@@ -1,0 +1,8 @@
+*.zip filter=lfs diff=lfs merge=lfs -text
+*.docx filter=lfs diff=lfs merge=lfs -text
+*.pdf filter=lfs diff=lfs merge=lfs -text
+*.png filter=lfs diff=lfs merge=lfs -text
+*.jpg filter=lfs diff=lfs merge=lfs -text
+*.dmg filter=lfs diff=lfs merge=lfs -text
+*.itmz filter=lfs diff=lfs merge=lfs -text
+*.dmm filter=lfs diff=lfs merge=lfs -text

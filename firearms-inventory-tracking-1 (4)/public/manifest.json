@@ -1,0 +1,55 @@
+{
+  "name": "CaliberVault",
+  "short_name": "CaliberVault",
+  "description": "Professional firearm inventory management system with barcode scanning and location tracking",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#3b82f6",
+  "orientation": "portrait",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    },
+    {
+      "src": "/screenshot2.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Scan Barcode",
+      "short_name": "Scan",
+      "description": "Quick barcode scanning",
+      "url": "/?action=scan",
+      "icons": [{ "src": "/scan-icon.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Add Item",
+      "short_name": "Add",
+      "description": "Add new inventory item",
+      "url": "/?action=add",
+      "icons": [{ "src": "/add-icon.png", "sizes": "96x96" }]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": []
+}

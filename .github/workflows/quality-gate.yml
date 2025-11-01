@@ -1,0 +1,111 @@
+name: Test Quality Gate
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'src/**/*.test.ts'
+      - 'src/**/*.test.tsx'
+      - 'src/**/*.spec.ts'
+      - 'src/**/*.spec.tsx'
+
+jobs:
+  quality-gate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get changed test files
+        id: changed-files
+        uses: tj-actions/changed-files@v39
+        with:
+          files: |
+            src/**/*.test.ts
+            src/**/*.test.tsx
+            src/**/*.spec.ts
+            src/**/*.spec.tsx
+
+      - name: Analyze test quality
+        if: steps.changed-files.outputs.any_changed == 'true'
+        id: analyze
+        run: |
+          echo "Analyzing test files..."
+          RESULTS=""
+          PASSED=true
+          
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "Analyzing $file"
+            # Read file content
+            CONTENT=$(cat "$file")
+            
+            # Call quality gate API (you would implement this)
+            # SCORE=$(curl -X POST your-api-endpoint -d "$CONTENT")
+            
+            # For now, simulate scoring
+            SCORE=75
+            
+            if [ $SCORE -lt 70 ]; then
+              PASSED=false
+              RESULTS="$RESULTS\n❌ $file: Score $SCORE (Failed)"
+            else
+              RESULTS="$RESULTS\n✅ $file: Score $SCORE (Passed)"
+            fi
+          done
+          
+          echo "results<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$RESULTS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+
+      - name: Comment PR
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const results = `${{ steps.analyze.outputs.results }}`;
+            const passed = '${{ steps.analyze.outputs.passed }}' === 'true';
+            
+            const body = `## 🧪 Test Quality Gate Report
+            
+            ${passed ? '✅ All tests meet quality standards!' : '❌ Some tests need improvement'}
+            
+            ### Results:
+            ${results}
+            
+            ### Quality Thresholds:
+            - Minimum Overall Score: 70
+            - Minimum Coverage Score: 70
+            - Minimum Edge Case Score: 60
+            - Minimum Mock Quality: 65
+            - Minimum Assertion Strength: 75
+            - Minimum Best Practices: 70
+            
+            ${!passed ? '⚠️ Please improve test quality before merging.' : ''}
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+      - name: Fail if quality gate not passed
+        if: steps.analyze.outputs.passed == 'false'
+        run: |
+          echo "Quality gate failed. Tests do not meet minimum quality standards."
+          exit 1

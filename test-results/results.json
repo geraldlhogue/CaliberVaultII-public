@@ -1,0 +1,344 @@
+{
+  "config": {
+    "configFile": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/playwright.config.ts",
+    "rootDir": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 3
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results/junit.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 3
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 3
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 3
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.1",
+    "workers": 8,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "visual/visual-regression.spec.ts",
+      "file": "visual/visual-regression.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "mock visual test @visual",
+          "ok": false,
+          "tags": [
+            "visual"
+          ],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 2876,
+                  "error": {
+                    "message": "Error: A snapshot doesn't exist at /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts-snapshots/mock-red-box-chromium-darwin.png, writing actual.",
+                    "stack": "Error: A snapshot doesn't exist at /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts-snapshots/mock-red-box-chromium-darwin.png, writing actual.\n    at /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts:5:3",
+                    "location": {
+                      "file": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts",
+                      "column": 3,
+                      "line": 5
+                    },
+                    "snippet": "  3 | test('mock visual test @visual', async ({ page }) => {\n  4 |   await page.goto('data:text/html,<div style=\"background:red;width:100px;height:100px\">Red Box</div>');\n> 5 |   await expect(page).toHaveScreenshot('mock-red-box.png');\n    |   ^\n  6 | });\n  7 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts",
+                        "column": 3,
+                        "line": 5
+                      },
+                      "message": "Error: A snapshot doesn't exist at /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts-snapshots/mock-red-box-chromium-darwin.png, writing actual.\n\n  3 | test('mock visual test @visual', async ({ page }) => {\n  4 |   await page.goto('data:text/html,<div style=\"background:red;width:100px;height:100px\">Red Box</div>');\n> 5 |   await expect(page).toHaveScreenshot('mock-red-box.png');\n    |   ^\n  6 | });\n  7 |\n    at /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts:5:3"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-10-31T18:57:02.204Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "mock-red-box-expected.png",
+                      "contentType": "image/png",
+                      "path": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts-snapshots/mock-red-box-chromium-darwin.png"
+                    },
+                    {
+                      "name": "mock-red-box-actual.png",
+                      "contentType": "image/png",
+                      "path": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/test-results/visual-visual-regression-mock-visual-test-visual-chromium/mock-red-box-actual.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/test-results/visual-visual-regression-mock-visual-test-visual-chromium/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts",
+                    "column": 3,
+                    "line": 5
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "402dc9c5fe5b3f39a9f9-6a7e0d75ac17a40ab8e9",
+          "file": "visual/visual-regression.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "mock visual test @visual",
+          "ok": false,
+          "tags": [
+            "visual"
+          ],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "firefox",
+              "projectName": "firefox",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
+                  "status": "failed",
+                  "duration": 894,
+                  "error": {
+                    "message": "Error: A snapshot doesn't exist at /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts-snapshots/mock-red-box-firefox-darwin.png, writing actual.",
+                    "stack": "Error: A snapshot doesn't exist at /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts-snapshots/mock-red-box-firefox-darwin.png, writing actual.\n    at /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts:5:3",
+                    "location": {
+                      "file": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts",
+                      "column": 3,
+                      "line": 5
+                    },
+                    "snippet": "  3 | test('mock visual test @visual', async ({ page }) => {\n  4 |   await page.goto('data:text/html,<div style=\"background:red;width:100px;height:100px\">Red Box</div>');\n> 5 |   await expect(page).toHaveScreenshot('mock-red-box.png');\n    |   ^\n  6 | });\n  7 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts",
+                        "column": 3,
+                        "line": 5
+                      },
+                      "message": "Error: A snapshot doesn't exist at /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts-snapshots/mock-red-box-firefox-darwin.png, writing actual.\n\n  3 | test('mock visual test @visual', async ({ page }) => {\n  4 |   await page.goto('data:text/html,<div style=\"background:red;width:100px;height:100px\">Red Box</div>');\n> 5 |   await expect(page).toHaveScreenshot('mock-red-box.png');\n    |   ^\n  6 | });\n  7 |\n    at /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts:5:3"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-10-31T18:57:02.204Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "mock-red-box-expected.png",
+                      "contentType": "image/png",
+                      "path": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts-snapshots/mock-red-box-firefox-darwin.png"
+                    },
+                    {
+                      "name": "mock-red-box-actual.png",
+                      "contentType": "image/png",
+                      "path": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/test-results/visual-visual-regression-mock-visual-test-visual-firefox/mock-red-box-actual.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/test-results/visual-visual-regression-mock-visual-test-visual-firefox/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts",
+                    "column": 3,
+                    "line": 5
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "402dc9c5fe5b3f39a9f9-f2b3ef1ee2cb1588be0b",
+          "file": "visual/visual-regression.spec.ts",
+          "line": 3,
+          "column": 1
+        },
+        {
+          "title": "mock visual test @visual",
+          "ok": false,
+          "tags": [
+            "visual"
+          ],
+          "tests": [
+            {
+              "timeout": 30000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "webkit",
+              "projectName": "webkit",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 2,
+                  "status": "failed",
+                  "duration": 915,
+                  "error": {
+                    "message": "Error: A snapshot doesn't exist at /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts-snapshots/mock-red-box-webkit-darwin.png, writing actual.",
+                    "stack": "Error: A snapshot doesn't exist at /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts-snapshots/mock-red-box-webkit-darwin.png, writing actual.\n    at /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts:5:3",
+                    "location": {
+                      "file": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts",
+                      "column": 3,
+                      "line": 5
+                    },
+                    "snippet": "  3 | test('mock visual test @visual', async ({ page }) => {\n  4 |   await page.goto('data:text/html,<div style=\"background:red;width:100px;height:100px\">Red Box</div>');\n> 5 |   await expect(page).toHaveScreenshot('mock-red-box.png');\n    |   ^\n  6 | });\n  7 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts",
+                        "column": 3,
+                        "line": 5
+                      },
+                      "message": "Error: A snapshot doesn't exist at /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts-snapshots/mock-red-box-webkit-darwin.png, writing actual.\n\n  3 | test('mock visual test @visual', async ({ page }) => {\n  4 |   await page.goto('data:text/html,<div style=\"background:red;width:100px;height:100px\">Red Box</div>');\n> 5 |   await expect(page).toHaveScreenshot('mock-red-box.png');\n    |   ^\n  6 | });\n  7 |\n    at /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts:5:3"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-10-31T18:57:02.204Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "mock-red-box-expected.png",
+                      "contentType": "image/png",
+                      "path": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts-snapshots/mock-red-box-webkit-darwin.png"
+                    },
+                    {
+                      "name": "mock-red-box-actual.png",
+                      "contentType": "image/png",
+                      "path": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/test-results/visual-visual-regression-mock-visual-test-visual-webkit/mock-red-box-actual.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/test-results/visual-visual-regression-mock-visual-test-visual-webkit/error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "/Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVault/src/test/visual/visual-regression.spec.ts",
+                    "column": 3,
+                    "line": 5
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "402dc9c5fe5b3f39a9f9-784eba0674ac39547109",
+          "file": "visual/visual-regression.spec.ts",
+          "line": 3,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-10-31T18:57:01.255Z",
+    "duration": 9134.358,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 3,
+    "flaky": 0
+  }
+}
