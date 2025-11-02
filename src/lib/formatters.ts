@@ -13,8 +13,14 @@ export function formatCurrency(value: any): string {
   return `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
-export function formatNumber(value: any): string {
+export function formatNumber(value: any, decimals?: number): string {
   const num = safeNumber(value);
+  if (decimals !== undefined) {
+    return num.toLocaleString('en-US', { 
+      minimumFractionDigits: decimals, 
+      maximumFractionDigits: decimals 
+    });
+  }
   return num.toLocaleString('en-US');
 }
 
@@ -23,12 +29,19 @@ export function formatPercent(value: any): string {
   return `${num.toFixed(1)}%`;
 }
 
+export function formatPercentage(value: any): string {
+  const num = safeNumber(value);
+  return `${(num * 100).toFixed(2)}%`;
+}
+
 export function formatDate(value: any): string {
   if (!value) return '-';
   try {
-    return new Date(value).toLocaleDateString('en-US');
+    const date = new Date(value);
+    if (isNaN(date.getTime())) return 'Invalid Date';
+    return date.toLocaleDateString('en-US');
   } catch {
-    return String(value);
+    return 'Invalid Date';
   }
 }
 
@@ -41,7 +54,6 @@ export function formatDateTime(value: any): string {
   }
 }
 
-// Safe wrapper for toLocaleString
 export function safeToLocaleString(value: any): string {
   const num = safeNumber(value);
   return num.toLocaleString('en-US');
