@@ -1,6 +1,8 @@
 import '@testing-library/jest-dom';
-import { expect, afterEach, vi } from 'vitest';
+import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
+import { afterEach, vi } from 'vitest';
+
 
 // Mock Supabase FIRST before any other imports
 vi.mock('@/lib/supabase', () => ({
