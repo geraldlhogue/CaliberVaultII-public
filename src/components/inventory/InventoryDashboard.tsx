@@ -280,10 +280,12 @@ export default function InventoryDashboard(props: Props) {
             <h2 className="text-2xl font-bold text-white mb-4">Categories</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {referenceData.categories.map(cat => {
-                // Calculate count for this category using case-insensitive comparison
+                // Calculate count for this category using case-insensitive name comparison
+                // NOTE: inventory.category is a TEXT field, not a UUID foreign key
                 const categoryCount = inventory.filter(i => 
-                  i.category?.toLowerCase() === cat.id.toLowerCase()
+                  i.category?.toLowerCase() === cat.name.toLowerCase()
                 ).length;
+
                 
                 return (
                   <CategoryCard
@@ -293,7 +295,8 @@ export default function InventoryDashboard(props: Props) {
                     label={cat.name}
                     count={categoryCount}
                     onClick={() => {
-                      setSelectedCategory(cat.id as ItemCategory);
+                      setSelectedCategory(cat.name as ItemCategory);
+
                       setShowAllItems(false);
                       setTimeout(() => {
                         document.getElementById('items-section')?.scrollIntoView({ behavior: 'smooth' });
@@ -339,7 +342,8 @@ export default function InventoryDashboard(props: Props) {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl md:text-2xl font-bold text-white">
                 {selectedCategory 
-                  ? referenceData.categories.find(c => c.id.toLowerCase() === selectedCategory.toLowerCase())?.name 
+                  ? referenceData.categories.find(c => c.name.toLowerCase() === selectedCategory.toLowerCase())?.name || selectedCategory
+
                   : searchQuery 
                     ? `Search: "${searchQuery}"`
                     : 'All Items'}

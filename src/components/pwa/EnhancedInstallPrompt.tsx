@@ -135,3 +135,5 @@ export function EnhancedInstallPrompt() {
     </div>
   );
 }
+
+export default EnhancedInstallPrompt;

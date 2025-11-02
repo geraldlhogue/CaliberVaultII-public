@@ -68,7 +68,8 @@ export const AttributeFields: React.FC<AttributeFieldsProps> = ({
         supabase.from('categories').select('*').order('name'),
         user ? supabase.from('locations').select('*').eq('user_id', user.id).order('name') 
              : Promise.resolve({ data: [], error: null }),
-        supabase.from('action_types').select('*').order('name'),
+        supabase.from('actions').select('*').order('name'),
+
         supabase.from('ammo_types').select('*').order('name'),
         supabase.from('manufacturers').select('*').order('name'),
         supabase.from('reticle_types').select('*').order('name'),
@@ -315,11 +316,11 @@ export const AttributeFields: React.FC<AttributeFieldsProps> = ({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-slate-300 mb-2">Action</label>
-              <select value={formData.action || ''} onChange={(e) => update('action', e.target.value)} 
+              <select value={formData.action_id || ''} onChange={(e) => update('action_id', e.target.value)} 
                 className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2 text-white">
                 <option value="">Select...</option>
                 {(actions || []).map(a => (
-                  <option key={a.id} value={a.name}>{a.name}</option>
+                  <option key={a.id} value={a.id}>{a.name}</option>
                 ))}
               </select>
             </div>
@@ -327,6 +328,7 @@ export const AttributeFields: React.FC<AttributeFieldsProps> = ({
               units={getUnitsByCategory('length')} onChange={(value, unit) => setFormData({...formData, barrelLengthValue: value, barrelLengthUom: unit})}
               placeholder="16" allowDecimal={true} />
           </div>
+
           <div className="grid grid-cols-2 gap-4">
             <NumericInput label="Capacity" value={formData.capacity || ''} unit="rds" units={[{code: 'rds', name: 'rounds'}]}
               onChange={(value) => update('capacity', value)} placeholder="30" />

@@ -17,7 +17,7 @@ export interface BatchLookupResult {
 export class BarcodeService {
   private static instance: BarcodeService;
   private apiCallCount = 0;
-  private readonly MAX_API_CALLS_PER_DAY = 90; // Conservative limit
+  private readonly MAX_API_CALLS_PER_DAY = 90;
 
   private constructor() {}
 
@@ -29,12 +29,41 @@ export class BarcodeService {
   }
 
   /**
-   * Lookup a single barcode with intelligent caching
+   * Validate UPC barcode format (12 or 13 digits)
    */
+  isValidUPC(barcode: string): boolean {
+    if (!barcode) return false;
+    const cleaned = barcode.replace(/\D/g, '');
+    return cleaned.length === 12 || cleaned.length === 13;
+  }
+
+  /**
+   * Validate EAN barcode format (13 digits)
+   */
+  isValidEAN(barcode: string): boolean {
+    if (!barcode) return false;
+    const cleaned = barcode.replace(/\D/g, '');
+    return cleaned.length === 13;
+  }
+
+  /**
+   * Detect barcode type based on format
+   */
+  detectBarcodeType(barcode: string): string {
+    if (!barcode) return 'UNKNOWN';
+    const cleaned = barcode.replace(/\D/g, '');
+    
+    if (cleaned.length === 12) return 'UPC';
+    if (cleaned.length === 13) return 'EAN';
+    if (cleaned.length === 8) return 'EAN-8';
+    if (cleaned.length === 14) return 'ITF-14';
+    
+    return 'UNKNOWN';
+  }
+
   async lookup(barcode: string, forceRefresh = false): Promise<BarcodeLookupResult> {
     console.log('[BarcodeService] Looking up barcode:', barcode);
 
-    // Check cache first (unless force refresh)
     if (!forceRefresh) {
       const cached = await barcodeCache.get(barcode);
       if (cached) {
@@ -47,7 +76,6 @@ export class BarcodeService {
       }
     }
 
-    // Check API rate limit
     if (this.apiCallCount >= this.MAX_API_CALLS_PER_DAY) {
       console.warn('[BarcodeService] API rate limit reached');
       return {
@@ -57,7 +85,6 @@ export class BarcodeService {
       };
     }
 
-    // Call API
     try {
       this.apiCallCount++;
       const { data, error } = await supabase.functions.invoke('barcode-lookup', {
@@ -67,7 +94,6 @@ export class BarcodeService {
       if (error) throw error;
 
       if (data.success && data.data) {
-        // Cache the result
         const cacheData: BarcodeData = {
           barcode: data.data.barcode,
           title: data.data.name,
@@ -96,7 +122,7 @@ export class BarcodeService {
         error: data.error || 'Product not found',
         source: 'api'
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('[BarcodeService] Lookup error:', error);
       return {
         success: false,
@@ -106,16 +132,12 @@ export class BarcodeService {
     }
   }
 
-  /**
-   * Batch lookup multiple barcodes
-   */
   async batchLookup(barcodes: string[]): Promise<BatchLookupResult[]> {
     console.log('[BarcodeService] Batch lookup for', barcodes.length, 'barcodes');
 
     const results: BatchLookupResult[] = [];
     const uncachedBarcodes: string[] = [];
 
-    // Check cache for all barcodes first
     for (const barcode of barcodes) {
       const cached = await barcodeCache.get(barcode);
       if (cached) {
@@ -132,7 +154,6 @@ export class BarcodeService {
       }
     }
 
-    // Batch API call for uncached barcodes
     if (uncachedBarcodes.length > 0) {
       try {
         const { data, error } = await supabase.functions.invoke('barcode-lookup', {
@@ -183,9 +204,8 @@ export class BarcodeService {
             }
           }
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('[BarcodeService] Batch lookup error:', error);
-        // Add failed results for uncached barcodes
         for (const barcode of uncachedBarcodes) {
           results.push({
             barcode,
@@ -202,23 +222,14 @@ export class BarcodeService {
     return results;
   }
 
-  /**
-   * Get cache statistics
-   */
   async getCacheStats() {
     return await barcodeCache.getStats();
   }
 
-  /**
-   * Clear cache
-   */
   async clearCache() {
     await barcodeCache.clear();
   }
 
-  /**
-   * Get API usage stats
-   */
   getApiUsage() {
     return {
       callsToday: this.apiCallCount,
@@ -228,9 +239,6 @@ export class BarcodeService {
     };
   }
 
-  /**
-   * Reset API counter (call this daily)
-   */
   resetApiCounter() {
     this.apiCallCount = 0;
   }

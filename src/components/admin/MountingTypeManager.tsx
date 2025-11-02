@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
+
 import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
 
 export const MountingTypeManager: React.FC = () => {
@@ -20,10 +21,11 @@ export const MountingTypeManager: React.FC = () => {
     e.preventDefault();
     if (editing) {
       await supabase.from('mounting_types').update(formData).eq('id', editing.id);
-      toast({ title: 'Updated mounting type' });
+      toast.success('Updated mounting type');
     } else {
       await supabase.from('mounting_types').insert([formData]);
-      toast({ title: 'Added mounting type' });
+      toast.success('Added mounting type');
+
     }
     setFormData({ name: '', thread_pitch: '', description: '' });
     setEditing(null);
@@ -33,7 +35,8 @@ export const MountingTypeManager: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (confirm('Delete this mounting type?')) {
       await supabase.from('mounting_types').delete().eq('id', id);
-      toast({ title: 'Deleted mounting type' });
+      toast.success('Deleted mounting type');
+
       fetchItems();
     }
   };

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Trash2, Edit2, Plus, Search } from 'lucide-react';
@@ -33,16 +33,18 @@ export const AmmoTypeManager: React.FC = () => {
       .select('*')
       .order('name');
     
+    
     if (error) {
-      toast({ title: 'Error fetching ammo types', description: error.message, variant: 'destructive' });
+      toast.error(`Error fetching ammo types: ${error.message}`);
     } else {
       setAmmoTypes(data || []);
     }
+
   };
 
   const handleSave = async () => {
     if (!formData.name) {
-      toast({ title: 'Error', description: 'Name is required', variant: 'destructive' });
+      toast.error('Name is required');
       return;
     }
 
@@ -53,9 +55,9 @@ export const AmmoTypeManager: React.FC = () => {
         .eq('id', editingId);
       
       if (error) {
-        toast({ title: 'Error updating ammo type', description: error.message, variant: 'destructive' });
+        toast.error(`Error updating ammo type: ${error.message}`);
       } else {
-        toast({ title: 'Success', description: 'Ammo type updated successfully' });
+        toast.success('Ammo type updated successfully');
         setEditingId(null);
       }
     } else {
@@ -64,9 +66,9 @@ export const AmmoTypeManager: React.FC = () => {
         .insert([formData]);
       
       if (error) {
-        toast({ title: 'Error adding ammo type', description: error.message, variant: 'destructive' });
+        toast.error(`Error adding ammo type: ${error.message}`);
       } else {
-        toast({ title: 'Success', description: 'Ammo type added successfully' });
+        toast.success('Ammo type added successfully');
         setIsAdding(false);
       }
     }
@@ -74,6 +76,7 @@ export const AmmoTypeManager: React.FC = () => {
     setFormData({ name: '', abbreviation: '', description: '' });
     fetchAmmoTypes();
   };
+
 
   const handleEdit = (type: AmmoType) => {
     setFormData({
@@ -94,11 +97,12 @@ export const AmmoTypeManager: React.FC = () => {
       .eq('id', id);
     
     if (error) {
-      toast({ title: 'Error deleting ammo type', description: error.message, variant: 'destructive' });
+      toast.error(`Error deleting ammo type: ${error.message}`);
     } else {
-      toast({ title: 'Success', description: 'Ammo type deleted successfully' });
+      toast.success('Ammo type deleted successfully');
       fetchAmmoTypes();
     }
+
   };
 
   const filteredTypes = ammoTypes.filter(t =>

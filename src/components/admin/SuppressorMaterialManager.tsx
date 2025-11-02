@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
+
 import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
 
 export const SuppressorMaterialManager: React.FC = () => {
@@ -20,10 +21,11 @@ export const SuppressorMaterialManager: React.FC = () => {
     e.preventDefault();
     if (editing) {
       await supabase.from('suppressor_materials').update(formData).eq('id', editing.id);
-      toast({ title: 'Updated suppressor material' });
+      toast.success('Updated suppressor material');
     } else {
       await supabase.from('suppressor_materials').insert([formData]);
-      toast({ title: 'Added suppressor material' });
+      toast.success('Added suppressor material');
+
     }
     setFormData({ name: '', properties: '', description: '' });
     setEditing(null);
@@ -33,7 +35,8 @@ export const SuppressorMaterialManager: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (confirm('Delete this suppressor material?')) {
       await supabase.from('suppressor_materials').delete().eq('id', id);
-      toast({ title: 'Deleted suppressor material' });
+      toast.success('Deleted suppressor material');
+
       fetchItems();
     }
   };

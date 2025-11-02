@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { supabase } from '@/lib/supabase';
 import { Plus, Pencil, Trash2, Save } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import {
   Dialog,
   DialogContent,
@@ -29,7 +29,6 @@ interface FirearmAction {
 }
 
 export function ActionManager() {
-  const { toast } = useToast();
   const [actions, setActions] = useState<FirearmAction[]>([]);
   const [editingItem, setEditingItem] = useState<FirearmAction | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -46,7 +45,6 @@ export function ActionManager() {
       .select('*')
       .order('name');
 
-    
     if (error) {
       console.error('Error loading actions:', error);
     } else if (data) {
@@ -56,11 +54,7 @@ export function ActionManager() {
 
   const handleSave = async () => {
     if (!formData.name?.trim()) {
-      toast({
-        title: "Error",
-        description: "Action name is required",
-        variant: "destructive"
-      });
+      toast.error('Action name is required');
       return;
     }
     
@@ -75,25 +69,16 @@ export function ActionManager() {
           .from('actions')
           .update(dataToSave)
           .eq('id', editingItem.id);
-
-          
-        if (error) throw error;
         
-        toast({
-          title: "Success",
-          description: `Action "${formData.name}" updated`
-        });
+        if (error) throw error;
+        toast.success(`Action "${formData.name}" updated`);
       } else {
         const { error } = await supabase
           .from('actions')
           .insert([dataToSave]);
 
         if (error) throw error;
-        
-        toast({
-          title: "Success",
-          description: `Action "${formData.name}" added`
-        });
+        toast.success(`Action "${formData.name}" added`);
       }
       
       setIsDialogOpen(false);
@@ -102,11 +87,7 @@ export function ActionManager() {
       await loadActions();
     } catch (error: any) {
       console.error('Error saving action:', error);
-      toast({
-        title: "Error",
-        description: error.message || "Failed to save action",
-        variant: "destructive"
-      });
+      toast.error(error.message || 'Failed to save action');
     }
   };
 
@@ -119,11 +100,7 @@ export function ActionManager() {
 
       if (error) {
         console.error('Error deleting action:', error);
-        toast({
-          title: "Error",
-          description: "Failed to delete action",
-          variant: "destructive"
-        });
+        toast.error('Failed to delete action');
       } else {
         await loadActions();
       }

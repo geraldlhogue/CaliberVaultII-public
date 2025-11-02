@@ -1,39 +1,35 @@
-import { vi } from 'vitest';
+import { Page } from '@playwright/test';
 
-export const mockSupabaseClient = {
-  from: vi.fn(() => ({
-    select: vi.fn(() => ({
-      eq: vi.fn(() => ({
-        single: vi.fn(() => Promise.resolve({ data: null, error: null }))
-      })),
-      limit: vi.fn(() => Promise.resolve({ data: [], error: null }))
-    })),
-    insert: vi.fn(() => ({
-      select: vi.fn(() => ({
-        single: vi.fn(() => Promise.resolve({ data: null, error: null }))
-      }))
-    })),
-    update: vi.fn(() => ({
-      eq: vi.fn(() => Promise.resolve({ data: null, error: null }))
-    })),
-    delete: vi.fn(() => ({
-      eq: vi.fn(() => Promise.resolve({ data: null, error: null }))
-    }))
-  })),
-  auth: {
-    getUser: vi.fn(() => Promise.resolve({ data: { user: { id: 'test-user' } }, error: null })),
-    signIn: vi.fn(() => Promise.resolve({ data: null, error: null })),
-    signOut: vi.fn(() => Promise.resolve({ error: null }))
+export async function loginAsTestUser(page: Page) {
+  await page.goto('/');
+  await page.getByRole('button', { name: /login/i }).click();
+  await page.fill('input[type="email"]', 'test@example.com');
+  await page.fill('input[type="password"]', 'password123');
+  await page.getByRole('button', { name: /sign in/i }).click();
+  await page.waitForURL('/');
+}
+
+export async function createTestItem(page: Page, itemData: any) {
+  await page.goto('/inventory');
+  await page.getByRole('button', { name: /add item/i }).click();
+  
+  for (const [key, value] of Object.entries(itemData)) {
+    const input = page.locator(`input[name="${key}"], select[name="${key}"]`);
+    await input.fill(String(value));
   }
-};
+  
+  await page.getByRole('button', { name: /save/i }).click();
+  await page.waitForLoadState('networkidle');
+}
 
-export const createMockItem = (overrides = {}) => ({
-  id: 'test-id',
-  user_id: 'test-user',
-  name: 'Test Item',
-  category: 'firearms',
-  created_at: new Date().toISOString(),
-  ...overrides
-});
+export async function waitForToast(page: Page, message: string) {
+  await page.waitForSelector(`text=${message}`, { timeout: 5000 });
+}
 
-export const waitForAsync = () => new Promise(resolve => setTimeout(resolve, 0));
+export async function clearLocalStorage(page: Page) {
+  await page.evaluate(() => localStorage.clear());
+}
+
+export async function mockApiResponse(page: Page, url: string, response: any) {
+  await page.route(url, (route) => route.fulfill({ body: JSON.stringify(response) }));
+}

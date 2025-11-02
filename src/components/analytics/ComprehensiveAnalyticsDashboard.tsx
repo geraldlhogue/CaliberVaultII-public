@@ -3,6 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/lib/supabase';
 import { TrendingUp, DollarSign, Package, Activity, Users, Calendar } from 'lucide-react';
+import { formatCurrency } from '@/lib/formatters';
+
 
 interface ComprehensiveMetrics {
   totalValue: number;
@@ -85,7 +87,8 @@ export function ComprehensiveAnalyticsDashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${metrics?.totalValue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{formatCurrency(metrics?.totalValue || 0)}</div>
+
             <p className="text-xs text-muted-foreground">Portfolio valuation</p>
           </CardContent>
         </Card>
@@ -137,7 +140,8 @@ export function ComprehensiveAnalyticsDashboard() {
                 <div className="font-medium">{cat.category}</div>
                 <div className="flex items-center gap-4 text-sm">
                   <span>{cat.count} items</span>
-                  <span className="font-semibold">${cat.value.toLocaleString()}</span>
+                  <span className="font-semibold">{formatCurrency(cat.value)}</span>
+
                 </div>
               </div>
             ))}

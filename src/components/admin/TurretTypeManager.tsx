@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
+
 import { Search, Plus, Pencil, Trash2 } from 'lucide-react';
 
 export const TurretTypeManager: React.FC = () => {
@@ -20,10 +21,11 @@ export const TurretTypeManager: React.FC = () => {
     e.preventDefault();
     if (editing) {
       await supabase.from('turret_types').update(formData).eq('id', editing.id);
-      toast({ title: 'Updated turret type' });
+      toast.success('Updated turret type');
     } else {
       await supabase.from('turret_types').insert([formData]);
-      toast({ title: 'Added turret type' });
+      toast.success('Added turret type');
+
     }
     setFormData({ name: '', description: '' });
     setEditing(null);
@@ -33,7 +35,8 @@ export const TurretTypeManager: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (confirm('Delete this turret type?')) {
       await supabase.from('turret_types').delete().eq('id', id);
-      toast({ title: 'Deleted turret type' });
+      toast.success('Deleted turret type');
+
       fetchItems();
     }
   };

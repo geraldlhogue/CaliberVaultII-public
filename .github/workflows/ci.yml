@@ -26,6 +26,7 @@ jobs:
       run: npm run lint
       continue-on-error: true
     
+    
     - name: Run unit tests
       run: npm run test:coverage
       env:
@@ -53,7 +54,7 @@ jobs:
       env:
         VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
         VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-    
+
     - name: Upload E2E test results
       uses: actions/upload-artifact@v3
       if: always()
@@ -61,6 +62,8 @@ jobs:
         name: playwright-report
         path: playwright-report/
         retention-days: 30
+
+
     
     - name: Build application
       run: npm run build

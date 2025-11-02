@@ -32,8 +32,6 @@ export default defineConfig(({ mode }) => ({
         '@capacitor/background-task',
         '@capacitor-community/barcode-scanner'
       ]
-
     }
   }
 }));
-

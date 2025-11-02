@@ -29,7 +29,8 @@ interface LookupData {
 export function EnhancedDatabaseViewer() {
   const [results, setResults] = useState<TableData[]>([]);
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState('firearms');
+  const [activeTab, setActiveTab] = useState('inventory');
+
   const [lookupData, setLookupData] = useState<LookupData>({
     manufacturers: new Map(),
     calibers: new Map(),
@@ -41,23 +42,31 @@ export function EnhancedDatabaseViewer() {
   });
 
   const tables = [
-    { name: 'firearms', label: 'Firearms' },
-    { name: 'bullets', label: 'Ammunition' },
-    { name: 'optics', label: 'Optics' },
-    { name: 'suppressors', label: 'Suppressors' },
-    { name: 'magazines', label: 'Magazines' },
-    { name: 'accessories', label: 'Accessories' },
+    // NEW SCHEMA - Base inventory table
+    { name: 'inventory', label: 'Inventory (Base)' },
+    // Detail tables
+    { name: 'firearm_details', label: 'Firearm Details' },
+    { name: 'optic_details', label: 'Optic Details' },
+    { name: 'suppressor_details', label: 'Suppressor Details' },
+    { name: 'ammunition_details', label: 'Ammunition Details' },
+    { name: 'primer_details', label: 'Primer Details' },
+    { name: 'bullet_details', label: 'Bullet Details' },
+    { name: 'powder_details', label: 'Powder Details' },
+    { name: 'case_details', label: 'Case Details' },
+    { name: 'magazine_details', label: 'Magazine Details' },
+    { name: 'accessory_details', label: 'Accessory Details' },
+    { name: 'reloading_details', label: 'Reloading Details' },
+    // Reference tables
+    { name: 'categories', label: 'Categories' },
     { name: 'manufacturers', label: 'Manufacturers' },
     { name: 'calibers', label: 'Calibers' },
-    { name: 'bullet_types', label: 'Bullet Types' },
-    { name: 'locations', label: 'Locations' },
-    { name: 'categories', label: 'Categories' },
     { name: 'actions', label: 'Actions' },
-    { name: 'ammo_types', label: 'Ammo Types' },
-    { name: 'cartridges', label: 'Cartridges' },
-    { name: 'powder_types', label: 'Powder Types' },
-    { name: 'primer_types', label: 'Primer Types' },
+    { name: 'firearm_types', label: 'Firearm Types' },
+    { name: 'optic_types', label: 'Optic Types' },
+    { name: 'bullet_types', label: 'Bullet Types' },
+    { name: 'storage_locations', label: 'Storage Locations' },
   ];
+
 
   const loadLookupData = async () => {
     const [mfg, cal, bullet, loc, cat, act, ammo] = await Promise.all([

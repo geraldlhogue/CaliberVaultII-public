@@ -4,6 +4,7 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Toaster } from 'sonner';
 import { EnhancedErrorBoundary } from '@/components/errors/EnhancedErrorBoundary';
+import { AuthProvider } from '@/components/auth/AuthProvider';
 import { queryClient } from '@/lib/queryClient';
 import './App.css';
 
@@ -27,19 +28,21 @@ function App() {
   return (
     <EnhancedErrorBoundary>
       <QueryClientProvider client={queryClient}>
-        <Router>
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/pricing" element={<Index />} />
-              <Route path="/invite/:token" element={<InvitationAcceptPage />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </Router>
+        <AuthProvider>
+          <Router>
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/pricing" element={<Index />} />
+                <Route path="/invite/:token" element={<InvitationAcceptPage />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </Router>
 
-        <Toaster position="top-right" richColors />
-        <ReactQueryDevtools initialIsOpen={false} />
+          <Toaster position="top-right" richColors />
+          <ReactQueryDevtools initialIsOpen={false} />
+        </AuthProvider>
       </QueryClientProvider>
     </EnhancedErrorBoundary>
   );

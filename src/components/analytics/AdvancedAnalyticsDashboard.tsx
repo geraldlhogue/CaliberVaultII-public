@@ -4,6 +4,8 @@ import { supabase } from '@/lib/supabase';
 import { TrendingUp, TrendingDown, DollarSign, Package, Calendar, Target, BarChart3 } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { HistoricalTrendsAnalytics } from './HistoricalTrendsAnalytics';
+import { formatCurrency } from '@/lib/formatters';
+
 
 interface AdvancedMetrics {
   totalValue: number;
@@ -121,7 +123,8 @@ export function AdvancedAnalyticsDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${metrics.totalValue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{formatCurrency(metrics.totalValue)}</div>
+
           </CardContent>
         </Card>
 
@@ -181,7 +184,8 @@ export function AdvancedAnalyticsDashboard() {
                   <div key={category}>
                     <div className="flex justify-between text-sm mb-1">
                       <span>{category} ({count} items)</span>
-                      <span className="font-semibold">${value.toLocaleString()}</span>
+                      <span className="font-semibold">{formatCurrency(value)}</span>
+
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div 

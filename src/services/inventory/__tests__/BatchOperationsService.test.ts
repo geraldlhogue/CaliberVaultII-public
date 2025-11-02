@@ -1,26 +1,4 @@
-import { vi } from 'vitest';
-
-vi.mock('../../category', async (importOriginal) => {
-  const mod = await importOriginal();
-  return {
-    ...mod,
-    ammunitionService: {
-      create: vi.fn().mockResolvedValue({ data: { id: 'mock-id' }, error: null }),
-      delete: vi.fn().mockResolvedValue({ data: null, error: null }),
-      duplicate: vi.fn().mockResolvedValue({ data: { id: 'dup-id' }, error: null })
-    }
-  };
-});
-  const actual = await importOriginal();
-  return {
-    ...actual,
-    ammunitionService: {
-      create: vi.fn(() => Promise.resolve({ data: { id: 'mock-id' }, error: null })),
-      delete: vi.fn(() => Promise.resolve({ data: null, error: null })),
-      duplicate: vi.fn(() => Promise.resolve({ data: { id: 'dup-id' }, error: null }))
-    }
-  };
-});import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { batchOperationsService } from '../BatchOperationsService';
 import * as categoryServices from '../../category';
 

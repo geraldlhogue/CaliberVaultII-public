@@ -8,6 +8,8 @@ import { supabase } from '@/lib/supabase';
 import { QrCode, MapPin, Sparkles } from 'lucide-react';
 import QRCodeGenerator from '../locations/QRCodeGenerator';
 import LocationCheckInOut from './LocationCheckInOut';
+import { formatCurrency } from '@/lib/formatters';
+
 
 import { InsuranceDocuments } from '../insurance/InsuranceDocuments';
 import { MaintenanceRecords } from '../maintenance/MaintenanceRecords';
@@ -302,7 +304,8 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, onClose,
               )}
               <div>
                 <label className="text-slate-400 text-sm">Current Value</label>
-                <p className="text-yellow-600 font-bold text-xl">${latestValue.toLocaleString()}</p>
+                <p className="text-yellow-600 font-bold text-xl">{formatCurrency(latestValue || 0)}</p>
+
               </div>
             </div>
             {item.description && (
@@ -343,12 +346,14 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, onClose,
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-slate-900 p-4 rounded-lg">
                 <p className="text-slate-400 text-sm mb-1">Purchase Price</p>
-                <p className="text-white text-2xl font-bold">${item.purchasePrice.toLocaleString()}</p>
+                <p className="text-white text-2xl font-bold">{formatCurrency(item.purchasePrice || 0)}</p>
+
                 <p className="text-slate-500 text-sm">{item.purchaseDate}</p>
               </div>
               <div className="bg-slate-900 p-4 rounded-lg">
                 <p className="text-slate-400 text-sm mb-1">Current Value</p>
-                <p className="text-yellow-600 text-2xl font-bold">${latestValue.toLocaleString()}</p>
+                <p className="text-yellow-600 text-2xl font-bold">{formatCurrency(latestValue || 0)}</p>
+
                 <p className={`text-sm ${latestValue >= item.purchasePrice ? 'text-green-500' : 'text-red-500'}`}>
                   {latestValue >= item.purchasePrice ? '+' : ''}{((latestValue - item.purchasePrice) / item.purchasePrice * 100).toFixed(1)}%
                 </p>
@@ -375,7 +380,8 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, onClose,
               <h3 className="text-white font-semibold mb-3">Update Value</h3>
               <div className="bg-slate-900 p-3 rounded mb-4">
                 <p className="text-slate-400 text-sm">Current Value</p>
-                <p className="text-yellow-600 font-bold text-xl">${latestValue.toLocaleString()}</p>
+                <p className="text-yellow-600 font-bold text-xl">{formatCurrency(latestValue || 0)}</p>
+
               </div>
               <div className="mt-4 flex gap-2">
                 <input
@@ -537,3 +543,5 @@ export const ItemDetailModal: React.FC<ItemDetailModalProps> = ({ item, onClose,
     </div>
   );
 };
+
+export default ItemDetailModal;

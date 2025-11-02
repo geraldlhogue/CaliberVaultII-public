@@ -1,60 +1,48 @@
 /**
- * Safe formatting utilities to prevent runtime errors
- * Provides fallbacks for undefined/null values
+ * Safe formatting utilities to prevent toLocaleString errors
  */
 
-/**
- * Safely format a number as currency
- * Returns $0 if value is invalid
- */
-export function formatCurrency(value: any): string {
-  if (value === null || value === undefined || isNaN(Number(value))) {
-    return '$0';
-  }
-  
-  const numValue = Number(value);
-  return `$${numValue.toLocaleString('en-US', { 
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2 
-  })}`;
-}
-
-/**
- * Safely format a number with commas
- * Returns 0 if value is invalid
- */
-export function formatNumber(value: any): string {
-  if (value === null || value === undefined || isNaN(Number(value))) {
-    return '0';
-  }
-  
-  const numValue = Number(value);
-  return numValue.toLocaleString('en-US');
-}
-
-/**
- * Safely format a date
- * Returns 'N/A' if date is invalid
- */
-export function formatDate(value: any): string {
-  if (!value) return 'N/A';
-  
-  try {
-    const date = new Date(value);
-    if (isNaN(date.getTime())) return 'N/A';
-    return date.toLocaleString('en-US');
-  } catch {
-    return 'N/A';
-  }
-}
-
-/**
- * Safely get a numeric value
- * Returns 0 if value is invalid
- */
 export function safeNumber(value: any): number {
-  if (value === null || value === undefined || isNaN(Number(value))) {
-    return 0;
+  if (value === null || value === undefined || value === '') return 0;
+  const num = typeof value === 'string' ? parseFloat(value) : Number(value);
+  return isNaN(num) ? 0 : num;
+}
+
+export function formatCurrency(value: any): string {
+  const num = safeNumber(value);
+  return `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+export function formatNumber(value: any): string {
+  const num = safeNumber(value);
+  return num.toLocaleString('en-US');
+}
+
+export function formatPercent(value: any): string {
+  const num = safeNumber(value);
+  return `${num.toFixed(1)}%`;
+}
+
+export function formatDate(value: any): string {
+  if (!value) return '-';
+  try {
+    return new Date(value).toLocaleDateString('en-US');
+  } catch {
+    return String(value);
   }
-  return Number(value);
+}
+
+export function formatDateTime(value: any): string {
+  if (!value) return '-';
+  try {
+    return new Date(value).toLocaleString('en-US');
+  } catch {
+    return String(value);
+  }
+}
+
+// Safe wrapper for toLocaleString
+export function safeToLocaleString(value: any): string {
+  const num = safeNumber(value);
+  return num.toLocaleString('en-US');
 }

@@ -1,66 +1,35 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useInventoryFilters } from '../useInventoryFilters';
-import { mockFirearm, mockAmmunition } from '../../test/fixtures/inventory.fixtures';
 
-describe('useInventoryFilters - Enhanced Tests', () => {
-  it('initializes with empty filters', () => {
-    const { result } = renderHook(() => useInventoryFilters());
-    expect(result.current.filters).toEqual({});
-  });
+vi.mock('@/lib/supabase', () => ({
+  supabase: {
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => Promise.resolve({ data: [], error: null }))
+      }))
+    }))
+  }
+}));
 
-  it('sets category filter', () => {
+describe('useInventoryFilters Enhanced', () => {
+  it('handles complex filter combinations', () => {
     const { result } = renderHook(() => useInventoryFilters());
-    
     act(() => {
-      result.current.setFilter('category', 'firearms');
+      result.current.setFilters({ 
+        category: 'firearms', 
+        manufacturer: 'Glock' 
+      });
     });
-    
     expect(result.current.filters.category).toBe('firearms');
+    expect(result.current.filters.manufacturer).toBe('Glock');
   });
 
-  it('filters items by category', () => {
-    const items = [mockFirearm, mockAmmunition];
+  it('persists filter state', () => {
     const { result } = renderHook(() => useInventoryFilters());
-    
     act(() => {
-      result.current.setFilter('category', 'firearms');
+      result.current.setFilters({ category: 'ammunition' });
     });
-    
-    const filtered = items.filter(item => 
-      result.current.filters.category ? 
-      item.category === result.current.filters.category : 
-      true
-    );
-    
-    expect(filtered).toHaveLength(1);
-    expect(filtered[0].category).toBe('firearms');
-  });
-
-  it('clears all filters', () => {
-    const { result } = renderHook(() => useInventoryFilters());
-    
-    act(() => {
-      result.current.setFilter('category', 'firearms');
-      result.current.setFilter('manufacturer', 'Test');
-    });
-    
-    act(() => {
-      result.current.clearFilters();
-    });
-    
-    expect(result.current.filters).toEqual({});
-  });
-
-  it('applies multiple filters simultaneously', () => {
-    const { result } = renderHook(() => useInventoryFilters());
-    
-    act(() => {
-      result.current.setFilter('category', 'firearms');
-      result.current.setFilter('manufacturer', 'Test Manufacturer');
-    });
-    
-    expect(result.current.filters.category).toBe('firearms');
-    expect(result.current.filters.manufacturer).toBe('Test Manufacturer');
+    expect(result.current.filters.category).toBe('ammunition');
   });
 });

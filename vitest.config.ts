@@ -7,13 +7,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./vitest.setup.ts'],
-    environmentOptions: {
-      jsdom: {
-        resources: 'usable',
-        runScripts: 'dangerously'
-      }
-    },
+    setupFiles: ['./src/test/setup.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
@@ -23,24 +17,26 @@ export default defineConfig({
         '**/*.d.ts',
         '**/*.config.*',
         '**/mockData.ts',
-        '**/types.ts',
         'dist/',
-        '.next/',
-        'coverage/'
+        '.github/',
+        'supabase/functions/',
       ],
+      all: true,
+      lines: 85,
+      functions: 85,
+      branches: 85,
+      statements: 85,
       thresholds: {
-        lines: 70,
-        functions: 70,
-        branches: 70,
-        statements: 70
-      }
+        lines: 85,
+        functions: 85,
+        branches: 85,
+        statements: 85,
+      },
     },
-    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    exclude: ['node_modules', 'dist', '.next', 'coverage']
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
-    }
-  }
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
 });

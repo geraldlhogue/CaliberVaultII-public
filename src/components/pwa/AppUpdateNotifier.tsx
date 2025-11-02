@@ -303,3 +303,5 @@ export function AppUpdateNotifier() {
     </>
   );
 }
+
+export default AppUpdateNotifier;

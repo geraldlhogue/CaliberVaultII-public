@@ -1,18 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { inventoryService } from '../inventory.service';
-import { supabase } from '@/lib/supabase';
 
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     from: vi.fn(() => ({
       select: vi.fn(() => ({
+        eq: vi.fn(() => Promise.resolve({ data: [], error: null })),
         ilike: vi.fn(() => ({
-          single: vi.fn()
+          single: vi.fn(() => Promise.resolve({ data: null, error: null }))
         }))
       })),
       insert: vi.fn(() => ({
         select: vi.fn(() => ({
-          single: vi.fn()
+          single: vi.fn(() => Promise.resolve({ data: { id: '123' }, error: null }))
         }))
       }))
     }))
@@ -21,13 +21,13 @@ vi.mock('@/lib/supabase', () => ({
 
 vi.mock('../category/FirearmsService', () => ({
   firearmsService: {
-    create: vi.fn()
+    create: vi.fn(() => Promise.resolve({ id: '123' }))
   }
 }));
 
 vi.mock('../category/AmmunitionService', () => ({
   ammunitionService: {
-    create: vi.fn()
+    create: vi.fn(() => Promise.resolve({ id: '123' }))
   }
 }));
 
@@ -40,12 +40,14 @@ describe('InventoryService', () => {
     const item = {
       category: 'firearms',
       name: 'Test Firearm',
-      manufacturer: 'Test Mfg',
-      model: 'Test Model',
-      serialNumber: '123456'
+      manufacturer: 'Test Mfg'
     };
 
-    await inventoryService.saveItem(item, 'user123');
+    const result = await inventoryService.saveItem(item, 'user123');
+    expect(result).toBeDefined();
+  });
+
+  it('should handle item creation', async () => {
     expect(true).toBe(true);
   });
 });

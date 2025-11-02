@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { supabase } from '@/lib/supabase';
-import { BarChart3, TrendingUp, Package, AlertTriangle, DollarSign, Activity } from 'lucide-react';
-import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
+import { Package, DollarSign, AlertTriangle, TrendingUp } from 'lucide-react';
+import { formatCurrency, formatNumber } from '@/lib/formatters';
+
 
 interface AnalyticsData {
   totalItems: number;
@@ -149,7 +150,8 @@ export function AnalyticsDashboard() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${data.totalValue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{formatCurrency(data.totalValue)}</div>
+
             <p className="text-xs text-muted-foreground">Inventory value</p>
           </CardContent>
         </Card>

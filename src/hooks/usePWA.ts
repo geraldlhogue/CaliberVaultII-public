@@ -37,10 +37,13 @@ export function usePWA() {
 
     // Handle install prompt
     const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setIsInstallable(true);
     };
+
 
     // Handle app installed
     const handleAppInstalled = () => {

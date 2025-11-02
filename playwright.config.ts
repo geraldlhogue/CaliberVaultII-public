@@ -33,17 +33,9 @@ export default defineConfig({
       use: { ...devices['Desktop Safari'] },
     },
   ],
-//   webServer: {
-//   command: 'echo "Skipping dev server for visual tests"',
-//   port: 9323,
-//   timeout: 120000,
-//   reuseExistingServer: false,
-// },
-use: {
-  // Mock mobile APIs
-  viewport: { width: 1280, height: 720 },
-  ignoreHTTPSErrors: true,
-  // Skip loading real app
-  baseURL: 'data:text/html,<h1>Mock Page for Visual Tests</h1>',
-},
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:5173',
+    reuseExistingServer: !process.env.CI,
+  },
 });

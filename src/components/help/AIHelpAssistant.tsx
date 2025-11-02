@@ -174,3 +174,5 @@ export function AIHelpAssistant() {
     </>
   );
 }
+
+export default AIHelpAssistant;

@@ -1,97 +1,179 @@
-import { vi } from 'vitest';
-
-const mockInventoryService = {
-  create: vi.fn().mockResolvedValue({ success: true, data: { id: 'new-id' } }),
-  getById: vi.fn().mockResolvedValue({ success: true, data: { id: '1' } }),
-  update: vi.fn().mockResolvedValue({ success: true }),
-  delete: vi.fn().mockResolvedValue({ success: true }),
-  getByCategory: vi.fn().mockResolvedValue({ success: true, data: [] }),
-};
-
-vi.mock('../inventory.service', () => ({
-  InventoryService: vi.fn(() => mockInventoryService),
-}));
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { InventoryService } from '../inventory.service';
-import { supabase } from '../../lib/supabase';
-import { mockFirearm, mockAmmunition } from '../../test/fixtures/inventory.fixtures';
+import { inventoryService } from '../inventory.service';
 
-vi.mock('../../lib/supabase');
+// Mock Supabase
+vi.mock('@/lib/supabase', () => ({
+  supabase: {
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          single: vi.fn(() => Promise.resolve({ data: { id: 'cat123', name: 'firearms' }, error: null }))
+        })),
+        ilike: vi.fn(() => ({
+          single: vi.fn(() => Promise.resolve({ data: { id: 'mfg123', name: 'Test Mfg' }, error: null }))
+        }))
+      })),
+      insert: vi.fn(() => ({
+        select: vi.fn(() => ({
+          single: vi.fn(() => Promise.resolve({ data: { id: 'inv123' }, error: null }))
+        }))
+      })),
+      update: vi.fn(() => ({
+        eq: vi.fn(() => Promise.resolve({ error: null }))
+      }))
+    }))
+  }
+}));
+
+vi.mock('sonner', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn()
+  }
+}));
 
 describe('InventoryService - Enhanced Tests', () => {
-  let service: InventoryService;
-
   beforeEach(() => {
-    service = new InventoryService();
     vi.clearAllMocks();
   });
 
-  describe('CRUD Operations', () => {
-    it('creates new inventory item', async () => {
-      const mockInsert = vi.fn().mockResolvedValue({ data: mockFirearm, error: null });
-      vi.mocked(supabase.from).mockReturnValue({
-        insert: mockInsert,
-        select: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({ data: mockFirearm, error: null })
-      } as any);
+  describe('saveItem', () => {
+    it('saves firearm item successfully', async () => {
+      const item = {
+        category: 'firearms',
+        name: 'Test Rifle',
+        manufacturer: 'Test Mfg',
+        model: 'TR-15',
+        quantity: 1,
+        serialNumber: '123456',
+        caliber: '5.56mm'
+      };
 
-      const result = await service.create(mockFirearm);
-      expect(result).toEqual(mockFirearm);
-      expect(mockInsert).toHaveBeenCalledWith(mockFirearm);
+      const result = await inventoryService.saveItem(item, 'user123');
+      expect(result).toBeDefined();
+      expect(result.id).toBe('inv123');
     });
 
-    it('retrieves inventory item by id', async () => {
-      const mockSelect = vi.fn().mockReturnThis();
-      const mockEq = vi.fn().mockReturnThis();
-      const mockSingle = vi.fn().mockResolvedValue({ data: mockFirearm, error: null });
-      
-      vi.mocked(supabase.from).mockReturnValue({
-        select: mockSelect,
-        eq: mockEq,
-        single: mockSingle
-      } as any);
+    it('saves ammunition item successfully', async () => {
+      const item = {
+        category: 'ammunition',
+        name: 'Test Ammo',
+        manufacturer: 'Ammo Co',
+        caliber: '9mm',
+        quantity: 1000,
+        roundCount: 1000
+      };
 
-      const result = await service.getById('firearm-1');
-      expect(result).toEqual(mockFirearm);
+      const result = await inventoryService.saveItem(item, 'user123');
+      expect(result).toBeDefined();
     });
 
-    it('updates inventory item', async () => {
-      const updates = { name: 'Updated Name' };
-      const mockUpdate = vi.fn().mockReturnThis();
-      const mockEq = vi.fn().mockResolvedValue({ data: { ...mockFirearm, ...updates }, error: null });
-      
+    it('throws error for invalid category', async () => {
+      const item = {
+        category: 'invalid_category',
+        name: 'Test Item'
+      };
+
+      // Mock category lookup to return null
+      const { supabase } = await import('@/lib/supabase');
       vi.mocked(supabase.from).mockReturnValue({
-        update: mockUpdate,
-        eq: mockEq
+        select: vi.fn(() => ({
+          ilike: vi.fn(() => ({
+            single: vi.fn(() => Promise.resolve({ data: null, error: null }))
+          }))
+        }))
       } as any);
 
-      const result = await service.update('firearm-1', updates);
-      expect(result.name).toBe('Updated Name');
-    });
-
-    it('deletes inventory item', async () => {
-      const mockDelete = vi.fn().mockReturnThis();
-      const mockEq = vi.fn().mockResolvedValue({ error: null });
-      
-      vi.mocked(supabase.from).mockReturnValue({
-        delete: mockDelete,
-        eq: mockEq
-      } as any);
-
-      await expect(service.delete('firearm-1')).resolves.not.toThrow();
+      await expect(inventoryService.saveItem(item, 'user123')).rejects.toThrow();
     });
   });
 
-  describe('Querying', () => {
-    it('filters by category', async () => {
-      const mockData = [mockFirearm];
+  describe('getItems', () => {
+    it('retrieves all items for user', async () => {
+      const mockItems = [
+        { id: '1', name: 'Item 1', category: 'firearms' },
+        { id: '2', name: 'Item 2', category: 'ammunition' }
+      ];
+
+      const { supabase } = await import('@/lib/supabase');
       vi.mocked(supabase.from).mockReturnValue({
-        select: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockResolvedValue({ data: mockData, error: null })
+        select: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            eq: vi.fn(() => Promise.resolve({ data: mockItems, error: null }))
+          }))
+        }))
       } as any);
 
-      const result = await service.getByCategory('firearms');
-      expect(result).toEqual(mockData);
+      const result = await inventoryService.getItems('user123');
+      expect(result).toEqual(mockItems);
+    });
+
+    it('returns empty array when no items found', async () => {
+      const { supabase } = await import('@/lib/supabase');
+      vi.mocked(supabase.from).mockReturnValue({
+        select: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            eq: vi.fn(() => Promise.resolve({ data: [], error: null }))
+          }))
+        }))
+      } as any);
+
+      const result = await inventoryService.getItems('user123');
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('updateItem', () => {
+    it('updates item successfully', async () => {
+      const item = {
+        category: 'firearms',
+        name: 'Updated Rifle',
+        manufacturer: 'Test Mfg',
+        model: 'TR-16',
+        quantity: 1
+      };
+
+      await expect(inventoryService.updateItem('inv123', item, 'user123')).resolves.not.toThrow();
+    });
+  });
+
+  describe('valuation methods', () => {
+    it('saves valuation successfully', async () => {
+      const { supabase } = await import('@/lib/supabase');
+      vi.mocked(supabase.from).mockReturnValue({
+        insert: vi.fn(() => ({
+          select: vi.fn(() => ({
+            single: vi.fn(() => Promise.resolve({ 
+              data: { id: 'val123', estimated_value: 1500 }, 
+              error: null 
+            }))
+          }))
+        }))
+      } as any);
+
+      const result = await inventoryService.saveValuation('inv123', 'user123', 1500, 'high', 'Test notes');
+      expect(result).toBeDefined();
+      expect(result.estimated_value).toBe(1500);
+    });
+
+    it('gets valuation history', async () => {
+      const mockHistory = [
+        { id: 'val1', estimated_value: 1500, created_at: '2024-01-01' },
+        { id: 'val2', estimated_value: 1600, created_at: '2024-02-01' }
+      ];
+
+      const { supabase } = await import('@/lib/supabase');
+      vi.mocked(supabase.from).mockReturnValue({
+        select: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            order: vi.fn(() => Promise.resolve({ data: mockHistory, error: null }))
+          }))
+        }))
+      } as any);
+
+      const result = await inventoryService.getValuationHistory('inv123');
+      expect(result).toEqual(mockHistory);
+      expect(result).toHaveLength(2);
     });
   });
 });

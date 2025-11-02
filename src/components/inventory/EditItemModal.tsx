@@ -227,3 +227,5 @@ export const EditItemModal: React.FC<EditItemModalProps> = ({ item, onClose, onU
     </div>
   );
 };
+
+export default EditItemModal;

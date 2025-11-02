@@ -1,55 +1,75 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SyncService } from '../sync/SyncService';
-import { ConflictResolver } from '../sync/ConflictResolver';
 
-describe('SyncService - Comprehensive Tests', () => {
+vi.mock('@/lib/supabase', () => ({
+  supabase: {
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => Promise.resolve({ data: [], error: null }))
+      })),
+      insert: vi.fn(() => ({
+        select: vi.fn(() => ({
+          single: vi.fn(() => Promise.resolve({ data: { id: '123' }, error: null }))
+        }))
+      })),
+      update: vi.fn(() => ({
+        eq: vi.fn(() => Promise.resolve({ error: null }))
+      })),
+      delete: vi.fn(() => ({
+        eq: vi.fn(() => Promise.resolve({ error: null }))
+      })),
+      upsert: vi.fn(() => Promise.resolve({ error: null }))
+    }))
+  }
+}));
+
+vi.mock('@/lib/enhancedOfflineQueue', () => ({
+  offlineQueue: {
+    isProcessing: vi.fn(() => false),
+    setProcessing: vi.fn(),
+    getPending: vi.fn(() => Promise.resolve([])),
+    shouldRetry: vi.fn(() => true),
+    markCompleted: vi.fn(() => Promise.resolve()),
+    update: vi.fn(() => Promise.resolve()),
+    markFailed: vi.fn(() => Promise.resolve())
+  }
+}));
+
+vi.mock('../sync/ConflictResolver', () => ({
+  conflictResolver: {
+    resolve: vi.fn(() => Promise.resolve({ resolution: 'local' }))
+  }
+}));
+
+describe('SyncService', () => {
   let syncService: SyncService;
-  let conflictResolver: ConflictResolver;
 
   beforeEach(() => {
     syncService = new SyncService();
-    conflictResolver = new ConflictResolver();
     vi.clearAllMocks();
   });
 
-  describe('Queue Management', () => {
-    it('adds items to sync queue', async () => {
-      const item = { id: '1', name: 'Test Item', category: 'firearms' };
-      await syncService.addToQueue('create', item);
-      const queue = await syncService.getQueue();
-      expect(queue).toHaveLength(1);
-    });
-
-    it('processes queue in order', async () => {
-      await syncService.addToQueue('create', { id: '1' });
-      await syncService.addToQueue('update', { id: '2' });
-      await syncService.processQueue();
-      const queue = await syncService.getQueue();
-      expect(queue).toHaveLength(0);
-    });
-
-    it('retries failed operations', async () => {
-      const failingOp = { id: '1', shouldFail: true };
-      await syncService.addToQueue('create', failingOp);
-      await syncService.processQueue();
-      const queue = await syncService.getQueue();
-      expect(queue[0]?.retryCount).toBeGreaterThan(0);
-    });
+  it('should process queue successfully', async () => {
+    const result = await syncService.processQueue('user123');
+    expect(result).toBeDefined();
+    expect(result).toHaveProperty('success');
+    expect(result).toHaveProperty('failed');
+    expect(result).toHaveProperty('conflicts');
   });
 
-  describe('Conflict Resolution', () => {
-    it('detects conflicts between local and remote', () => {
-      const local = { id: '1', updated_at: '2024-01-01', value: 'A' };
-      const remote = { id: '1', updated_at: '2024-01-02', value: 'B' };
-      const hasConflict = conflictResolver.detectConflict(local, remote);
-      expect(hasConflict).toBe(true);
-    });
+  it('should subscribe to sync status updates', () => {
+    const callback = vi.fn();
+    const unsubscribe = syncService.subscribe(callback);
+    expect(typeof unsubscribe).toBe('function');
+    unsubscribe();
+  });
 
-    it('resolves conflicts using last-write-wins', () => {
-      const local = { id: '1', updated_at: '2024-01-01', value: 'A' };
-      const remote = { id: '1', updated_at: '2024-01-02', value: 'B' };
-      const resolved = conflictResolver.resolve(local, remote, 'last-write-wins');
-      expect(resolved.value).toBe('B');
-    });
+  it('should not process queue if already processing', async () => {
+    const { offlineQueue } = await import('@/lib/enhancedOfflineQueue');
+    vi.mocked(offlineQueue.isProcessing).mockReturnValue(true);
+    
+    const result = await syncService.processQueue('user123');
+    expect(result.success).toBe(0);
+    expect(result.failed).toBe(0);
   });
 });

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { TrendingUp, TrendingDown, DollarSign, Package, BarChart3 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { TrendingUp, TrendingDown, DollarSign, Package, Calendar, Target } from 'lucide-react';
-import { format, subMonths, parseISO } from 'date-fns';
+import { formatCurrency, formatNumber } from '@/lib/formatters';
+
 
 interface AdvancedMetrics {
   totalValue: number;
@@ -110,7 +111,7 @@ export function AdvancedAnalytics() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${metrics.totalValue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">{formatCurrency(metrics.totalValue)}</div>
             <div className="flex items-center gap-1 text-sm text-green-600 mt-1">
               <TrendingUp className="h-3 w-3" />
               +{metrics.valueChange}% this month
@@ -121,12 +122,12 @@ export function AdvancedAnalytics() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Target className="h-4 w-4" />
+              <Package className="h-4 w-4" />
               Avg Item Value
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${metrics.averageItemValue.toFixed(0)}</div>
+            <div className="text-2xl font-bold">{formatCurrency(metrics.averageItemValue)}</div>
             <p className="text-xs text-muted-foreground mt-1">Per inventory item</p>
           </CardContent>
         </Card>
@@ -155,8 +156,9 @@ export function AdvancedAnalytics() {
               <div key={category}>
                 <div className="flex justify-between text-sm mb-1">
                   <span>{category}</span>
-                  <span className="font-semibold">${value.toLocaleString()}</span>
+                  <span className="font-semibold">{formatCurrency(value)}</span>
                 </div>
+
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div 
                     className="bg-blue-600 h-2 rounded-full transition-all"

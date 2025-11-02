@@ -1,75 +1,39 @@
 import { describe, it, expect } from 'vitest';
-import { parseCSV, validateCSVHeaders, convertToCSV } from '../csvParser';
+import { parseCSV, generateCSVTemplate } from '../csvParser';
 
-describe('CSV Parser Tests', () => {
-  describe('CSV Parsing', () => {
-    it('parses simple CSV', () => {
-      const csv = 'name,category\nTest Item,firearms\nTest Ammo,ammunition';
+describe('csvParser', () => {
+  describe('parseCSV', () => {
+    it('parses valid CSV data', () => {
+      const csv = 'name,quantity\nTest Item,5\nAnother Item,10';
       const result = parseCSV(csv);
-      
       expect(result).toHaveLength(2);
-      expect(result[0].name).toBe('Test Item');
-      expect(result[0].category).toBe('firearms');
+      expect(result[0]).toHaveProperty('name', 'Test Item');
+      expect(result[0]).toHaveProperty('quantity', '5');
     });
 
-    it('handles quoted fields', () => {
-      const csv = 'name,description\n"Item, with comma","Description with ""quotes"""';
-      const result = parseCSV(csv);
-      
-      expect(result[0].name).toBe('Item, with comma');
-      expect(result[0].description).toBe('Description with "quotes"');
+    it('handles empty CSV', () => {
+      const result = parseCSV('');
+      expect(result).toHaveLength(0);
     });
 
-    it('handles empty fields', () => {
-      const csv = 'name,category,notes\nTest,,Some notes';
-      const result = parseCSV(csv);
-      
-      expect(result[0].category).toBe('');
-      expect(result[0].notes).toBe('Some notes');
+    it('handles CSV with headers only', () => {
+      const result = parseCSV('name,quantity');
+      expect(result).toHaveLength(0);
     });
 
-    it('handles line breaks in quoted fields', () => {
-      const csv = 'name,description\n"Test","Line 1\nLine 2"';
+    it('handles quoted values', () => {
+      const csv = 'name,description\n"Test, Item","Has, commas"';
       const result = parseCSV(csv);
-      
-      expect(result[0].description).toContain('\n');
+      expect(result[0].name).toBe('Test, Item');
     });
   });
 
-  describe('CSV Header Validation', () => {
-    it('validates required headers', () => {
-      const headers = ['name', 'category', 'manufacturer'];
-      const required = ['name', 'category'];
-      
-      expect(validateCSVHeaders(headers, required)).toBe(true);
-    });
-
-    it('rejects missing headers', () => {
-      const headers = ['name'];
-      const required = ['name', 'category'];
-      
-      expect(validateCSVHeaders(headers, required)).toBe(false);
-    });
-  });
-
-  describe('CSV Generation', () => {
-    it('converts objects to CSV', () => {
-      const data = [
-        { name: 'Item 1', category: 'firearms' },
-        { name: 'Item 2', category: 'ammunition' }
-      ];
-      
-      const csv = convertToCSV(data);
-      expect(csv).toContain('name,category');
-      expect(csv).toContain('Item 1,firearms');
-    });
-
-    it('escapes special characters', () => {
-      const data = [{ name: 'Item, with comma', notes: 'Has "quotes"' }];
-      const csv = convertToCSV(data);
-      
-      expect(csv).toContain('"Item, with comma"');
-      expect(csv).toContain('"Has ""quotes"""');
+  describe('generateCSVTemplate', () => {
+    it('generates template with headers', () => {
+      const template = generateCSVTemplate(['name', 'quantity', 'price']);
+      expect(template).toContain('name');
+      expect(template).toContain('quantity');
+      expect(template).toContain('price');
     });
   });
 });

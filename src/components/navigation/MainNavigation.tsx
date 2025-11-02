@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Menu, X, Home, Settings, BarChart3, FileText, Database, Users, Shield, Wrench, Package, Search, Activity, TrendingUp, Smartphone, UsersRound, Code, Bell, Zap, GraduationCap } from 'lucide-react';
+import { Menu, X, Home, Settings, BarChart3, FileText, Database, Users, Shield, Wrench, Package, Search, Activity, TrendingUp, Smartphone, UsersRound, Code, Bell, Zap, GraduationCap, AlertTriangle } from 'lucide-react';
+
 
 
 
@@ -33,6 +34,8 @@ export function MainNavigation({ onNavigate, currentScreen }: MainNavigationProp
     { id: 'notifications', label: 'Notifications', icon: Bell },
     { id: 'integrations', label: 'Integrations & AI', icon: Zap },
     { id: 'admin', label: 'Admin', icon: Settings },
+    { id: 'error-monitoring', label: 'Error Monitoring', icon: AlertTriangle },
+
     { id: 'performance', label: 'Performance', icon: Activity },
     { id: 'mobile', label: 'Mobile & PWA', icon: Smartphone },
     { id: 'database', label: 'Database Tools', icon: Database },
@@ -122,3 +125,5 @@ export function MainNavigation({ onNavigate, currentScreen }: MainNavigationProp
     </>
   );
 }
+
+export default MainNavigation;

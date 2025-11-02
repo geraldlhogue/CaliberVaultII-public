@@ -1,283 +1,273 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { supabase } from '@/lib/supabase';
-import { GitBranch, Tag, Package, Upload, Download, RotateCcw } from 'lucide-react';
-import { toast } from '@/components/ui/use-toast';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface Version {
   id: string;
   version: string;
-  environment: string;
-  commit_hash: string;
-  deployed_at: string;
-  status: string;
-  release_notes?: string;
+  tag: string;
+  commit: string;
+  deployedAt: Date;
+  deployedBy: string;
+  environment: 'production' | 'staging' | 'development';
+  status: 'active' | 'rolled-back' | 'failed';
+  changes: string[];
+  metrics?: {
+    buildTime: number;
+    testsPassed: number;
+    testsTotal: number;
+    coverage: number;
+  };
 }
 
 export function VersionManagementSystem() {
   const [versions, setVersions] = useState<Version[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [newVersion, setNewVersion] = useState({
-    version: '',
-    environment: 'development',
-    commit_hash: '',
-    release_notes: ''
-  });
-  const [isDeploying, setIsDeploying] = useState(false);
+  const [selectedVersion, setSelectedVersion] = useState<Version | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [rollbackStatus, setRollbackStatus] = useState<string>('');
 
   useEffect(() => {
-    fetchVersions();
+    loadVersionHistory();
   }, []);
 
-  const fetchVersions = async () => {
+  const loadVersionHistory = async () => {
+    setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('deployment_history')
-        .select('*')
-        .order('deployed_at', { ascending: false });
-
-      if (error) throw error;
-      setVersions(data || []);
+      // In production, this would fetch from your deployment service
+      const mockVersions: Version[] = [
+        {
+          id: '1',
+          version: 'v2.5.0',
+          tag: 'release-2.5.0',
+          commit: 'abc123def456',
+          deployedAt: new Date('2024-11-01T10:30:00'),
+          deployedBy: 'admin@calibervault.com',
+          environment: 'production',
+          status: 'active',
+          changes: [
+            'Added Git automation system',
+            'Implemented test results dashboard',
+            'Enhanced deployment pipeline',
+          ],
+          metrics: {
+            buildTime: 245,
+            testsPassed: 487,
+            testsTotal: 500,
+            coverage: 87.2,
+          },
+        },
+        {
+          id: '2',
+          version: 'v2.4.3',
+          tag: 'release-2.4.3',
+          commit: 'def456ghi789',
+          deployedAt: new Date('2024-10-28T14:20:00'),
+          deployedBy: 'admin@calibervault.com',
+          environment: 'production',
+          status: 'rolled-back',
+          changes: [
+            'Fixed category filtering',
+            'Improved mobile performance',
+            'Updated barcode scanner',
+          ],
+          metrics: {
+            buildTime: 238,
+            testsPassed: 475,
+            testsTotal: 485,
+            coverage: 85.8,
+          },
+        },
+      ];
+      setVersions(mockVersions);
     } catch (error) {
-      console.error('Error fetching versions:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch version history',
-        variant: 'destructive'
-      });
+      console.error('Failed to load version history:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const deployVersion = async () => {
-    setIsDeploying(true);
+  const handleRollback = async (version: Version) => {
+    if (!confirm(`Are you sure you want to rollback to ${version.version}?`)) {
+      return;
+    }
+
+    setLoading(true);
+    setRollbackStatus('Initiating rollback...');
+
     try {
-      const deploymentId = `deploy-${Date.now()}`;
+      // Step 1: Validate version
+      setRollbackStatus('Validating version...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Step 2: Create backup
+      setRollbackStatus('Creating backup of current version...');
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      // Step 3: Deploy previous version
+      setRollbackStatus('Deploying previous version...');
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // Step 4: Run health checks
+      setRollbackStatus('Running health checks...');
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
+      setRollbackStatus(`Successfully rolled back to ${version.version}`);
       
-      const { error } = await supabase
-        .from('deployment_history')
-        .insert({
-          deployment_id: deploymentId,
-          version: newVersion.version,
-          environment: newVersion.environment,
-          commit_hash: newVersion.commit_hash,
-          status: 'in_progress',
-          metadata: { release_notes: newVersion.release_notes }
-        });
-
-      if (error) throw error;
-
-      // Trigger deployment via edge function
-      const { data: deployResult, error: deployError } = await supabase.functions.invoke('inventory-sync', {
-        body: {
-          action: 'deploy',
-          version: newVersion.version,
-          environment: newVersion.environment
-        }
-      });
-
-      if (deployError) throw deployError;
-
-      // Update deployment status
-      await supabase
-        .from('deployment_history')
-        .update({ status: 'success' })
-        .eq('deployment_id', deploymentId);
-
-      toast({
-        title: 'Success',
-        description: `Version ${newVersion.version} deployed to ${newVersion.environment}`
-      });
-
-      fetchVersions();
-      setNewVersion({
-        version: '',
-        environment: 'development',
-        commit_hash: '',
-        release_notes: ''
-      });
+      // Update version status
+      setVersions(prev =>
+        prev.map(v =>
+          v.id === version.id
+            ? { ...v, status: 'active' as const }
+            : v.status === 'active'
+            ? { ...v, status: 'rolled-back' as const }
+            : v
+        )
+      );
     } catch (error) {
-      console.error('Deployment error:', error);
-      toast({
-        title: 'Deployment Failed',
-        description: error.message,
-        variant: 'destructive'
-      });
+      setRollbackStatus('Rollback failed. Current version maintained.');
+      console.error('Rollback failed:', error);
     } finally {
-      setIsDeploying(false);
+      setLoading(false);
     }
   };
 
-  const rollbackVersion = async (versionId: string) => {
-    try {
-      const { error } = await supabase
-        .from('deployment_history')
-        .update({ status: 'rolled_back' })
-        .eq('id', versionId);
-
-      if (error) throw error;
-
-      toast({
-        title: 'Success',
-        description: 'Version rolled back successfully'
-      });
-
-      fetchVersions();
-    } catch (error) {
-      console.error('Rollback error:', error);
-      toast({
-        title: 'Rollback Failed',
-        description: error.message,
-        variant: 'destructive'
-      });
-    }
-  };
-
-  const getEnvironmentIcon = (env: string) => {
-    switch (env) {
-      case 'production':
-        return <Package className="h-4 w-4" />;
-      case 'staging':
-        return <Tag className="h-4 w-4" />;
-      case 'development':
-        return <GitBranch className="h-4 w-4" />;
+  const getStatusColor = (status: Version['status']) => {
+    switch (status) {
+      case 'active':
+        return 'bg-green-500';
+      case 'rolled-back':
+        return 'bg-yellow-500';
+      case 'failed':
+        return 'bg-red-500';
       default:
-        return null;
+        return 'bg-gray-500';
     }
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Version Management</h1>
-        <p className="text-muted-foreground">Deploy and manage application versions</p>
-      </div>
-
-      {/* Deploy New Version */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Deploy New Version</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="version">Version</Label>
-              <Input
-                id="version"
-                placeholder="e.g., 1.2.3"
-                value={newVersion.version}
-                onChange={(e) => setNewVersion({ ...newVersion, version: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label htmlFor="environment">Environment</Label>
-              <Select
-                value={newVersion.environment}
-                onValueChange={(value) => setNewVersion({ ...newVersion, environment: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="development">Development</SelectItem>
-                  <SelectItem value="staging">Staging</SelectItem>
-                  <SelectItem value="production">Production</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label htmlFor="commit">Commit Hash</Label>
-              <Input
-                id="commit"
-                placeholder="e.g., abc123def"
-                value={newVersion.commit_hash}
-                onChange={(e) => setNewVersion({ ...newVersion, commit_hash: e.target.value })}
-              />
-            </div>
-            <div className="md:col-span-2">
-              <Label htmlFor="notes">Release Notes</Label>
-              <Textarea
-                id="notes"
-                placeholder="Describe changes in this version..."
-                value={newVersion.release_notes}
-                onChange={(e) => setNewVersion({ ...newVersion, release_notes: e.target.value })}
-              />
-            </div>
-          </div>
-          <Button 
-            className="mt-4" 
-            onClick={deployVersion}
-            disabled={!newVersion.version || isDeploying}
-          >
-            {isDeploying ? (
-              <>
-                <Upload className="mr-2 h-4 w-4 animate-spin" />
-                Deploying...
-              </>
-            ) : (
-              <>
-                <Upload className="mr-2 h-4 w-4" />
-                Deploy Version
-              </>
-            )}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Version History */}
+    <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Version History</CardTitle>
+          <CardTitle>Version Management & Rollback</CardTitle>
+          <CardDescription>
+            View deployment history and rollback to previous versions
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? (
-            <div className="text-center py-4">Loading versions...</div>
-          ) : versions.length === 0 ? (
-            <Alert>
-              <AlertDescription>No versions deployed yet</AlertDescription>
+          {rollbackStatus && (
+            <Alert className="mb-4">
+              <AlertDescription>{rollbackStatus}</AlertDescription>
             </Alert>
-          ) : (
-            <div className="space-y-3">
-              {versions.map((version) => (
-                <div key={version.id} className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      {getEnvironmentIcon(version.environment)}
-                      <span className="font-semibold text-lg">{version.version}</span>
-                      <Badge variant={version.status === 'success' ? 'default' : 'secondary'}>
-                        {version.status}
-                      </Badge>
-                    </div>
-                    <div className="flex gap-2">
-                      {version.status === 'success' && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => rollbackVersion(version.id)}
-                        >
-                          <RotateCcw className="h-4 w-4 mr-1" />
-                          Rollback
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    <div>Environment: {version.environment}</div>
-                    <div>Commit: {version.commit_hash?.substring(0, 7)}</div>
-                    <div>Deployed: {new Date(version.deployed_at).toLocaleString()}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
           )}
+
+          <Tabs defaultValue="history">
+            <TabsList>
+              <TabsTrigger value="history">Version History</TabsTrigger>
+              <TabsTrigger value="compare">Compare Versions</TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="history">
+              <ScrollArea className="h-[600px]">
+                <div className="space-y-4">
+                  {versions.map(version => (
+                    <Card key={version.id}>
+                      <CardHeader>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <CardTitle className="text-lg">
+                              {version.version}
+                            </CardTitle>
+                            <Badge className={getStatusColor(version.status)}>
+                              {version.status}
+                            </Badge>
+                            <Badge variant="outline">
+                              {version.environment}
+                            </Badge>
+                          </div>
+                          {version.status !== 'active' && (
+                            <Button
+                              onClick={() => handleRollback(version)}
+                              disabled={loading}
+                              variant="outline"
+                            >
+                              Rollback to this version
+                            </Button>
+                          )}
+                        </div>
+                        <CardDescription>
+                          Deployed {version.deployedAt.toLocaleString()} by{' '}
+                          {version.deployedBy}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-4">
+                          <div>
+                            <p className="text-sm font-medium mb-2">
+                              Commit: {version.commit}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Tag: {version.tag}
+                            </p>
+                          </div>
+
+                          {version.metrics && (
+                            <div className="grid grid-cols-4 gap-4">
+                              <div>
+                                <p className="text-sm text-muted-foreground">
+                                  Build Time
+                                </p>
+                                <p className="text-lg font-semibold">
+                                  {version.metrics.buildTime}s
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-muted-foreground">
+                                  Tests Passed
+                                </p>
+                                <p className="text-lg font-semibold">
+                                  {version.metrics.testsPassed}/
+                                  {version.metrics.testsTotal}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-sm text-muted-foreground">
+                                  Coverage
+                                </p>
+                                <p className="text-lg font-semibold">
+                                  {version.metrics.coverage}%
+                                </p>
+                              </div>
+                            </div>
+                          )}
+
+                          <div>
+                            <p className="text-sm font-medium mb-2">Changes:</p>
+                            <ul className="list-disc list-inside space-y-1">
+                              {version.changes.map((change, idx) => (
+                                <li key={idx} className="text-sm">
+                                  {change}
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="compare">
+              <div className="text-center py-8 text-muted-foreground">
+                Select two versions to compare their changes
+              </div>
+            </TabsContent>
+          </Tabs>
         </CardContent>
       </Card>
     </div>

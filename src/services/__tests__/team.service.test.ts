@@ -1,65 +1,77 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TeamService } from '../team/TeamService';
-import { TeamInvitationService } from '../team/TeamInvitationService';
-import { supabase } from '../../lib/supabase';
 
-vi.mock('../../lib/supabase', () => ({
+vi.mock('@/lib/supabase', () => ({
   supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn().mockReturnThis(),
-      insert: vi.fn().mockReturnThis(),
-      update: vi.fn().mockReturnThis(),
-      delete: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      single: vi.fn().mockResolvedValue({ data: null, error: null })
-    })),
     auth: {
-      getUser: vi.fn().mockResolvedValue({ data: { user: { id: '123' } } })
-    }
+      getUser: vi.fn(() => Promise.resolve({ 
+        data: { user: { id: 'user123' } }, 
+        error: null 
+      }))
+    },
+    from: vi.fn(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          order: vi.fn(() => Promise.resolve({ data: [], error: null })),
+          single: vi.fn(() => Promise.resolve({ data: { id: '123', name: 'Test Team' }, error: null }))
+        })),
+        order: vi.fn(() => Promise.resolve({ data: [], error: null }))
+      })),
+      insert: vi.fn(() => ({
+        select: vi.fn(() => ({
+          single: vi.fn(() => Promise.resolve({ data: { id: '123', name: 'Test Team' }, error: null }))
+        }))
+      })),
+      update: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          select: vi.fn(() => ({
+            single: vi.fn(() => Promise.resolve({ data: { id: '123' }, error: null }))
+          }))
+        }))
+      })),
+      delete: vi.fn(() => ({
+        eq: vi.fn(() => Promise.resolve({ error: null }))
+      }))
+    }))
   }
 }));
 
-describe('Team Collaboration Tests', () => {
-  let teamService: TeamService;
-  let invitationService: TeamInvitationService;
-
+describe('TeamService', () => {
   beforeEach(() => {
-    teamService = new TeamService();
-    invitationService = new TeamInvitationService();
     vi.clearAllMocks();
   });
 
-  describe('Team Invitations', () => {
-    it('creates team invitation', async () => {
-      const invitation = await invitationService.createInvitation({
-        email: 'test@example.com',
-        role: 'member',
-        teamId: 'team-1'
-      });
-      expect(invitation).toBeDefined();
-    });
-
-    it('validates invitation token', async () => {
-      const isValid = await invitationService.validateToken('token-123');
-      expect(typeof isValid).toBe('boolean');
-    });
-
-    it('accepts invitation', async () => {
-      await expect(
-        invitationService.acceptInvitation('token-123')
-      ).resolves.not.toThrow();
-    });
+  it('should create team', async () => {
+    const team = await TeamService.createTeam({ name: 'Test Team' });
+    expect(team).toBeDefined();
+    expect(team.name).toBe('Test Team');
   });
 
-  describe('Permissions', () => {
-    it('checks user permissions', async () => {
-      const hasPermission = await teamService.hasPermission('user-1', 'edit');
-      expect(typeof hasPermission).toBe('boolean');
-    });
+  it('should add team member', async () => {
+    const member = await TeamService.addTeamMember('team123', 'user123', 'member');
+    expect(member).toBeDefined();
+  });
 
-    it('grants permissions to team member', async () => {
-      await teamService.grantPermission('user-1', 'admin');
-      expect(supabase.from).toHaveBeenCalled();
-    });
+  it('should list team members', async () => {
+    const members = await TeamService.getTeamMembers('team123');
+    expect(Array.isArray(members)).toBe(true);
+  });
+
+  it('should remove team member', async () => {
+    await expect(TeamService.removeTeamMember('member123')).resolves.not.toThrow();
+  });
+
+  it('should get teams', async () => {
+    const teams = await TeamService.getTeams();
+    expect(Array.isArray(teams)).toBe(true);
+  });
+
+  it('should update team', async () => {
+    const updated = await TeamService.updateTeam('team123', { name: 'Updated Team' });
+    expect(updated).toBeDefined();
+  });
+
+  it('should delete team', async () => {
+    await expect(TeamService.deleteTeam('team123')).resolves.not.toThrow();
   });
 });

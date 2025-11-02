@@ -14,7 +14,13 @@ import { SyncStatusDashboard } from './sync/SyncStatusDashboard';
 import MaintenanceRecords from './maintenance/MaintenanceRecords';
 import type { InventoryItem } from '@/types/inventory';
 
-// Lazy load components
+// Import critical components directly (not lazy)
+import MainNavigation from './navigation/MainNavigation';
+import AppUpdateNotifier from './pwa/AppUpdateNotifier';
+import EnhancedInstallPrompt from './pwa/EnhancedInstallPrompt';
+import AIHelpAssistant from './help/AIHelpAssistant';
+
+// Lazy load non-critical components
 const AdvancedAnalytics = React.lazy(() => import('./analytics/AdvancedAnalytics'));
 const CohortAnalyticsDashboard = React.lazy(() => import('./analytics/CohortAnalyticsDashboard'));
 const OnboardingAnalyticsDashboard = React.lazy(() => import('./analytics/OnboardingAnalyticsDashboard'));
@@ -34,11 +40,15 @@ const MobileOptimizationDashboard = React.lazy(() => import('./mobile/MobileOpti
 const TeamWorkspace = React.lazy(() => import('./collaboration/TeamWorkspace'));
 const DeveloperDashboard = React.lazy(() => import('./api/DeveloperDashboard'));
 const IntegrationsDashboardEnhanced = React.lazy(() => import('./integrations/IntegrationsDashboardEnhanced'));
+const ErrorMonitoringDashboard = React.lazy(() => import('./admin/ErrorMonitoringDashboard'));
+
 const InteractiveTutorial = React.lazy(() => import('./help/InteractiveTutorial'));
 const VideoTutorialLibrary = React.lazy(() => import('./help/VideoTutorialLibrary'));
-const AddItemModal = React.lazy(() => import('./inventory/AddItemModal'));
-const EditItemModal = React.lazy(() => import('./inventory/EditItemModal'));
-const ItemDetailModal = React.lazy(() => import('./inventory/ItemDetailModal'));
+// Import critical modals directly (not lazy) to avoid hook issues
+import AddItemModal from './inventory/AddItemModal';
+import EditItemModal from './inventory/EditItemModal';
+import ItemDetailModal from './inventory/ItemDetailModal';
+
 const SimpleBarcodeScanner = React.lazy(() => import('./inventory/SimpleBarcodeScanner'));
 const BatchBarcodeScannerModal = React.lazy(() => import('./inventory/BatchBarcodeScannerModal'));
 const CSVImportModal = React.lazy(() => import('./inventory/CSVImportModal'));
@@ -48,10 +58,6 @@ const EnhancedLabelPrinting = React.lazy(() => import('./inventory/EnhancedLabel
 const LocationBarcodeScanner = React.lazy(() => import('./inventory/LocationBarcodeScanner'));
 const AutoBuildConfigurator = React.lazy(() => import('./inventory/AutoBuildConfigurator'));
 const BuildConfigurator = React.lazy(() => import('./inventory/BuildConfigurator'));
-const AppUpdateNotifier = React.lazy(() => import('./pwa/AppUpdateNotifier'));
-const MainNavigation = React.lazy(() => import('./navigation/MainNavigation'));
-const EnhancedInstallPrompt = React.lazy(() => import('./pwa/EnhancedInstallPrompt'));
-const AIHelpAssistant = React.lazy(() => import('./help/AIHelpAssistant'));
 
 export function AppLayout() {
 
@@ -137,7 +143,9 @@ export function AppLayout() {
             featureName="Advanced Analytics" 
             requiredTier="Pro"
           >
-            <AdvancedAnalytics />
+            <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+              <AdvancedAnalytics />
+            </React.Suspense>
           </FeatureGuard>
         );
       case 'ai-insights':
@@ -149,8 +157,10 @@ export function AppLayout() {
           >
             <div className="space-y-6">
               <h1 className="text-3xl font-bold text-white">AI-Powered Insights</h1>
-              <NaturalLanguageSearch />
-              <PredictiveAnalyticsDashboard />
+              <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+                <NaturalLanguageSearch />
+                <PredictiveAnalyticsDashboard />
+              </React.Suspense>
             </div>
           </FeatureGuard>
         );
@@ -158,10 +168,12 @@ export function AppLayout() {
         return (
           <div className="space-y-6">
             <h1 className="text-3xl font-bold text-white">PWA Settings</h1>
-            <div className="grid md:grid-cols-2 gap-6">
-              <PushNotificationManager />
-              <BackgroundSyncManager />
-            </div>
+            <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+              <div className="grid md:grid-cols-2 gap-6">
+                <PushNotificationManager />
+                <BackgroundSyncManager />
+              </div>
+            </React.Suspense>
           </div>
         );
       case 'pwa-analytics':
@@ -171,7 +183,9 @@ export function AppLayout() {
             featureName="PWA Analytics" 
             requiredTier="Pro"
           >
-            <PWAAnalyticsDashboard />
+            <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+              <PWAAnalyticsDashboard />
+            </React.Suspense>
           </FeatureGuard>
         );
       case 'cohort-analytics':
@@ -181,7 +195,9 @@ export function AppLayout() {
             featureName="Cohort Analytics" 
             requiredTier="Pro"
           >
-            <CohortAnalyticsDashboard />
+            <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+              <CohortAnalyticsDashboard />
+            </React.Suspense>
           </FeatureGuard>
         );
       case 'mobile-analytics':
@@ -196,34 +212,76 @@ export function AppLayout() {
         );
 
       case 'search':
-        return <EnhancedAdvancedSearch />;
+        return (
+          <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+            <EnhancedAdvancedSearch />
+          </React.Suspense>
+        );
       case 'reports':
-        return <AdvancedReportsDashboard />;
+        return (
+          <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+            <AdvancedReportsDashboard />
+          </React.Suspense>
+        );
       case 'admin':
-        return <AdminDashboard />;
+        return (
+          <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+            <AdminDashboard />
+          </React.Suspense>
+        );
       case 'performance':
-        return <PerformanceMonitor />;
+        return (
+          <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+            <PerformanceMonitor />
+          </React.Suspense>
+        );
 
       case 'mobile':
-        return <MobileOptimizationDashboard />;
+        return (
+          <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+            <MobileOptimizationDashboard />
+          </React.Suspense>
+        );
       case 'mobile-settings':
         return (
           <div className="space-y-6">
             <h1 className="text-3xl font-bold text-white">Mobile App Settings</h1>
-            <MobileAppSettings />
+            <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+              <MobileAppSettings />
+            </React.Suspense>
           </div>
         );
 
       case 'teams':
-        return <TeamWorkspace />;
+        return (
+          <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+            <TeamWorkspace />
+          </React.Suspense>
+        );
       case 'developer':
-        return <DeveloperDashboard />;
+        return (
+          <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+            <DeveloperDashboard />
+          </React.Suspense>
+        );
       case 'security':
-        return <SecurityDashboard />;
+        return (
+          <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+            <SecurityDashboard />
+          </React.Suspense>
+        );
       case 'notifications':
-        return <NotificationCenter />;
+        return (
+          <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+            <NotificationCenter />
+          </React.Suspense>
+        );
       case 'integrations':
-        return <IntegrationsDashboardEnhanced />;
+        return (
+          <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+            <IntegrationsDashboardEnhanced />
+          </React.Suspense>
+        );
       case 'onboarding-analytics':
         return (
           <FeatureGuard 
@@ -231,7 +289,9 @@ export function AppLayout() {
             featureName="Onboarding Analytics" 
             requiredTier="Team"
           >
-            <OnboardingAnalyticsDashboard />
+            <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+              <OnboardingAnalyticsDashboard />
+            </React.Suspense>
           </FeatureGuard>
         );
       case 'help':
@@ -240,45 +300,48 @@ export function AppLayout() {
             <div className="flex items-center justify-between">
               <h1 className="text-3xl font-bold text-white">Help & Support</h1>
             </div>
-            <div className="grid gap-6">
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-white">Interactive Tutorials</h2>
-                <InteractiveTutorial />
+            <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+              <div className="grid gap-6">
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold text-white">Interactive Tutorials</h2>
+                  <InteractiveTutorial />
+                </div>
+                <div className="space-y-4">
+                  <h2 className="text-xl font-semibold text-white">Video Tutorials</h2>
+                  <VideoTutorialLibrary />
+                </div>
               </div>
-              <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-white">Video Tutorials</h2>
-                <VideoTutorialLibrary />
-              </div>
-            </div>
+            </React.Suspense>
           </div>
         );
 
-
-
-
-
       case 'database':
         return (
-          <div className="space-y-6">
+          <div className="space-y-6 pb-32">
             <DataFlowVisualization />
             <InventoryDebugger />
             <SyncStatusDashboard />
             <DatabaseHealthCheck />
             <EnhancedDatabaseViewer />
 
-            <button
-              onClick={() => setShowSeederModal(true)}
-              className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg"
-            >
-              Seed Reference Data
-            </button>
+            <div className="fixed bottom-20 right-4 z-50">
+              <button
+                onClick={() => setShowSeederModal(true)}
+                className="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg shadow-lg font-semibold"
+              >
+                Seed Reference Data
+              </button>
+            </div>
           </div>
         );
 
 
-
-
-
+      case 'error-monitoring':
+        return (
+          <React.Suspense fallback={<div className="text-white">Loading...</div>}>
+            <ErrorMonitoringDashboard />
+          </React.Suspense>
+        );
       case 'maintenance':
         return <MaintenanceRecords />;
       case 'profile':
@@ -287,6 +350,8 @@ export function AppLayout() {
         return null;
     }
   };
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -303,9 +368,15 @@ export function AppLayout() {
         </div>
       </div>
 
-      {/* Modals */}
-      {showAddModal && <AddItemModal onClose={() => setShowAddModal(false)} onAdd={addCloudItem} />}
-      {showEditModal && selectedItem && <EditItemModal item={selectedItem} onClose={() => setShowEditModal(false)} onUpdate={updateCloudItem} />}
+      {/* Modals - no Suspense needed since they're directly imported */}
+      {showAddModal && (
+        <AddItemModal onClose={() => setShowAddModal(false)} onAdd={addCloudItem} />
+      )}
+      
+      {showEditModal && selectedItem && (
+        <EditItemModal item={selectedItem} onClose={() => setShowEditModal(false)} onUpdate={updateCloudItem} />
+      )}
+      
       {showDetailModal && selectedItem && (
         <ItemDetailModal 
           item={selectedItem} 
@@ -317,14 +388,23 @@ export function AppLayout() {
           }}
         />
       )}
-      {showScanner && <SimpleBarcodeScanner onClose={() => setShowScanner(false)} onScan={handleBarcodeScan} />}
+
+      
+      {showScanner && (
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <SimpleBarcodeScanner onClose={() => setShowScanner(false)} onScan={handleBarcodeScan} />
+        </React.Suspense>
+      )}
+      
       {showBatchScanner && (
         <FeatureGuard 
           feature="barcode_scanning" 
           featureName="Batch Barcode Scanner" 
           requiredTier="Basic"
         >
-          <BatchBarcodeScannerModal onClose={() => setShowBatchScanner(false)} />
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <BatchBarcodeScannerModal onClose={() => setShowBatchScanner(false)} />
+          </React.Suspense>
         </FeatureGuard>
       )}
 
@@ -334,45 +414,69 @@ export function AppLayout() {
           featureName="Bulk Import" 
           requiredTier="Basic"
         >
-          <CSVImportModal onClose={() => setShowImportModal(false)} onImport={handleCSVImport} />
+          <React.Suspense fallback={<div>Loading...</div>}>
+            <CSVImportModal onClose={() => setShowImportModal(false)} onImport={handleCSVImport} />
+          </React.Suspense>
         </FeatureGuard>
       )}
 
-      {showReportModal && <ReportGenerator inventory={inventory} onClose={() => setShowReportModal(false)} />}
-      {showBarcodeCacheModal && <BarcodeCacheModal onClose={() => setShowBarcodeCacheModal(false)} />}
+      {showReportModal && (
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <ReportGenerator inventory={inventory} onClose={() => setShowReportModal(false)} />
+        </React.Suspense>
+      )}
+      
+      {showBarcodeCacheModal && (
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <BarcodeCacheModal onClose={() => setShowBarcodeCacheModal(false)} />
+        </React.Suspense>
+      )}
+      
       {showSeederModal && <ReferenceDataSeederModal onClose={() => setShowSeederModal(false)} />}
+      
       {showLabelPrintModal && (
-        <EnhancedLabelPrinting 
-          isOpen={showLabelPrintModal}
-          onClose={() => setShowLabelPrintModal(false)}
-          items={selectedItems.length > 0 ? selectedItems : inventory}
-        />
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <EnhancedLabelPrinting 
+            isOpen={showLabelPrintModal}
+            onClose={() => setShowLabelPrintModal(false)}
+            items={selectedItems.length > 0 ? selectedItems : inventory}
+          />
+        </React.Suspense>
       )}
+      
       {showLocationScannerModal && selectedItem && (
-        <LocationBarcodeScanner
-          isOpen={showLocationScannerModal}
-          onClose={() => setShowLocationScannerModal(false)}
-          item={selectedItem}
-          onLocationAssigned={() => {
-            toast.success('Location assigned successfully');
-            setShowLocationScannerModal(false);
-          }}
-        />
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <LocationBarcodeScanner
+            isOpen={showLocationScannerModal}
+            onClose={() => setShowLocationScannerModal(false)}
+            item={selectedItem}
+            onLocationAssigned={() => {
+              toast.success('Location assigned successfully');
+              setShowLocationScannerModal(false);
+            }}
+          />
+        </React.Suspense>
       )}
+      
       {showAutoBuildModal && (
-        <AutoBuildConfigurator
-          isOpen={showAutoBuildModal}
-          onClose={() => setShowAutoBuildModal(false)}
-          availableItems={inventory}
-        />
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <AutoBuildConfigurator
+            isOpen={showAutoBuildModal}
+            onClose={() => setShowAutoBuildModal(false)}
+            availableItems={inventory}
+          />
+        </React.Suspense>
       )}
+      
       {showBuildModal && (
         <div className="fixed inset-0 bg-black/90 z-50 overflow-y-auto">
           <div className="container mx-auto px-4 py-8">
             <div className="flex justify-end mb-4">
               <button onClick={() => setShowBuildModal(false)} className="text-white hover:text-red-500 text-2xl">✕</button>
             </div>
-            <BuildConfigurator />
+            <React.Suspense fallback={<div>Loading...</div>}>
+              <BuildConfigurator />
+            </React.Suspense>
           </div>
         </div>
       )}
@@ -382,9 +486,7 @@ export function AppLayout() {
       
       {/* AI Help Assistant - Always available */}
       <AIHelpAssistant />
-
     </div>
   );
 }
-
 
