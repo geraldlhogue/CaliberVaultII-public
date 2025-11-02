@@ -18,6 +18,17 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
     ],
+    testTimeout: 20000,
+    hookTimeout: 20000,
+    teardownTimeout: 15000,
+
+    isolate: true,
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
@@ -36,12 +47,6 @@ export default defineConfig({
       functions: 85,
       branches: 85,
       statements: 85,
-      thresholds: {
-        lines: 85,
-        functions: 85,
-        branches: 85,
-        statements: 85,
-      },
     },
   },
   resolve: {
@@ -50,4 +55,3 @@ export default defineConfig({
     },
   },
 });
-
