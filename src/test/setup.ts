@@ -7,29 +7,35 @@ import { afterEach, vi } from 'vitest';
 // Mock Supabase FIRST before any other imports
 vi.mock('@/lib/supabase', () => ({
   supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn().mockReturnThis(),
-      insert: vi.fn().mockReturnThis(),
-      update: vi.fn().mockReturnThis(),
-      delete: vi.fn().mockReturnThis(),
-      upsert: vi.fn().mockReturnThis(),
-      eq: vi.fn().mockReturnThis(),
-      in: vi.fn().mockReturnThis(),
-      neq: vi.fn().mockReturnThis(),
-      gt: vi.fn().mockReturnThis(),
-      lt: vi.fn().mockReturnThis(),
-      gte: vi.fn().mockReturnThis(),
-      lte: vi.fn().mockReturnThis(),
-      like: vi.fn().mockReturnThis(),
-      ilike: vi.fn().mockReturnThis(),
-      is: vi.fn().mockReturnThis(),
-      order: vi.fn().mockReturnThis(),
-      limit: vi.fn().mockReturnThis(),
-      range: vi.fn().mockReturnThis(),
-      single: vi.fn(() => Promise.resolve({ data: null, error: null })),
-      maybeSingle: vi.fn(() => Promise.resolve({ data: null, error: null })),
-      then: vi.fn((resolve) => resolve({ data: [], error: null })),
-    })),
+    from: vi.fn(() => {
+      const chainable = {
+        select: vi.fn().mockReturnThis(),
+        insert: vi.fn().mockReturnThis(),
+        update: vi.fn().mockReturnThis(),
+        delete: vi.fn().mockReturnThis(),
+        upsert: vi.fn().mockReturnThis(),
+        eq: vi.fn().mockReturnThis(),
+        in: vi.fn().mockReturnThis(),
+        neq: vi.fn().mockReturnThis(),
+        gt: vi.fn().mockReturnThis(),
+        lt: vi.fn().mockReturnThis(),
+        gte: vi.fn().mockReturnThis(),
+        lte: vi.fn().mockReturnThis(),
+        like: vi.fn().mockReturnThis(),
+        ilike: vi.fn().mockReturnThis(),
+        is: vi.fn().mockReturnThis(),
+        order: vi.fn().mockReturnThis(),
+        limit: vi.fn().mockReturnThis(),
+        range: vi.fn().mockReturnThis(),
+        single: vi.fn(() => Promise.resolve({ data: null, error: null })),
+        maybeSingle: vi.fn(() => Promise.resolve({ data: null, error: null })),
+      };
+      // Make it thenable so it can be awaited directly
+      (chainable as any).then = (resolve: any) => {
+        return Promise.resolve({ data: [], error: null }).then(resolve);
+      };
+      return chainable;
+    }),
     auth: {
       getSession: vi.fn(() => Promise.resolve({ data: { session: null }, error: null })),
       getUser: vi.fn(() => Promise.resolve({ data: { user: null }, error: null })),
@@ -54,6 +60,7 @@ vi.mock('@/lib/supabase', () => ({
     rpc: vi.fn(() => Promise.resolve({ data: null, error: null })),
   },
 }));
+
 
 // Mock lucide-react icons - return simple div elements
 vi.mock('lucide-react', () => {
@@ -232,3 +239,117 @@ window.location = {
   replace: vi.fn(),
   assign: vi.fn(),
 } as any;
+} as any;
+
+// Mock service APIs
+vi.mock('@/services/api/InventoryAPIService', () => ({
+  InventoryAPIService: class {
+    async getItems() { return []; }
+    async createItem() { return { id: '1' }; }
+    async updateItem() { return { id: '1' }; }
+    async deleteItem() { return true; }
+    async list() { return { success: true, data: [] }; }
+    async getById() { return { success: true, data: {} }; }
+    async create() { return { success: true, data: { id: '1' } }; }
+    async update() { return { success: true, data: { id: '1' } }; }
+    async delete() { return { success: true }; }
+  },
+  inventoryAPIService: {
+    getItems: vi.fn(async () => []),
+    createItem: vi.fn(async () => ({ id: '1' })),
+  }
+}));
+
+vi.mock('@/services/reports/ReportService', () => ({
+  ReportService: class {
+    async generateSummaryReport() { return []; }
+    async generateCategoryReport() { return {}; }
+    async generateValueReport() { return { total: 0 }; }
+    static async generateReport() { return { metadata: {}, data: {} }; }
+    static async saveCustomReport() { return { id: '1' }; }
+    static async getCustomReports() { return []; }
+  }
+}));
+
+vi.mock('@/services/security/SecurityService', () => ({
+  SecurityService: class {
+    async logSecurityEvent() { return true; }
+    async checkPermission() { return true; }
+    async getSecurityEvents() { return []; }
+  },
+  service: {
+    logSecurityEvent: vi.fn(async () => true),
+    checkPermission: vi.fn(async () => true),
+  }
+}));
+
+vi.mock('@/services/barcode/BarcodeService', () => ({
+  BarcodeService: class {
+    isValidUPC(code: string) { return code.length === 12; }
+    isValidEAN(code: string) { return code.length === 13; }
+    detectBarcodeType(code: string) { 
+      if (code.length === 12) return 'UPC';
+      if (code.length === 13) return 'EAN';
+      return 'UNKNOWN';
+    }
+    async lookup() { return { success: true, data: {} }; }
+    static getInstance() { return new this(); }
+  },
+  barcodeService: {
+    isValidUPC: vi.fn((code: string) => code.length === 12),
+    isValidEAN: vi.fn((code: string) => code.length === 13),
+    detectBarcodeType: vi.fn((code: string) => code.length === 12 ? 'UPC' : 'EAN'),
+  }
+}));
+
+vi.mock('@/lib/errorHandler', () => {
+  const handleError = vi.fn((error: any) => ({ 
+    success: false,
+    error,
+    userMessage: 'Error occurred',
+    technicalMessage: error.message,
+    context: {}
+  }));
+  
+  class ErrorHandler { 
+    log = vi.fn();
+    categorize = vi.fn(() => 'general');
+    handleOperation = vi.fn(async (op: any) => {
+      try {
+        const data = await op();
+        return { success: true, data };
+      } catch (error) {
+        return handleError(error);
+      }
+    });
+    getErrorLogs = vi.fn(() => []);
+    clearErrorLogs = vi.fn();
+  }
+  
+  return { 
+    handleError,
+    ErrorHandler,
+    errorHandler: new ErrorHandler(),
+    withErrorHandling: vi.fn(async (op: any) => {
+      try {
+        const data = await op();
+        return { success: true, data };
+      } catch (error) {
+        return handleError(error);
+      }
+    })
+  };
+});
+
+// Mock browser caches API for barcode cache tests
+(globalThis as any).caches = {
+  open: vi.fn(async () => ({
+    match: vi.fn(async () => undefined),
+    put: vi.fn(async () => undefined),
+    delete: vi.fn(async () => true),
+    keys: vi.fn(async () => []),
+  }))
+} as any;
+
+// Mock IndexedDB for barcode cache
+import 'fake-indexeddb/auto';
