@@ -26,5 +26,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "src/test/vitest.d.ts", "firearms-inventory-tracking-1 (4)"]
+
 }
