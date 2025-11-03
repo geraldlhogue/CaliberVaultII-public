@@ -1,0 +1,211 @@
+
+ RUN  v2.1.9 /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVaultII
+
+ × firearms-inventory-tracking-1 (4)/src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture Component > renders photo capture button
+   → Found multiple elements with the text: /capture/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<h2[39m
+  [33mclass[39m=[32m"text-white text-lg font-bold"[39m
+[36m>[39m
+  [0m📸 Capture Photo [v2.0 UPDATED][0m
+[36m</h2>[39m
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33mclass[39m=[32m"flex-1 bg-yellow-600 disabled:bg-slate-700 text-white py-2 rounded font-semibold"[39m
+  [33mdisabled[39m=[32m""[39m
+[36m>[39m
+  [0m📷 Capture[0m
+[36m</button>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 bg-black z-50 flex flex-col"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex justify-between items-center p-3 bg-slate-900 border-b-2 border-green-500"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"text-white text-lg font-bold"[39m
+        [36m>[39m
+          [0m📸 Capture Photo [v2.0 UPDATED][0m
+        [36m</h2>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"text-white text-2xl font-bold hover:text-red-500"[39m
+        [36m>[39m
+          [0m×[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex-1 relative flex items-center justify-center bg-black"[39m
+      [36m>[39m
+        [36m<video[39m
+          [33mautoplay[39m=[32m""[39m
+          [33mclass[39m=[32m"max-w-full max-h-full object-contain"[39m
+          [33mplaysinline[39m=[32m""[39m
+        [36m/>[39m
+        [36m<canvas[39m
+          [33mclass[39m=[32m"hidden"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"p-3 bg-slate-900 flex gap-2"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"flex-1 bg-yellow-600 disabled:bg-slate-700 text-white py-2 rounded font-semibold"[39m
+          [33mdisabled[39m=[32m""[39m
+        [36m>[39m
+          [0m📷 Capture[0m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × firearms-inventory-tracking-1 (4)/src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture Component > requests camera permissions
+   → Found multiple elements with the text: /capture/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<h2[39m
+  [33mclass[39m=[32m"text-white text-lg font-bold"[39m
+[36m>[39m
+  [0m📸 Capture Photo [v2.0 UPDATED][0m
+[36m</h2>[39m
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33mclass[39m=[32m"flex-1 bg-yellow-600 disabled:bg-slate-700 text-white py-2 rounded font-semibold"[39m
+  [33mdisabled[39m=[32m""[39m
+[36m>[39m
+  [0m📷 Capture[0m
+[36m</button>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 bg-black z-50 flex flex-col"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex justify-between items-center p-3 bg-slate-900 border-b-2 border-green-500"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"text-white text-lg font-bold"[39m
+        [36m>[39m
+          [0m📸 Capture Photo [v2.0 UPDATED][0m
+        [36m</h2>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"text-white text-2xl font-bold hover:text-red-500"[39m
+        [36m>[39m
+          [0m×[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex-1 relative flex items-center justify-center bg-black"[39m
+      [36m>[39m
+        [36m<video[39m
+          [33mautoplay[39m=[32m""[39m
+          [33mclass[39m=[32m"max-w-full max-h-full object-contain"[39m
+          [33mplaysinline[39m=[32m""[39m
+        [36m/>[39m
+        [36m<canvas[39m
+          [33mclass[39m=[32m"hidden"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"p-3 bg-slate-900 flex gap-2"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"flex-1 bg-yellow-600 disabled:bg-slate-700 text-white py-2 rounded font-semibold"[39m
+          [33mdisabled[39m=[32m""[39m
+        [36m>[39m
+          [0m📷 Capture[0m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ × firearms-inventory-tracking-1 (4)/src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture Component > handles camera permission denial
+   → Found multiple elements with the text: /capture/i
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<h2[39m
+  [33mclass[39m=[32m"text-white text-lg font-bold"[39m
+[36m>[39m
+  [0m📸 Capture Photo [v2.0 UPDATED][0m
+[36m</h2>[39m
+
+Ignored nodes: comments, script, style
+[36m<button[39m
+  [33mclass[39m=[32m"flex-1 bg-yellow-600 disabled:bg-slate-700 text-white py-2 rounded font-semibold"[39m
+  [33mdisabled[39m=[32m""[39m
+[36m>[39m
+  [0m📷 Capture[0m
+[36m</button>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 bg-black z-50 flex flex-col"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex justify-between items-center p-3 bg-slate-900 border-b-2 border-green-500"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"text-white text-lg font-bold"[39m
+        [36m>[39m
+          [0m📸 Capture Photo [v2.0 UPDATED][0m
+        [36m</h2>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"text-white text-2xl font-bold hover:text-red-500"[39m
+        [36m>[39m
+          [0m×[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex-1 relative flex items-center justify-center bg-black"[39m
+      [36m>[39m
+        [36m<video[39m
+          [33mautoplay[39m=[32m""[39m
+          [33mclass[39m=[32m"max-w-full max-h-full object-contain"[39m
+          [33mplaysinline[39m=[32m""[39m
+        [36m/>[39m
+        [36m<canvas[39m
+          [33mclass[39m=[32m"hidden"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"p-3 bg-slate-900 flex gap-2"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"flex-1 bg-yellow-600 disabled:bg-slate-700 text-white py-2 rounded font-semibold"[39m
+          [33mdisabled[39m=[32m""[39m
+        [36m>[39m
+          [0m📷 Capture[0m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ✓ firearms-inventory-tracking-1 (4)/src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture Component > detects iOS devices
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 1 passed (4)
+   Start at  20:06:27
+   Duration  981ms (transform 39ms, setup 187ms, collect 18ms, tests 23ms, environment 409ms, prepare 77ms)
+
