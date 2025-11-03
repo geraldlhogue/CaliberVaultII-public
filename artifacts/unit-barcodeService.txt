@@ -14,6 +14,6 @@
 
  Test Files  1 failed (1)
       Tests  5 failed (5)
-   Start at  08:00:31
-   Duration  764ms (transform 35ms, setup 175ms, collect 5ms, tests 4ms, environment 374ms, prepare 71ms)
+   Start at  13:08:15
+   Duration  23.37s (transform 206ms, setup 6.52s, collect 61ms, tests 18ms, environment 15.06s, prepare 1.40s)
 
