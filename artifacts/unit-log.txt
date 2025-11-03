@@ -1,0 +1,9 @@
+
+ RUN  v2.1.9 /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVaultII
+
+
+ Test Files  141 failed (141)
+      Tests  no tests
+   Start at  14:04:15
+   Duration  789ms (transform 9ms, setup 0ms, collect 0ms, tests 0ms, environment 388ms, prepare 61ms)
+
