@@ -239,7 +239,6 @@ window.location = {
   replace: vi.fn(),
   assign: vi.fn(),
 } as any;
-} as any;
 
 // Mock service APIs
 vi.mock('@/services/api/InventoryAPIService', () => ({
