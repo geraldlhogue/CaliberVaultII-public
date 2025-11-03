@@ -1,3 +1,5 @@
+import userEvent from '@testing-library/user-event';
+import { act } from 'react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { PhotoCapture } from '../inventory/PhotoCapture';
@@ -22,12 +24,12 @@ describe('PhotoCapture Component', () => {
 
   it('renders photo capture button', () => {
     render(<PhotoCapture onPhotoCapture={vi.fn()} />);
-    expect(screen.getByText(/capture/i)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Capture/i })).toBeInTheDocument();
   });
 
   it('requests camera permissions', async () => {
     render(<PhotoCapture onPhotoCapture={vi.fn()} />);
-    const button = screen.getByText(/capture/i);
+    const button = screen.getByRole('button', { name: /Capture/i });
     fireEvent.click(button);
     
     await waitFor(() => {
@@ -41,7 +43,7 @@ describe('PhotoCapture Component', () => {
     mockGetUserMedia.mockRejectedValue(new Error('Permission denied'));
     render(<PhotoCapture onPhotoCapture={vi.fn()} />);
     
-    const button = screen.getByText(/capture/i);
+    const button = screen.getByRole('button', { name: /Capture/i });
     fireEvent.click(button);
     
     await waitFor(() => {
