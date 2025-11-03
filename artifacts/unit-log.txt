@@ -237,6 +237,13 @@ stdout | firearms-inventory-tracking-1 (4)/src/services/__tests__/categoryServic
   detailData: 'user123'
 }
 
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have ammunition table with correct schema
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have bullets table with correct schema
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have magazines table
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have accessories table
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should fetch all categories from categories table
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should create ammunition item successfully
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should create magazine item successfully
 stdout | firearms-inventory-tracking-1 (4)/src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should create ammunition with correct field mapping
 [ammunition_detailsService] Creating: {
   baseData: {
@@ -345,13 +352,6 @@ stdout | firearms-inventory-tracking-1 (4)/src/services/category/__tests__/Ammun
  ✓ firearms-inventory-tracking-1 (4)/src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should use bullet_weight not grain_weight
  ✓ firearms-inventory-tracking-1 (4)/src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should include cartridge_id in detail data
  ✓ firearms-inventory-tracking-1 (4)/src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should put manufacturer_id in base data not detail data
- ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have ammunition table with correct schema
- ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have bullets table with correct schema
- ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have magazines table
- ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have accessories table
- ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should fetch all categories from categories table
- ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should create ammunition item successfully
- ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should create magazine item successfully
  ↓ firearms-inventory-tracking-1 (4)/src/test/integration/data-migration.test.ts > Data Migration Validation > should have ammunition table with correct schema
  ↓ firearms-inventory-tracking-1 (4)/src/test/integration/data-migration.test.ts > Data Migration Validation > should have bullets table with correct schema
  ↓ firearms-inventory-tracking-1 (4)/src/test/integration/data-migration.test.ts > Data Migration Validation > should have magazines table
@@ -359,22 +359,6 @@ stdout | firearms-inventory-tracking-1 (4)/src/services/category/__tests__/Ammun
  ↓ firearms-inventory-tracking-1 (4)/src/test/integration/data-migration.test.ts > Data Migration Validation > should fetch all categories from categories table
  ↓ firearms-inventory-tracking-1 (4)/src/test/integration/data-migration.test.ts > Data Migration Validation > should create ammunition item successfully
  ↓ firearms-inventory-tracking-1 (4)/src/test/integration/data-migration.test.ts > Data Migration Validation > should create magazine item successfully
- × firearms-inventory-tracking-1 (4)/src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkCreate > should create multiple items successfully
-   → [vitest] No "ammunitionService" export is defined on the "../../category" mock. Did you forget to return it from "vi.mock"?
-If you need to partially mock a module, you can use "importOriginal" helper inside:
-
- × firearms-inventory-tracking-1 (4)/src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkCreate > should handle partial failures
-   → [vitest] No "ammunitionService" export is defined on the "../../category" mock. Did you forget to return it from "vi.mock"?
-If you need to partially mock a module, you can use "importOriginal" helper inside:
-
- × firearms-inventory-tracking-1 (4)/src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkDelete > should delete multiple items
-   → [vitest] No "ammunitionService" export is defined on the "../../category" mock. Did you forget to return it from "vi.mock"?
-If you need to partially mock a module, you can use "importOriginal" helper inside:
-
- × firearms-inventory-tracking-1 (4)/src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkDuplicate > should duplicate items
-   → [vitest] No "ammunitionService" export is defined on the "../../category" mock. Did you forget to return it from "vi.mock"?
-If you need to partially mock a module, you can use "importOriginal" helper inside:
-
  × src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkCreate > should create multiple items successfully
    → [vitest] No "ammunitionService" export is defined on the "../../category" mock. Did you forget to return it from "vi.mock"?
 If you need to partially mock a module, you can use "importOriginal" helper inside:
@@ -388,6 +372,22 @@ If you need to partially mock a module, you can use "importOriginal" helper insi
 If you need to partially mock a module, you can use "importOriginal" helper inside:
 
  × src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkDuplicate > should duplicate items
+   → [vitest] No "ammunitionService" export is defined on the "../../category" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+ × firearms-inventory-tracking-1 (4)/src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkCreate > should create multiple items successfully
+   → [vitest] No "ammunitionService" export is defined on the "../../category" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+ × firearms-inventory-tracking-1 (4)/src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkCreate > should handle partial failures
+   → [vitest] No "ammunitionService" export is defined on the "../../category" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+ × firearms-inventory-tracking-1 (4)/src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkDelete > should delete multiple items
+   → [vitest] No "ammunitionService" export is defined on the "../../category" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+ × firearms-inventory-tracking-1 (4)/src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkDuplicate > should duplicate items
    → [vitest] No "ammunitionService" export is defined on the "../../category" mock. Did you forget to return it from "vi.mock"?
 If you need to partially mock a module, you can use "importOriginal" helper inside:
 
@@ -457,9 +457,6 @@ stdout | firearms-inventory-tracking-1 (4)/src/services/category/__tests__/Firea
   }
 }
 
- ✓ firearms-inventory-tracking-1 (4)/src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > createFirearm > should create firearm with all fields in correct tables
- ✓ firearms-inventory-tracking-1 (4)/src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > createFirearm > should use action_id not action text
- ✓ firearms-inventory-tracking-1 (4)/src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > createFirearm > should include cartridge_id in detail data
 stdout | firearms-inventory-tracking-1 (4)/src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > createFirearm > should include cartridge_id in detail data
 [firearm_detailsService] Creating: {
   baseData: {
@@ -493,6 +490,9 @@ stdout | firearms-inventory-tracking-1 (4)/src/services/category/__tests__/Firea
   }
 }
 
+ ✓ firearms-inventory-tracking-1 (4)/src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > createFirearm > should create firearm with all fields in correct tables
+ ✓ firearms-inventory-tracking-1 (4)/src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > createFirearm > should use action_id not action text
+ ✓ firearms-inventory-tracking-1 (4)/src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > createFirearm > should include cartridge_id in detail data
 stdout | firearms-inventory-tracking-1 (4)/src/services/category/__tests__/AllCategories.test.ts > All Category Services > FirearmsService > should create item with inventory + detail tables
 [firearm_detailsService] Creating: {
   baseData: {
@@ -869,12 +869,12 @@ stdout | src/services/__tests__/sync.service.test.ts > SyncService > should not 
    → reportService.exportCSV is not a function
  × firearms-inventory-tracking-1 (4)/src/services/__tests__/reports.service.test.ts > ReportService - Comprehensive Tests > CSV Export > handles special characters in CSV
    → reportService.exportCSV is not a function
- ✓ firearms-inventory-tracking-1 (4)/src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > saveItem > should route firearms to firearmsService
- ✓ firearms-inventory-tracking-1 (4)/src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > saveItem > should route ammunition to ammunitionService
- ✓ firearms-inventory-tracking-1 (4)/src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > updateItem > should update firearms correctly
  ✓ src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > saveItem > should route firearms to firearmsService
  ✓ src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > saveItem > should route ammunition to ammunitionService
  ✓ src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > updateItem > should update firearms correctly
+ ✓ firearms-inventory-tracking-1 (4)/src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > saveItem > should route firearms to firearmsService
+ ✓ firearms-inventory-tracking-1 (4)/src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > saveItem > should route ammunition to ammunitionService
+ ✓ firearms-inventory-tracking-1 (4)/src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > updateItem > should update firearms correctly
 stdout | firearms-inventory-tracking-1 (4)/src/services/__tests__/sync.service.test.ts > SyncService - Comprehensive Tests > Conflict Resolution > resolves conflicts using last-write-wins
 [ConflictResolver] Resolving conflict: 1 Strategy: { id: '1', updated_at: '2024-01-02', value: 'B' }
 [ConflictResolver] Resolving conflict: 1 Strategy: newest-wins
@@ -951,12 +951,6 @@ stdout | src/services/__tests__/categoryServices.test.ts > FirearmsService > sho
   }
 }
 
- × src/services/__tests__/categoryServices.test.ts > FirearmsService > should create a firearm using createFirearm method
-   → Failed to create inventory item: undefined
- × src/services/__tests__/categoryServices.test.ts > FirearmsService > should update a firearm using updateFirearm method
-   → supabase.from(...).update is not a function
- × src/services/__tests__/categoryServices.test.ts > AmmunitionService > should create ammunition using createAmmunition method
-   → Failed to create inventory item: undefined
 stdout | src/services/__tests__/categoryServices.test.ts > AmmunitionService > should create ammunition using createAmmunition method
 [ammunition_detailsService] Creating: {
   baseData: {
@@ -983,6 +977,12 @@ stdout | src/services/__tests__/categoryServices.test.ts > AmmunitionService > s
   }
 }
 
+ × src/services/__tests__/categoryServices.test.ts > FirearmsService > should create a firearm using createFirearm method
+   → Failed to create inventory item: undefined
+ × src/services/__tests__/categoryServices.test.ts > FirearmsService > should update a firearm using updateFirearm method
+   → supabase.from(...).update is not a function
+ × src/services/__tests__/categoryServices.test.ts > AmmunitionService > should create ammunition using createAmmunition method
+   → Failed to create inventory item: undefined
  × firearms-inventory-tracking-1 (4)/src/hooks/__tests__/useSwipeGesture.test.ts > useSwipeGesture Hook Tests > detects swipe left
    → result.current.handleTouchStart is not a function
  × firearms-inventory-tracking-1 (4)/src/hooks/__tests__/useSwipeGesture.test.ts > useSwipeGesture Hook Tests > detects swipe right
@@ -1247,29 +1247,29 @@ stdout | src/services/category/__tests__/FirearmsService.test.ts > FirearmsServi
   detailData: { serial_number: '123456', caliber_id: 'cal-123' }
 }
 
- × src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should create firearm with correct fields
-   → Failed to create inventory item: undefined
- × src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should handle serial numbers
-   → Failed to create inventory item: undefined
 stdout | src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should handle serial numbers
 [firearm_detailsService] Creating: {
   baseData: { name: 'Test Pistol' },
   detailData: { serial_number: 'ABC123' }
 }
 
+ × src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should create firearm with correct fields
+   → Failed to create inventory item: undefined
+ × src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should handle serial numbers
+   → Failed to create inventory item: undefined
 stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should create ammunition with correct fields
 [ammunition_detailsService] Creating: {
   baseData: { name: 'Test Ammo', manufacturer_id: 'mfg-456' },
   detailData: { caliber_id: 'cal-456', bullet_weight: 115 }
 }
 
+stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should handle bullet weight
+[ammunition_detailsService] Creating: { baseData: { name: 'Test Ammo' }, detailData: { bullet_weight: 115 } }
+
  × src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should create ammunition with correct fields
    → Failed to create inventory item: undefined
  × src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should handle bullet weight
    → Failed to create inventory item: undefined
-stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should handle bullet weight
-[ammunition_detailsService] Creating: { baseData: { name: 'Test Ammo' }, detailData: { bullet_weight: 115 } }
-
  ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > firearms service is defined
  ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > ammunition service is defined
  ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > optics service is defined
