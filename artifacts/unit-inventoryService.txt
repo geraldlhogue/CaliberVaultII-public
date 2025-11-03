@@ -1,15 +1,13 @@
 
  RUN  v2.1.9 /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVaultII
 
+ ✓ src/services/__tests__/inventory.service.test.ts > InventoryService > should save firearm item
+ ✓ src/services/__tests__/inventory.service.test.ts > InventoryService > should handle lowercase category names
+ ✓ firearms-inventory-tracking-1 (4)/src/services/__tests__/inventory.service.test.ts > InventoryService > should save firearm item
+ ✓ firearms-inventory-tracking-1 (4)/src/services/__tests__/inventory.service.test.ts > InventoryService > should handle lowercase category names
 
-⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
-
-Vitest caught 1 unhandled error during the test run.
-This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
- Test Files  no tests
-      Tests  no tests
-     Errors  1 error
-   Start at  05:58:45
-   Duration  54ms (transform 0ms, setup 0ms, collect 0ms, tests 0ms, environment 0ms, prepare 0ms)
+ Test Files  2 passed (2)
+      Tests  4 passed (4)
+   Start at  06:40:56
+   Duration  1.21s (transform 54ms, setup 291ms, collect 24ms, tests 4ms, environment 602ms, prepare 106ms)
 

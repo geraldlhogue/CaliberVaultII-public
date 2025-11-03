@@ -1,15 +1,3 @@
 
  RUN  v2.1.9 /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVaultII
 
-
-⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
-
-Vitest caught 1 unhandled error during the test run.
-This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
- Test Files  no tests
-      Tests  no tests
-     Errors  1 error
-   Start at  05:58:45
-   Duration  56ms (transform 0ms, setup 0ms, collect 0ms, tests 0ms, environment 0ms, prepare 0ms)
-

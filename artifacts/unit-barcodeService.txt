@@ -1,15 +1,27 @@
 
  RUN  v2.1.9 /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVaultII
 
+ × src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate UPC format
+   → barcodeService.resetApiCounter is not a function
+ × src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate EAN format
+   → barcodeService.resetApiCounter is not a function
+ × src/services/__tests__/barcode.service.test.ts > BarcodeService > should detect barcode type
+   → barcodeService.resetApiCounter is not a function
+ × src/services/__tests__/barcode.service.test.ts > BarcodeService > should track API usage
+   → barcodeService.resetApiCounter is not a function
+ × src/services/__tests__/barcode.service.test.ts > BarcodeService > should reset API counter
+   → barcodeService.resetApiCounter is not a function
+ × firearms-inventory-tracking-1 (4)/src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate UPC format
+   → barcodeService.isValidUPC is not a function
+ × firearms-inventory-tracking-1 (4)/src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate EAN format
+   → barcodeService.isValidEAN is not a function
+ × firearms-inventory-tracking-1 (4)/src/services/__tests__/barcode.service.test.ts > BarcodeService > should detect barcode type
+   → barcodeService.detectBarcodeType is not a function
+ ✓ firearms-inventory-tracking-1 (4)/src/services/__tests__/barcode.service.test.ts > BarcodeService > should track API usage
+ ✓ firearms-inventory-tracking-1 (4)/src/services/__tests__/barcode.service.test.ts > BarcodeService > should reset API counter
 
-⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
-
-Vitest caught 1 unhandled error during the test run.
-This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
- Test Files  no tests
-      Tests  no tests
-     Errors  1 error
-   Start at  05:58:46
-   Duration  57ms (transform 0ms, setup 0ms, collect 0ms, tests 0ms, environment 0ms, prepare 0ms)
+ Test Files  2 failed (2)
+      Tests  8 failed | 2 passed (10)
+   Start at  06:40:35
+   Duration  1.25s (transform 44ms, setup 239ms, collect 16ms, tests 7ms, environment 640ms, prepare 146ms)
 
