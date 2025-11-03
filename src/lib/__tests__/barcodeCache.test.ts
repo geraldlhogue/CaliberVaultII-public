@@ -48,25 +48,39 @@ describe('BarcodeCacheManager', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     cacheManager = new BarcodeCacheManager();
-  });
+  
+  vi.runAllTimers();
+});
 
   afterEach(() => {
     vi.clearAllTimers();
-  });
+  
+  vi.runAllTimers();
+});
 
   it('initializes cache manager', () => {
     expect(cacheManager).toBeDefined();
-  });
+  
+  vi.runAllTimers();
+});
 
   it('caches barcode data', async () => {
     await cacheManager.init();
-    await cacheManager.set({ barcode: '123456', title: 'Test', cachedAt: new Date().toISOString(), hitCount: 0, lastAccessed: new Date().toISOString() });
+    await cacheManager.set({ barcode: '123456', title: 'Test', cachedAt: new Date().toISOString(), hitCount: 0, lastAccessed: new Date().toISOString() 
+  vi.runAllTimers();
+});
     expect(mockObjectStore.put).toHaveBeenCalled();
-  });
+  
+  vi.runAllTimers();
+});
 
   it('retrieves cached data', async () => {
     await cacheManager.init();
     const data = await cacheManager.get('123456');
     expect(mockObjectStore.get).toHaveBeenCalledWith('123456');
-  });
+  
+  vi.runAllTimers();
+});
+
+  vi.runAllTimers();
 });
