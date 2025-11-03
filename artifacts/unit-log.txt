@@ -211,12 +211,6 @@ stdout | firearms-inventory-tracking-1 (4)/src/services/__tests__/categoryServic
   detailData: 'user123'
 }
 
-stdout | firearms-inventory-tracking-1 (4)/src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > PrimersService > should create primer
-[primer_detailsService] Creating: {
-  baseData: { name: 'Test Primer', user_id: 'user123' },
-  detailData: 'user123'
-}
-
  ✓ firearms-inventory-tracking-1 (4)/src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > FirearmsService > should create firearm with required fields
  × firearms-inventory-tracking-1 (4)/src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > FirearmsService > should update firearm
    → Cannot read properties of null (reading 'name')
@@ -231,19 +225,18 @@ stdout | firearms-inventory-tracking-1 (4)/src/services/__tests__/categoryServic
  ✓ firearms-inventory-tracking-1 (4)/src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > CasesService > should create case
  ✓ firearms-inventory-tracking-1 (4)/src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > PrimersService > should create primer
  ✓ firearms-inventory-tracking-1 (4)/src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > PowderService > should create powder
+stdout | firearms-inventory-tracking-1 (4)/src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > PrimersService > should create primer
+[primer_detailsService] Creating: {
+  baseData: { name: 'Test Primer', user_id: 'user123' },
+  detailData: 'user123'
+}
+
 stdout | firearms-inventory-tracking-1 (4)/src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > PowderService > should create powder
 [powder_detailsService] Creating: {
   baseData: { name: 'Test Powder', user_id: 'user123' },
   detailData: 'user123'
 }
 
- ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have ammunition table with correct schema
- ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have bullets table with correct schema
- ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have magazines table
- ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have accessories table
- ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should fetch all categories from categories table
- ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should create ammunition item successfully
- ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should create magazine item successfully
 stdout | firearms-inventory-tracking-1 (4)/src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should create ammunition with correct field mapping
 [ammunition_detailsService] Creating: {
   baseData: {
@@ -352,6 +345,13 @@ stdout | firearms-inventory-tracking-1 (4)/src/services/category/__tests__/Ammun
  ✓ firearms-inventory-tracking-1 (4)/src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should use bullet_weight not grain_weight
  ✓ firearms-inventory-tracking-1 (4)/src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should include cartridge_id in detail data
  ✓ firearms-inventory-tracking-1 (4)/src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should put manufacturer_id in base data not detail data
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have ammunition table with correct schema
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have bullets table with correct schema
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have magazines table
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have accessories table
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should fetch all categories from categories table
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should create ammunition item successfully
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should create magazine item successfully
  ↓ firearms-inventory-tracking-1 (4)/src/test/integration/data-migration.test.ts > Data Migration Validation > should have ammunition table with correct schema
  ↓ firearms-inventory-tracking-1 (4)/src/test/integration/data-migration.test.ts > Data Migration Validation > should have bullets table with correct schema
  ↓ firearms-inventory-tracking-1 (4)/src/test/integration/data-migration.test.ts > Data Migration Validation > should have magazines table
@@ -983,6 +983,8 @@ stdout | src/services/__tests__/categoryServices.test.ts > AmmunitionService > s
    → supabase.from(...).update is not a function
  × src/services/__tests__/categoryServices.test.ts > AmmunitionService > should create ammunition using createAmmunition method
    → Failed to create inventory item: undefined
+ ✓ src/services/__tests__/inventory.service.test.ts > InventoryService > should save firearm item
+ ✓ src/services/__tests__/inventory.service.test.ts > InventoryService > should handle lowercase category names
  × firearms-inventory-tracking-1 (4)/src/hooks/__tests__/useSwipeGesture.test.ts > useSwipeGesture Hook Tests > detects swipe left
    → result.current.handleTouchStart is not a function
  × firearms-inventory-tracking-1 (4)/src/hooks/__tests__/useSwipeGesture.test.ts > useSwipeGesture Hook Tests > detects swipe right
@@ -1263,49 +1265,10 @@ stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionS
   detailData: { caliber_id: 'cal-456', bullet_weight: 115 }
 }
 
-stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should handle bullet weight
-[ammunition_detailsService] Creating: { baseData: { name: 'Test Ammo' }, detailData: { bullet_weight: 115 } }
-
  × src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should create ammunition with correct fields
    → Failed to create inventory item: undefined
  × src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should handle bullet weight
    → Failed to create inventory item: undefined
- ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > firearms service is defined
- ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > ammunition service is defined
- ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > optics service is defined
- ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > all services have create method
- ✓ src/services/__tests__/reference.service.test.ts > ReferenceDataService > getManufacturers > fetches manufacturers
- ✓ src/services/__tests__/reference.service.test.ts > ReferenceDataService > getCalibers > fetches calibers
- × src/services/__tests__/reference.service.test.ts > ReferenceDataService > addManufacturer > adds new manufacturer
-   → service.addManufacturer is not a function
- × src/lib/__tests__/validation.test.ts > validation utilities > validateEmail > validates correct email
-   → validateEmail is not a function
- × src/lib/__tests__/validation.test.ts > validation utilities > validateEmail > rejects invalid email
-   → validateEmail is not a function
- × src/lib/__tests__/validation.test.ts > validation utilities > validatePhone > validates US phone number
-   → validatePhone is not a function
- × src/lib/__tests__/validation.test.ts > validation utilities > validatePhone > rejects invalid phone
-   → validatePhone is not a function
- × src/lib/__tests__/validation.test.ts > validation utilities > validateURL > validates correct URL
-   → validateURL is not a function
- × src/lib/__tests__/validation.test.ts > validation utilities > validateURL > rejects invalid URL
-   → validateURL is not a function
- × src/lib/__tests__/validation.test.ts > validation utilities > validateRequired > validates non-empty value
-   → validateRequired is not a function
- × src/lib/__tests__/validation.test.ts > validation utilities > validateRequired > rejects empty value
-   → validateRequired is not a function
- × src/services/__tests__/storage.service.test.ts > StorageService > uploadFile > uploads file successfully
-   → [vitest] No "StorageService" export is defined on the "@/services/storage.service" mock. Did you forget to return it from "vi.mock"?
-If you need to partially mock a module, you can use "importOriginal" helper inside:
+stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should handle bullet weight
+[ammunition_detailsService] Creating: { baseData: { name: 'Test Ammo' }, detailData: { bullet_weight: 115 } }
 
- × src/services/__tests__/storage.service.test.ts > StorageService > deleteFile > deletes file successfully
-   → [vitest] No "StorageService" export is defined on the "@/services/storage.service" mock. Did you forget to return it from "vi.mock"?
-If you need to partially mock a module, you can use "importOriginal" helper inside:
-
- × src/services/__tests__/storage.service.test.ts > StorageService > listFiles > lists files successfully
-   → [vitest] No "StorageService" export is defined on the "@/services/storage.service" mock. Did you forget to return it from "vi.mock"?
-If you need to partially mock a module, you can use "importOriginal" helper inside:
-
- × src/services/__tests__/inventory.service.test.ts > InventoryService > should save firearm item
-   → Category "firearms" not found. Please select a valid category.
- ✓ src/services/__tests__/inventory.service.test.ts > InventoryService > should handle item creation
