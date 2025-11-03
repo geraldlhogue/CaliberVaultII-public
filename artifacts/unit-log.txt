@@ -4,6 +4,6 @@
 
  Test Files  141 failed (141)
       Tests  no tests
-   Start at  14:20:14
-   Duration  11.54s (transform 9ms, setup 0ms, collect 0ms, tests 0ms, environment 118.86s, prepare 17.35s)
+   Start at  14:45:46
+   Duration  704ms (transform 7ms, setup 0ms, collect 0ms, tests 0ms, environment 257ms, prepare 49ms)
 
