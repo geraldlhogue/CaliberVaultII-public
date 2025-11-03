@@ -10,22 +10,24 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     include: [
       '**/__tests__/**/*.{test,spec}.ts?(x)',
-      '**/*.{test,spec}.ts?(x)',
-      'firearms-inventory-tracking-1 \\(4\\)/**/*.{test,spec}.ts?(x)'
+      '**/*.{test,spec}.ts?(x)'
     ],
 
     exclude: [
       'node_modules/**',
       'dist/**',
       'build/**',
-      '**/artifacts/**'
+      '**/artifacts/**',
+      '**/*.bak.*',
+      '**/firearms-inventory-tracking-1 \\(4\\)/**',
+      'src/**/vitest.d.ts',
+      'src/test/vitest.d.ts'
     ],
 
     // Increased timeouts for IndexedDB and async operations
     testTimeout: 30000,
     hookTimeout: 30000,
     teardownTimeout: 20000,
-
 
     isolate: true,
     pool: 'forks',

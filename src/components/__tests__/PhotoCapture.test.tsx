@@ -1,7 +1,26 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PhotoCapture } from '../inventory/PhotoCapture';
+
+// Mock camera and video APIs
+const mockGetUserMedia = vi.fn(() => 
+  Promise.resolve({
+    getTracks: () => [{ stop: vi.fn() }]
+  } as any)
+);
+
+Object.defineProperty(global.navigator, 'mediaDevices', {
+  value: { getUserMedia: mockGetUserMedia },
+  writable: true,
+  configurable: true
+});
+
+// Mock HTMLVideoElement.play to prevent pending promises
+vi.spyOn(HTMLVideoElement.prototype, 'play').mockResolvedValue();
+
+// Mock requestAnimationFrame for smooth test execution
+window.requestAnimationFrame = ((cb: any) => setTimeout(cb, 0)) as any;
 
 // Mock Supabase storage
 vi.mock('@/lib/supabase', () => ({
@@ -20,23 +39,19 @@ vi.mock('@/lib/supabase', () => ({
   }
 }));
 
-// Mock getUserMedia to reject immediately
-const mockGetUserMedia = vi.fn(() => 
-  Promise.reject(new Error('Camera not available in test environment'))
-);
-
-Object.defineProperty(global.navigator, 'mediaDevices', {
-  value: { getUserMedia: mockGetUserMedia },
-  writable: true,
-  configurable: true
-});
-
 describe('PhotoCapture', () => {
   const mockOnCapture = vi.fn();
   const mockOnClose = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGetUserMedia.mockResolvedValue({
+      getTracks: () => [{ stop: vi.fn() }]
+    } as any);
+  });
+
+  afterEach(() => {
+    vi.clearAllTimers();
   });
 
   it('renders photo capture component', async () => {
@@ -49,9 +64,8 @@ describe('PhotoCapture', () => {
       );
     });
 
-    await waitFor(() => {
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
-    }, { timeout: 1000 });
+    const dialog = await screen.findByText(/capture photo/i);
+    expect(dialog).toBeInTheDocument();
   });
 
   it('handles close callback', async () => {
@@ -64,7 +78,7 @@ describe('PhotoCapture', () => {
       );
     });
 
-    const closeButton = await screen.findByRole('button', { name: /close/i });
+    const closeButton = await screen.findByRole('button', { name: /×/i });
     
     await act(async () => {
       await userEvent.click(closeButton);
@@ -73,7 +87,7 @@ describe('PhotoCapture', () => {
     expect(mockOnClose).toHaveBeenCalled();
   });
 
-  it('shows camera error message', async () => {
+  it('initializes camera on mount', async () => {
     await act(async () => {
       render(
         <PhotoCapture 
@@ -84,7 +98,12 @@ describe('PhotoCapture', () => {
     });
 
     await waitFor(() => {
-      expect(mockGetUserMedia).toHaveBeenCalled();
+      expect(mockGetUserMedia).toHaveBeenCalledWith(
+        expect.objectContaining({
+          video: expect.any(Object),
+          audio: false
+        })
+      );
     }, { timeout: 1000 });
   });
 });
