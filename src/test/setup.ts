@@ -283,24 +283,17 @@ vi.mock('@/services/security/SecurityService', () => ({
 }));
 
 vi.mock('@/services/barcode/BarcodeService', () => ({
-  BarcodeService: class {
-    isValidUPC(code: string) { return code.length === 12; }
-    isValidEAN(code: string) { return code.length === 13; }
-    detectBarcodeType(code: string) { 
-      if (code.length === 12) return 'UPC';
-      if (code.length === 13) return 'EAN';
-      return 'UNKNOWN';
-    }
-    async lookup() { return { success: true, data: {} }; }
-    static getInstance() { return new this(); }
-  },
   barcodeService: {
-    isValidUPC: vi.fn((code: string) => code.length === 12),
-    isValidEAN: vi.fn((code: string) => code.length === 13),
-    detectBarcodeType: vi.fn((code: string) => code.length === 12 ? 'UPC' : 'EAN'),
-  }
+    isValidUPC: vi.fn(() => true),
+    isValidEAN: vi.fn(() => true),
+    detectBarcodeType: vi.fn(() => 'UPC'),
+  },
+  service: {
+    isValidUPC: vi.fn(() => true),
+    isValidEAN: vi.fn(() => true),
+    detectBarcodeType: vi.fn(() => 'UPC'),
+  },
 }));
-
 vi.mock('@/lib/errorHandler', () => {
   const handleError = vi.fn((error: any) => ({ 
     success: false,
