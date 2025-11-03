@@ -1,14 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor, act } from '@testing-library/react';
+import { render, screen, cleanup, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PhotoCapture } from '../inventory/PhotoCapture';
 
-// Mock camera and video APIs
-const mockGetUserMedia = vi.fn(() => 
-  Promise.resolve({
-    getTracks: () => [{ stop: vi.fn() }]
-  } as any)
-);
+// Comprehensive camera and video mocks
+const mockStream = {
+  getTracks: vi.fn(() => [{ stop: vi.fn() }]),
+  getVideoTracks: vi.fn(() => [{ stop: vi.fn() }])
+};
+
+const mockGetUserMedia = vi.fn(() => Promise.resolve(mockStream as any));
 
 Object.defineProperty(global.navigator, 'mediaDevices', {
   value: { getUserMedia: mockGetUserMedia },
@@ -16,11 +17,17 @@ Object.defineProperty(global.navigator, 'mediaDevices', {
   configurable: true
 });
 
-// Mock HTMLVideoElement.play to prevent pending promises
+// Prevent pending play promise
 vi.spyOn(HTMLVideoElement.prototype, 'play').mockResolvedValue();
+vi.spyOn(HTMLVideoElement.prototype, 'pause').mockImplementation(() => {});
 
-// Mock requestAnimationFrame for smooth test execution
-window.requestAnimationFrame = ((cb: any) => setTimeout(cb, 0)) as any;
+// Mock RAF to flush immediately
+globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) => {
+  const id = setTimeout(() => cb(performance.now()), 0);
+  return id as unknown as number;
+}) as any;
+
+globalThis.cancelAnimationFrame = ((id: number) => clearTimeout(id)) as any;
 
 // Mock Supabase storage
 vi.mock('@/lib/supabase', () => ({
@@ -28,11 +35,11 @@ vi.mock('@/lib/supabase', () => ({
     storage: {
       from: vi.fn(() => ({
         upload: vi.fn(() => Promise.resolve({ 
-          data: { path: 'test-photo.jpg' }, 
+          data: { path: 'test.jpg' }, 
           error: null 
         })),
         getPublicUrl: vi.fn(() => ({ 
-          data: { publicUrl: 'https://example.com/test-photo.jpg' } 
+          data: { publicUrl: 'https://example.com/test.jpg' } 
         }))
       }))
     }
@@ -45,43 +52,30 @@ describe('PhotoCapture', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetUserMedia.mockResolvedValue({
-      getTracks: () => [{ stop: vi.fn() }]
-    } as any);
   });
 
   afterEach(() => {
+    cleanup();
     vi.clearAllTimers();
   });
 
-  it('renders photo capture component', async () => {
+  it('renders photo capture dialog', async () => {
     await act(async () => {
-      render(
-        <PhotoCapture 
-          onCapture={mockOnCapture} 
-          onClose={mockOnClose}
-        />
-      );
+      render(<PhotoCapture onCapture={mockOnCapture} onClose={mockOnClose} />);
     });
 
-    const dialog = await screen.findByText(/capture photo/i);
-    expect(dialog).toBeInTheDocument();
+    expect(await screen.findByText(/capture photo/i)).toBeInTheDocument();
   });
 
-  it('handles close callback', async () => {
+  it('calls onClose when close button clicked', async () => {
     await act(async () => {
-      render(
-        <PhotoCapture 
-          onCapture={mockOnCapture} 
-          onClose={mockOnClose}
-        />
-      );
+      render(<PhotoCapture onCapture={mockOnCapture} onClose={mockOnClose} />);
     });
 
-    const closeButton = await screen.findByRole('button', { name: /×/i });
+    const closeBtn = await screen.findByRole('button', { name: /×/i });
     
     await act(async () => {
-      await userEvent.click(closeButton);
+      await userEvent.click(closeBtn);
     });
 
     expect(mockOnClose).toHaveBeenCalled();
@@ -89,21 +83,18 @@ describe('PhotoCapture', () => {
 
   it('initializes camera on mount', async () => {
     await act(async () => {
-      render(
-        <PhotoCapture 
-          onCapture={mockOnCapture} 
-          onClose={mockOnClose}
-        />
-      );
+      render(<PhotoCapture onCapture={mockOnCapture} onClose={mockOnClose} />);
     });
 
-    await waitFor(() => {
-      expect(mockGetUserMedia).toHaveBeenCalledWith(
-        expect.objectContaining({
-          video: expect.any(Object),
-          audio: false
-        })
-      );
-    }, { timeout: 1000 });
+    await act(async () => {
+      await vi.waitFor(() => {
+        expect(mockGetUserMedia).toHaveBeenCalledWith(
+          expect.objectContaining({
+            video: expect.any(Object),
+            audio: false
+          })
+        );
+      }, { timeout: 1000 });
+    });
   });
 });

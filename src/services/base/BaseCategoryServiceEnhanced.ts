@@ -159,6 +159,12 @@ export abstract class BaseCategoryServiceEnhanced<TDetail> {
     return this.flattenResult(result.data);
   }
 
+  // Alias for get() to support both naming conventions
+  async getById(id: string): Promise<any | null> {
+    return this.get(id);
+  }
+
+
   async list(filters?: Record<string, any>): Promise<any[]> {
     const result = await withDatabaseErrorHandling(
       async () => {
