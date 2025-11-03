@@ -1,3 +1,4 @@
+import "fake-indexeddb/auto"; import { vi } from "vitest"; vi.useFakeTimers();
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { BarcodeCacheManager } from '../barcodeCache';
 
