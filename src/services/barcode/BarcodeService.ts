@@ -14,6 +14,20 @@ export interface BatchLookupResult {
   result: BarcodeLookupResult;
 }
 
+// Type definition for the singleton API
+export type BarcodeApi = {
+  isValidUPC: (code: string) => boolean;
+  isValidEAN: (code: string) => boolean;
+  detectBarcodeType: (code: string) => 'UPC' | 'EAN' | 'EAN-8' | 'ITF-14' | 'UNKNOWN';
+  resetApiCounter: () => void;
+  getApiCounter: () => number;
+  lookup: (barcode: string, forceRefresh?: boolean) => Promise<BarcodeLookupResult>;
+  batchLookup: (barcodes: string[]) => Promise<BatchLookupResult[]>;
+  getCacheStats: () => Promise<any>;
+  clearCache: () => Promise<void>;
+  getApiUsage: () => { callsToday: number; limit: number; remaining: number; percentUsed: number };
+};
+
 export class BarcodeService {
   private static instance: BarcodeService;
   private apiCallCount = 0;
@@ -248,11 +262,11 @@ export class BarcodeService {
   }
 }
 
-// Export singleton instance with full API
-export const barcodeService = {
+// Export singleton instance with full API conforming to BarcodeApi type
+export const barcodeService: BarcodeApi = {
   isValidUPC: (code: string) => BarcodeService.getInstance().isValidUPC(code),
   isValidEAN: (code: string) => BarcodeService.getInstance().isValidEAN(code),
-  detectBarcodeType: (code: string) => BarcodeService.getInstance().detectBarcodeType(code),
+  detectBarcodeType: (code: string) => BarcodeService.getInstance().detectBarcodeType(code) as 'UPC' | 'EAN' | 'EAN-8' | 'ITF-14' | 'UNKNOWN',
   resetApiCounter: () => BarcodeService.getInstance().resetApiCounter(),
   getApiCounter: () => BarcodeService.getInstance().getApiCounter(),
   lookup: (barcode: string, forceRefresh?: boolean) => BarcodeService.getInstance().lookup(barcode, forceRefresh),
@@ -263,3 +277,4 @@ export const barcodeService = {
 };
 
 export default barcodeService;
+
