@@ -6,8 +6,9 @@ export default defineConfig({
     globals: true,
     setupFiles: ['src/test/setup.ts'],
     include: [
-      'src/**/*.{test,spec}.ts?(x)',
-      'firearms-inventory-tracking-1 (4)/**/*.{test,spec}.ts?(x)'
+      '**/__tests__/**/*.{test,spec}.ts?(x)',
+      '**/*.{test,spec}.ts?(x)',
+      'firearms-inventory-tracking-1 \\(4\\)/**/*.{test,spec}.ts?(x)'
     ],
     exclude: [
       'node_modules/**',
