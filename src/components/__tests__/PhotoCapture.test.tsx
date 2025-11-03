@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor, act } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { PhotoCapture } from '../inventory/PhotoCapture';
 
 // Mock Supabase storage
@@ -63,17 +64,13 @@ describe('PhotoCapture', () => {
       );
     });
 
-    await waitFor(() => {
-      const closeButton = screen.queryByRole('button', { name: /close/i });
-      if (closeButton) {
-        act(() => {
-          closeButton.click();
-        });
-      }
-    }, { timeout: 1000 });
+    const closeButton = await screen.findByRole('button', { name: /close/i });
+    
+    await act(async () => {
+      await userEvent.click(closeButton);
+    });
 
-    expect(mockOnCapture).toBeDefined();
-    expect(mockOnClose).toBeDefined();
+    expect(mockOnClose).toHaveBeenCalled();
   });
 
   it('shows camera error message', async () => {

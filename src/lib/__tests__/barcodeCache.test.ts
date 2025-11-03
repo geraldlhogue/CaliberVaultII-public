@@ -1,86 +1,98 @@
-import "fake-indexeddb/auto"; import { vi } from "vitest"; vi.useFakeTimers();
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import 'fake-indexeddb/auto';
 import { BarcodeCacheManager } from '../barcodeCache';
-
-// Properly mock IndexedDB with immediate resolution
-const createMockIDBRequest = (result: any = null) => {
-  const request = {
-    result,
-    error: null,
-    onsuccess: null as any,
-    onerror: null as any,
-  };
-  // Immediately trigger success
-  setTimeout(() => request.onsuccess?.({ target: request }), 0);
-  return request;
-};
-
-const mockObjectStore = {
-  get: vi.fn((key) => createMockIDBRequest({ barcode: key, hitCount: 0, cachedAt: new Date().toISOString(), lastAccessed: new Date().toISOString() })),
-  put: vi.fn(() => createMockIDBRequest()),
-  delete: vi.fn(() => createMockIDBRequest()),
-  getAll: vi.fn(() => createMockIDBRequest([])),
-  clear: vi.fn(() => createMockIDBRequest()),
-  createIndex: vi.fn(),
-};
-
-const mockTransaction = {
-  objectStore: vi.fn(() => mockObjectStore),
-};
-
-const mockDB = {
-  transaction: vi.fn(() => mockTransaction),
-  objectStoreNames: { contains: vi.fn(() => false) },
-  createObjectStore: vi.fn(() => mockObjectStore),
-};
-
-global.indexedDB = {
-  open: vi.fn((name, version) => {
-    const request = createMockIDBRequest(mockDB);
-    setTimeout(() => request.onupgradeneeded?.({ target: request }), 0);
-    return request;
-  }),
-} as any;
 
 describe('BarcodeCacheManager', () => {
   let cacheManager: BarcodeCacheManager;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    vi.useFakeTimers();
     vi.clearAllMocks();
+    
+    // Clear IndexedDB between tests
+    const dbs = await indexedDB.databases();
+    for (const db of dbs) {
+      if (db.name) indexedDB.deleteDatabase(db.name);
+    }
     cacheManager = new BarcodeCacheManager();
-  
-  vi.runAllTimers();
-});
+  });
 
   afterEach(() => {
     vi.clearAllTimers();
-  
-  vi.runAllTimers();
-});
+    vi.useRealTimers();
+  });
 
-  it('initializes cache manager', () => {
+  it('initializes cache manager', async () => {
     expect(cacheManager).toBeDefined();
-  
-  vi.runAllTimers();
-});
+    await cacheManager.init();
+    vi.runAllTimers();
+  });
 
   it('caches barcode data', async () => {
     await cacheManager.init();
-    await cacheManager.set({ barcode: '123456', title: 'Test', cachedAt: new Date().toISOString(), hitCount: 0, lastAccessed: new Date().toISOString() 
-  vi.runAllTimers();
-});
-    expect(mockObjectStore.put).toHaveBeenCalled();
-  
-  vi.runAllTimers();
-});
+    vi.runAllTimers();
+    
+    const testData = {
+      barcode: '123456',
+      title: 'Test Product',
+      cachedAt: new Date().toISOString(),
+      hitCount: 0,
+      lastAccessed: new Date().toISOString()
+    };
+    
+    await cacheManager.set(testData);
+    vi.runAllTimers();
+    
+    const retrieved = await cacheManager.get('123456');
+    expect(retrieved).toBeDefined();
+    expect(retrieved?.title).toBe('Test Product');
+  });
 
   it('retrieves cached data', async () => {
     await cacheManager.init();
-    const data = await cacheManager.get('123456');
-    expect(mockObjectStore.get).toHaveBeenCalledWith('123456');
-  
-  vi.runAllTimers();
-});
+    vi.runAllTimers();
+    
+    const testData = {
+      barcode: '789012',
+      title: 'Another Product',
+      cachedAt: new Date().toISOString(),
+      hitCount: 0,
+      lastAccessed: new Date().toISOString()
+    };
+    
+    await cacheManager.set(testData);
+    vi.runAllTimers();
+    
+    const data = await cacheManager.get('789012');
+    expect(data).toBeDefined();
+    expect(data?.barcode).toBe('789012');
+  });
 
-  vi.runAllTimers();
+  it('returns null for non-existent barcode', async () => {
+    await cacheManager.init();
+    vi.runAllTimers();
+    
+    const data = await cacheManager.get('nonexistent');
+    expect(data).toBeNull();
+  });
+
+  it('clears all cache', async () => {
+    await cacheManager.init();
+    vi.runAllTimers();
+    
+    await cacheManager.set({
+      barcode: '111111',
+      title: 'Test',
+      cachedAt: new Date().toISOString(),
+      hitCount: 0,
+      lastAccessed: new Date().toISOString()
+    });
+    vi.runAllTimers();
+    
+    await cacheManager.clear();
+    vi.runAllTimers();
+    
+    const data = await cacheManager.get('111111');
+    expect(data).toBeNull();
+  });
 });

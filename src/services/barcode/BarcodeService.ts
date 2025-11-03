@@ -239,9 +239,27 @@ export class BarcodeService {
     };
   }
 
+  getApiCounter(): number {
+    return this.apiCallCount;
+  }
+
   resetApiCounter() {
     this.apiCallCount = 0;
   }
 }
 
-export const barcodeService = BarcodeService.getInstance();
+// Export singleton instance with full API
+export const barcodeService = {
+  isValidUPC: (code: string) => BarcodeService.getInstance().isValidUPC(code),
+  isValidEAN: (code: string) => BarcodeService.getInstance().isValidEAN(code),
+  detectBarcodeType: (code: string) => BarcodeService.getInstance().detectBarcodeType(code),
+  resetApiCounter: () => BarcodeService.getInstance().resetApiCounter(),
+  getApiCounter: () => BarcodeService.getInstance().getApiCounter(),
+  lookup: (barcode: string, forceRefresh?: boolean) => BarcodeService.getInstance().lookup(barcode, forceRefresh),
+  batchLookup: (barcodes: string[]) => BarcodeService.getInstance().batchLookup(barcodes),
+  getCacheStats: () => BarcodeService.getInstance().getCacheStats(),
+  clearCache: () => BarcodeService.getInstance().clearCache(),
+  getApiUsage: () => BarcodeService.getInstance().getApiUsage()
+};
+
+export default barcodeService;
