@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { PhotoCapture } from '../inventory/PhotoCapture';
 
 vi.mock('@/lib/supabase', () => ({
@@ -13,23 +13,33 @@ vi.mock('@/lib/supabase', () => ({
   }
 }));
 
+// Mock getUserMedia
+Object.defineProperty(global.navigator, 'mediaDevices', {
+  value: {
+    getUserMedia: vi.fn(() => Promise.reject(new Error('Camera not available in test')))
+  },
+  writable: true
+});
+
 describe('PhotoCapture', () => {
-  it('renders photo capture component', () => {
+  it('renders photo capture component', async () => {
     const { container } = render(
       <PhotoCapture 
-        onPhotoCapture={vi.fn()} 
+        onCapture={vi.fn()} 
+        onClose={vi.fn()}
       />
     );
-    expect(container).toBeTruthy();
+    await waitFor(() => expect(container).toBeTruthy());
   });
 
-  it('handles photo capture callback', () => {
-    const onPhotoCapture = vi.fn();
+  it('handles photo capture callback', async () => {
+    const onCapture = vi.fn();
     render(
       <PhotoCapture 
-        onPhotoCapture={onPhotoCapture} 
+        onCapture={onCapture} 
+        onClose={vi.fn()}
       />
     );
-    expect(onPhotoCapture).toBeDefined();
+    await waitFor(() => expect(onCapture).toBeDefined());
   });
 });
