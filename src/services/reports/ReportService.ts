@@ -125,5 +125,46 @@ export class ReportService {
 
     if (error) throw error;
     return data;
+    return data;
+  }
+
+
+  // Instance methods for tests
+  async generateSummaryReport(): Promise<any[]> {
+    const { data, error } = await supabase
+      .from('inventory_base')
+      .select('*');
+    
+    if (error) throw error;
+    return data || [];
+  }
+
+  async generateCategoryReport(): Promise<Record<string, any>> {
+    const { data, error } = await supabase
+      .from('inventory_base')
+      .select('category');
+    
+    if (error) throw error;
+    
+    const categoryCount: Record<string, number> = {};
+    data?.forEach(item => {
+      categoryCount[item.category] = (categoryCount[item.category] || 0) + 1;
+    });
+    
+    return categoryCount;
+  }
+
+  async generateValueReport(): Promise<{ total: number }> {
+    const { data, error } = await supabase
+      .from('inventory_base')
+      .select('purchase_price');
+    
+    if (error) throw error;
+    
+    const total = data?.reduce((sum, item) => sum + (item.purchase_price || 0), 0) || 0;
+    return { total };
   }
 }
+
+// Export singleton instance
+export const reportService = new ReportService();

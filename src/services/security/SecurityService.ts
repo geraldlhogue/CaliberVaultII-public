@@ -211,5 +211,34 @@ export class SecurityService {
     });
     if (error) throw error;
     return data;
+    return data;
+  }
+
+  // Instance methods for tests
+  async logSecurityEvent(event: Partial<SecurityEvent>): Promise<boolean> {
+    const { error } = await supabase
+      .from('security_events')
+      .insert([event]);
+    return !error;
+  }
+
+  async checkPermission(userId: string, permission: string): Promise<boolean> {
+    const { data, error } = await supabase
+      .from('user_permissions')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('permission', permission)
+      .single();
+    return !!data && !error;
+  }
+
+  async getSecurityEvents(): Promise<SecurityEvent[]> {
+    const { data, error } = await supabase
+      .from('security_events')
+      .select('*')
+      .order('created_at', { ascending: false });
+    return data || [];
   }
 }
+
+export const service = new SecurityService();

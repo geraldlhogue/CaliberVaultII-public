@@ -13,10 +13,11 @@ export interface UploadOptions {
 }
 
 class StorageService {
-  private async uploadFile(
+  async uploadFile(
     file: File,
     options: UploadOptions
   ): Promise<UploadResult> {
+
     const { bucket, folder, fileName, upsert = false } = options;
     
     // Get current user
@@ -92,6 +93,21 @@ class StorageService {
       throw error;
     }
   }
+
+  async listFiles(bucket: string, folder?: string): Promise<any[]> {
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .list(folder);
+
+    if (error) {
+      console.error(`[StorageService] List error:`, error);
+      throw error;
+    }
+
+    return data || [];
+  }
 }
 
 export const storageService = new StorageService();
+export default storageService;
+

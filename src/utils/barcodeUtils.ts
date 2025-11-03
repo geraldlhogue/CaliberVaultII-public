@@ -280,5 +280,75 @@ export function formatBarcode(code: string): string {
     return `${cleanCode.slice(0, 3)}-${cleanCode[3]}-${cleanCode.slice(4, 9)}-${cleanCode.slice(9, 13)}`;
   }
   
+  
+  return code;
+}
+
+
+/**
+ * Validate UPC barcode with check digit
+ */
+export function validateUPC(code: string): boolean {
+  const cleanCode = code.replace(/[\s-]/g, '');
+  if (!/^\d{12}$/.test(cleanCode)) return false;
+  
+  const checkDigit = parseInt(cleanCode[11]);
+  const calculated = calculateCheckDigit(cleanCode.slice(0, 11));
+  return checkDigit === calculated;
+}
+
+/**
+ * Validate EAN barcode with check digit
+ */
+export function validateEAN(code: string): boolean {
+  const cleanCode = code.replace(/[\s-]/g, '');
+  if (!/^\d{13}$/.test(cleanCode)) return false;
+  
+  const checkDigit = parseInt(cleanCode[12]);
+  const calculated = calculateCheckDigit(cleanCode.slice(0, 12));
+  return checkDigit === calculated;
+}
+
+/**
+ * Calculate check digit for UPC/EAN
+ */
+export function calculateCheckDigit(code: string): number {
+  const digits = code.split('').map(Number);
+  let sum = 0;
+  
+  for (let i = 0; i < digits.length; i++) {
+    sum += digits[i] * (i % 2 === 0 ? 3 : 1);
+  }
+  
+  const remainder = sum % 10;
+  return remainder === 0 ? 0 : 10 - remainder;
+}
+
+/**
+ * Generate check digit (alias for calculateCheckDigit)
+ */
+export function generateCheckDigit(code: string): number {
+  return calculateCheckDigit(code);
+}
+
+/**
+ * Format UPC barcode
+ */
+export function formatUPC(code: string): string {
+  const cleanCode = code.replace(/[\s-]/g, '');
+  if (cleanCode.length === 12) {
+    return `${cleanCode[0]}-${cleanCode.slice(1, 6)}-${cleanCode.slice(6, 11)}-${cleanCode[11]}`;
+  }
+  return code;
+}
+
+/**
+ * Format EAN barcode
+ */
+export function formatEAN(code: string): string {
+  const cleanCode = code.replace(/[\s-]/g, '');
+  if (cleanCode.length === 13) {
+    return `${cleanCode.slice(0, 3)}-${cleanCode[3]}-${cleanCode.slice(4, 9)}-${cleanCode.slice(9, 13)}`;
+  }
   return code;
 }
