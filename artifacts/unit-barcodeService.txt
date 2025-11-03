@@ -11,17 +11,9 @@
    → barcodeService.resetApiCounter is not a function
  × src/services/__tests__/barcode.service.test.ts > BarcodeService > should reset API counter
    → barcodeService.resetApiCounter is not a function
- × firearms-inventory-tracking-1 (4)/src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate UPC format
-   → barcodeService.isValidUPC is not a function
- × firearms-inventory-tracking-1 (4)/src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate EAN format
-   → barcodeService.isValidEAN is not a function
- × firearms-inventory-tracking-1 (4)/src/services/__tests__/barcode.service.test.ts > BarcodeService > should detect barcode type
-   → barcodeService.detectBarcodeType is not a function
- ✓ firearms-inventory-tracking-1 (4)/src/services/__tests__/barcode.service.test.ts > BarcodeService > should track API usage
- ✓ firearms-inventory-tracking-1 (4)/src/services/__tests__/barcode.service.test.ts > BarcodeService > should reset API counter
 
- Test Files  2 failed (2)
-      Tests  8 failed | 2 passed (10)
-   Start at  06:57:26
-   Duration  1.61s (transform 48ms, setup 338ms, collect 18ms, tests 8ms, environment 889ms, prepare 127ms)
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  08:00:31
+   Duration  764ms (transform 35ms, setup 175ms, collect 5ms, tests 4ms, environment 374ms, prepare 71ms)
 

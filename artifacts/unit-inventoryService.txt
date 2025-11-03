@@ -3,11 +3,9 @@
 
  ✓ src/services/__tests__/inventory.service.test.ts > InventoryService > should save firearm item
  ✓ src/services/__tests__/inventory.service.test.ts > InventoryService > should handle lowercase category names
- ✓ firearms-inventory-tracking-1 (4)/src/services/__tests__/inventory.service.test.ts > InventoryService > should save firearm item
- ✓ firearms-inventory-tracking-1 (4)/src/services/__tests__/inventory.service.test.ts > InventoryService > should handle lowercase category names
 
- Test Files  2 passed (2)
-      Tests  4 passed (4)
-   Start at  06:40:56
-   Duration  1.21s (transform 54ms, setup 291ms, collect 24ms, tests 4ms, environment 602ms, prepare 106ms)
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  08:02:46
+   Duration  758ms (transform 39ms, setup 155ms, collect 14ms, tests 2ms, environment 382ms, prepare 64ms)
 
