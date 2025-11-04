@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { barcodeService } from '../barcode/BarcodeService';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
+// Mock dependencies BEFORE importing the service
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     functions: {
@@ -27,41 +27,53 @@ vi.mock('@/lib/barcodeCache', () => ({
   BarcodeData: {}
 }));
 
+// Import service AFTER mocks
+import { barcodeService, BarcodeService } from '../barcode/BarcodeService';
+
 describe('BarcodeService', () => {
+  let service: BarcodeService;
+
   beforeEach(() => {
     vi.clearAllMocks();
-    barcodeService.resetApiCounter();
+    // Create fresh instance for each test
+    service = new BarcodeService();
+    service.resetApiCounter();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   it('should validate UPC format', () => {
-    expect(barcodeService.isValidUPC('012345678905')).toBe(true);
-    expect(barcodeService.isValidUPC('invalid')).toBe(false);
-    expect(barcodeService.isValidUPC('123')).toBe(false);
+    expect(service.isValidUPC('012345678905')).toBe(true);
+    expect(service.isValidUPC('0123456789012')).toBe(true);
+    expect(service.isValidUPC('invalid')).toBe(false);
+    expect(service.isValidUPC('123')).toBe(false);
   });
 
   it('should validate EAN format', () => {
-    expect(barcodeService.isValidEAN('5901234123457')).toBe(true);
-    expect(barcodeService.isValidEAN('123')).toBe(false);
-    expect(barcodeService.isValidEAN('12345678')).toBe(false);
+    expect(service.isValidEAN('5901234123457')).toBe(true);
+    expect(service.isValidEAN('123')).toBe(false);
+    expect(service.isValidEAN('12345678')).toBe(false);
   });
 
   it('should detect barcode type', () => {
-    expect(barcodeService.detectBarcodeType('012345678905')).toBe('UPC');
-    expect(barcodeService.detectBarcodeType('5901234123457')).toBe('EAN');
-    expect(barcodeService.detectBarcodeType('12345678')).toBe('EAN-8');
-    expect(barcodeService.detectBarcodeType('invalid')).toBe('UNKNOWN');
+    expect(service.detectBarcodeType('012345678905')).toBe('UPC');
+    expect(service.detectBarcodeType('5901234123457')).toBe('EAN');
+    expect(service.detectBarcodeType('12345678')).toBe('EAN-8');
+    expect(service.detectBarcodeType('invalid')).toBe('UNKNOWN');
   });
 
   it('should track API usage', () => {
-    const usage = barcodeService.getApiUsage();
+    const usage = service.getApiUsage();
     expect(usage.callsToday).toBe(0);
     expect(usage.limit).toBe(90);
     expect(usage.remaining).toBe(90);
   });
 
   it('should reset API counter', () => {
-    barcodeService.resetApiCounter();
-    const usage = barcodeService.getApiUsage();
+    service.resetApiCounter();
+    const usage = service.getApiUsage();
     expect(usage.callsToday).toBe(0);
   });
 });

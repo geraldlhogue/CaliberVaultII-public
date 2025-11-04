@@ -6,21 +6,30 @@ describe('BarcodeCacheManager', () => {
   let cacheManager: BarcodeCacheManager;
 
   beforeEach(async () => {
-    // Clear IndexedDB between tests
-    const dbs = await indexedDB.databases();
-    for (const db of dbs) {
-      if (db.name) indexedDB.deleteDatabase(db.name);
+    // Delete the specific database we use
+    try {
+      indexedDB.deleteDatabase('BarcodeCacheDB');
+    } catch (e) {
+      // Ignore errors
     }
+    
+    // Small delay to ensure deletion completes
+    await new Promise(resolve => setTimeout(resolve, 10));
     
     cacheManager = new BarcodeCacheManager();
     await cacheManager.init();
   });
 
   afterEach(async () => {
-    // Ensure cleanup
-    if (cacheManager) {
-      await cacheManager.clear().catch(() => {});
+    // Clear and cleanup
+    try {
+      await cacheManager.clear();
+    } catch (e) {
+      // Ignore errors
     }
+    
+    // Small delay for cleanup
+    await new Promise(resolve => setTimeout(resolve, 10));
   });
 
   it('initializes cache manager', () => {
