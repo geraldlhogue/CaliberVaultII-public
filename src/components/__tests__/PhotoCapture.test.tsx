@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup, act } from '@testing-library/react';
+import { render, screen, cleanup, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PhotoCapture } from '../inventory/PhotoCapture';
 
@@ -86,15 +86,14 @@ describe('PhotoCapture', () => {
       render(<PhotoCapture onCapture={mockOnCapture} onClose={mockOnClose} />);
     });
 
-    await act(async () => {
-      await vi.waitFor(() => {
-        expect(mockGetUserMedia).toHaveBeenCalledWith(
-          expect.objectContaining({
-            video: expect.any(Object),
-            audio: false
-          })
-        );
-      }, { timeout: 1000 });
-    });
+    await waitFor(() => {
+      expect(mockGetUserMedia).toHaveBeenCalledWith(
+        expect.objectContaining({
+          video: expect.any(Object),
+          audio: false
+        })
+      );
+    }, { timeout: 1000 });
   });
 });
+

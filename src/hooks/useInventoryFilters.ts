@@ -87,9 +87,10 @@ export function useInventoryFilters({
   }, [inventory]);
 
   const maxPrice = useMemo(() => {
-    if (!inventory || !Array.isArray(inventory) || inventory.length === 0) return 10000;
-    return Math.max(...inventory.map(i => i.purchasePrice), 10000);
+    if (!inventory || !Array.isArray(inventory) || inventory.length === 0) return 0;
+    return Math.max(...inventory.map(i => i.purchasePrice || 0));
   }, [inventory]);
+
 
   // Calculate active filter count
   const activeFilterCount = useMemo(() => {
