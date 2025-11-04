@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import 'fake-indexeddb/auto';
 import { BarcodeCacheManager } from '../barcodeCache';
 
@@ -6,9 +6,6 @@ describe('BarcodeCacheManager', () => {
   let cacheManager: BarcodeCacheManager;
 
   beforeEach(async () => {
-    vi.useFakeTimers();
-    vi.clearAllMocks();
-    
     // Clear IndexedDB between tests
     const dbs = await indexedDB.databases();
     for (const db of dbs) {
@@ -17,18 +14,16 @@ describe('BarcodeCacheManager', () => {
     
     cacheManager = new BarcodeCacheManager();
     await cacheManager.init();
-    
-    // Flush any pending timers from init
-    await vi.runAllTimersAsync();
   });
 
   afterEach(async () => {
-    await vi.runAllTimersAsync();
-    vi.clearAllTimers();
-    vi.useRealTimers();
+    // Ensure cleanup
+    if (cacheManager) {
+      await cacheManager.clear().catch(() => {});
+    }
   });
 
-  it('initializes cache manager', async () => {
+  it('initializes cache manager', () => {
     expect(cacheManager).toBeDefined();
   });
 
@@ -42,10 +37,7 @@ describe('BarcodeCacheManager', () => {
     };
     
     await cacheManager.set(testData);
-    await vi.runAllTimersAsync();
-    
     const retrieved = await cacheManager.get('123456');
-    await vi.runAllTimersAsync();
     
     expect(retrieved).toBeDefined();
     expect(retrieved?.title).toBe('Test Product');
@@ -61,10 +53,7 @@ describe('BarcodeCacheManager', () => {
     };
     
     await cacheManager.set(testData);
-    await vi.runAllTimersAsync();
-    
     const data = await cacheManager.get('789012');
-    await vi.runAllTimersAsync();
     
     expect(data).toBeDefined();
     expect(data?.barcode).toBe('789012');
@@ -72,8 +61,6 @@ describe('BarcodeCacheManager', () => {
 
   it('returns null for non-existent barcode', async () => {
     const data = await cacheManager.get('nonexistent');
-    await vi.runAllTimersAsync();
-    
     expect(data).toBeNull();
   });
 
@@ -85,13 +72,9 @@ describe('BarcodeCacheManager', () => {
       hitCount: 0,
       lastAccessed: new Date().toISOString()
     });
-    await vi.runAllTimersAsync();
     
     await cacheManager.clear();
-    await vi.runAllTimersAsync();
-    
     const data = await cacheManager.get('111111');
-    await vi.runAllTimersAsync();
     
     expect(data).toBeNull();
   });

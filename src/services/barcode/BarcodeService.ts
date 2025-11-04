@@ -14,28 +14,23 @@ export interface BatchLookupResult {
   result: BarcodeLookupResult;
 }
 
-// Core API type for mocking - only 5 essential methods
-export type BarcodeApi = {
+// Core API interface
+export interface BarcodeApi {
   isValidUPC(s: string): boolean;
   isValidEAN(s: string): boolean;
   detectBarcodeType(s: string): 'UPC' | 'EAN' | 'EAN-8' | 'UNKNOWN';
   resetApiCounter(): void;
   getApiCounter(): number;
-};
+  lookup(barcode: string, forceRefresh?: boolean): Promise<BarcodeLookupResult>;
+  batchLookup(barcodes: string[]): Promise<BatchLookupResult[]>;
+  getCacheStats(): Promise<any>;
+  clearCache(): Promise<void>;
+  getApiUsage(): any;
+}
 
 export class BarcodeService implements BarcodeApi {
-  private static instance: BarcodeService;
   private apiCallCount = 0;
   private readonly MAX_API_CALLS_PER_DAY = 90;
-
-  private constructor() {}
-
-  static getInstance(): BarcodeService {
-    if (!BarcodeService.instance) {
-      BarcodeService.instance = new BarcodeService();
-    }
-    return BarcodeService.instance;
-  }
 
   isValidUPC(barcode: string): boolean {
     if (!barcode) return false;
@@ -69,9 +64,7 @@ export class BarcodeService implements BarcodeApi {
   async lookup(barcode: string, forceRefresh = false): Promise<BarcodeLookupResult> {
     if (!forceRefresh) {
       const cached = await barcodeCache.get(barcode);
-      if (cached) {
-        return { success: true, data: cached, source: 'cache' };
-      }
+      if (cached) return { success: true, data: cached, source: 'cache' };
     }
 
     if (this.apiCallCount >= this.MAX_API_CALLS_PER_DAY) {
@@ -131,6 +124,6 @@ export class BarcodeService implements BarcodeApi {
   }
 }
 
-// Export singleton with all methods
-export const barcodeService = BarcodeService.getInstance();
+// Export singleton instance
+export const barcodeService = new BarcodeService();
 export default barcodeService;
