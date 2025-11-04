@@ -1,0 +1,10 @@
+
+ RUN  v2.1.9 /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVaultII
+
+ ✓ src/__tests__/smoke.test.ts > smoke > runs
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  16:52:17
+   Duration  990ms (transform 29ms, setup 205ms, collect 4ms, tests 1ms, environment 446ms, prepare 64ms)
+
