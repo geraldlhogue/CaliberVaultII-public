@@ -1,27 +1,41 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { inventoryService } from '../inventory.service';
 
-// Mock Supabase
+// Create comprehensive mock chain
+const createMockChain = (data: any = null, error: any = null) => {
+  const chain: any = {
+    select: vi.fn(() => chain),
+    eq: vi.fn(() => chain),
+    ilike: vi.fn(() => chain),
+    single: vi.fn(() => Promise.resolve({ data, error })),
+    insert: vi.fn(() => chain),
+    update: vi.fn(() => chain),
+    order: vi.fn(() => Promise.resolve({ data, error }))
+  };
+  return chain;
+};
+
+// Mock Supabase with complete chain
 vi.mock('@/lib/supabase', () => ({
   supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({ data: { id: 'cat123', name: 'firearms' }, error: null }))
-        })),
-        ilike: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({ data: { id: 'mfg123', name: 'Test Mfg' }, error: null }))
-        }))
-      })),
-      insert: vi.fn(() => ({
-        select: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({ data: { id: 'inv123' }, error: null }))
-        }))
-      })),
-      update: vi.fn(() => ({
-        eq: vi.fn(() => Promise.resolve({ error: null }))
-      }))
-    }))
+    from: vi.fn((table: string) => {
+      if (table === 'categories') {
+        return createMockChain({ id: 'cat123', name: 'firearms' });
+      }
+      if (table === 'manufacturers') {
+        return createMockChain({ id: 'mfg123', name: 'Test Mfg' });
+      }
+      if (table === 'inventory_base') {
+        return createMockChain({ id: 'inv123' });
+      }
+      if (table === 'valuation_history') {
+        return createMockChain([
+          { id: 'val1', estimated_value: 1500, created_at: '2024-01-01' },
+          { id: 'val2', estimated_value: 1600, created_at: '2024-02-01' }
+        ]);
+      }
+      return createMockChain();
+    })
   }
 }));
 
@@ -74,15 +88,8 @@ describe('InventoryService - Enhanced Tests', () => {
         name: 'Test Item'
       };
 
-      // Mock category lookup to return null
       const { supabase } = await import('@/lib/supabase');
-      vi.mocked(supabase.from).mockReturnValue({
-        select: vi.fn(() => ({
-          ilike: vi.fn(() => ({
-            single: vi.fn(() => Promise.resolve({ data: null, error: null }))
-          }))
-        }))
-      } as any);
+      vi.mocked(supabase.from).mockReturnValue(createMockChain(null, null));
 
       await expect(inventoryService.saveItem(item, 'user123')).rejects.toThrow();
     });
@@ -96,13 +103,7 @@ describe('InventoryService - Enhanced Tests', () => {
       ];
 
       const { supabase } = await import('@/lib/supabase');
-      vi.mocked(supabase.from).mockReturnValue({
-        select: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            eq: vi.fn(() => Promise.resolve({ data: mockItems, error: null }))
-          }))
-        }))
-      } as any);
+      vi.mocked(supabase.from).mockReturnValue(createMockChain(mockItems));
 
       const result = await inventoryService.getItems('user123');
       expect(result).toEqual(mockItems);
@@ -110,13 +111,7 @@ describe('InventoryService - Enhanced Tests', () => {
 
     it('returns empty array when no items found', async () => {
       const { supabase } = await import('@/lib/supabase');
-      vi.mocked(supabase.from).mockReturnValue({
-        select: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            eq: vi.fn(() => Promise.resolve({ data: [], error: null }))
-          }))
-        }))
-      } as any);
+      vi.mocked(supabase.from).mockReturnValue(createMockChain([]));
 
       const result = await inventoryService.getItems('user123');
       expect(result).toEqual([]);
@@ -140,16 +135,9 @@ describe('InventoryService - Enhanced Tests', () => {
   describe('valuation methods', () => {
     it('saves valuation successfully', async () => {
       const { supabase } = await import('@/lib/supabase');
-      vi.mocked(supabase.from).mockReturnValue({
-        insert: vi.fn(() => ({
-          select: vi.fn(() => ({
-            single: vi.fn(() => Promise.resolve({ 
-              data: { id: 'val123', estimated_value: 1500 }, 
-              error: null 
-            }))
-          }))
-        }))
-      } as any);
+      vi.mocked(supabase.from).mockReturnValue(
+        createMockChain({ id: 'val123', estimated_value: 1500 })
+      );
 
       const result = await inventoryService.saveValuation('inv123', 'user123', 1500, 'high', 'Test notes');
       expect(result).toBeDefined();
@@ -163,13 +151,7 @@ describe('InventoryService - Enhanced Tests', () => {
       ];
 
       const { supabase } = await import('@/lib/supabase');
-      vi.mocked(supabase.from).mockReturnValue({
-        select: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            order: vi.fn(() => Promise.resolve({ data: mockHistory, error: null }))
-          }))
-        }))
-      } as any);
+      vi.mocked(supabase.from).mockReturnValue(createMockChain(mockHistory));
 
       const result = await inventoryService.getValuationHistory('inv123');
       expect(result).toEqual(mockHistory);

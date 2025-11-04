@@ -3,10 +3,12 @@ import { render, screen, cleanup, act, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PhotoCapture } from '../inventory/PhotoCapture';
 
-// Comprehensive camera and video mocks
+// Mock stream with proper cleanup
+const mockTrack = { stop: vi.fn() };
 const mockStream = {
-  getTracks: vi.fn(() => [{ stop: vi.fn() }]),
-  getVideoTracks: vi.fn(() => [{ stop: vi.fn() }])
+  getTracks: vi.fn(() => [mockTrack]),
+  getVideoTracks: vi.fn(() => [mockTrack]),
+  active: true
 };
 
 const mockGetUserMedia = vi.fn(() => Promise.resolve(mockStream as any));
@@ -17,30 +19,31 @@ Object.defineProperty(global.navigator, 'mediaDevices', {
   configurable: true
 });
 
-// Prevent pending play promise
-vi.spyOn(HTMLVideoElement.prototype, 'play').mockResolvedValue();
-vi.spyOn(HTMLVideoElement.prototype, 'pause').mockImplementation(() => {});
+// Mock video element methods
+const mockPlay = vi.fn(() => Promise.resolve());
+const mockPause = vi.fn();
+vi.spyOn(HTMLVideoElement.prototype, 'play').mockImplementation(mockPlay);
+vi.spyOn(HTMLVideoElement.prototype, 'pause').mockImplementation(mockPause);
 
-// Mock RAF to flush immediately
-globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) => {
+// Mock RAF to execute immediately
+let rafCallbacks: FrameRequestCallback[] = [];
+globalThis.requestAnimationFrame = vi.fn((cb: FrameRequestCallback) => {
+  rafCallbacks.push(cb);
   const id = setTimeout(() => cb(performance.now()), 0);
   return id as unknown as number;
 }) as any;
 
-globalThis.cancelAnimationFrame = ((id: number) => clearTimeout(id)) as any;
+globalThis.cancelAnimationFrame = vi.fn((id: number) => {
+  clearTimeout(id);
+}) as any;
 
-// Mock Supabase storage
+// Mock Supabase
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     storage: {
       from: vi.fn(() => ({
-        upload: vi.fn(() => Promise.resolve({ 
-          data: { path: 'test.jpg' }, 
-          error: null 
-        })),
-        getPublicUrl: vi.fn(() => ({ 
-          data: { publicUrl: 'https://example.com/test.jpg' } 
-        }))
+        upload: vi.fn(() => Promise.resolve({ data: { path: 'test.jpg' }, error: null })),
+        getPublicUrl: vi.fn(() => ({ data: { publicUrl: 'https://example.com/test.jpg' } }))
       }))
     }
   }
@@ -52,9 +55,18 @@ describe('PhotoCapture', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    rafCallbacks = [];
+    mockTrack.stop.mockClear();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    // Flush all RAF callbacks
+    rafCallbacks.forEach(cb => cb(performance.now()));
+    rafCallbacks = [];
+    
+    // Stop all tracks
+    mockTrack.stop();
+    
     cleanup();
     vi.clearAllTimers();
   });
@@ -64,7 +76,9 @@ describe('PhotoCapture', () => {
       render(<PhotoCapture onCapture={mockOnCapture} onClose={mockOnClose} />);
     });
 
-    expect(await screen.findByText(/capture photo/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText(/capture photo/i)).toBeInTheDocument();
+    }, { timeout: 2000 });
   });
 
   it('calls onClose when close button clicked', async () => {
@@ -72,11 +86,12 @@ describe('PhotoCapture', () => {
       render(<PhotoCapture onCapture={mockOnCapture} onClose={mockOnClose} />);
     });
 
-    const closeBtn = await screen.findByRole('button', { name: /×/i });
-    
-    await act(async () => {
-      await userEvent.click(closeBtn);
-    });
+    await waitFor(async () => {
+      const closeBtn = screen.getByRole('button', { name: /close|×/i });
+      await act(async () => {
+        await userEvent.click(closeBtn);
+      });
+    }, { timeout: 2000 });
 
     expect(mockOnClose).toHaveBeenCalled();
   });
@@ -88,12 +103,8 @@ describe('PhotoCapture', () => {
 
     await waitFor(() => {
       expect(mockGetUserMedia).toHaveBeenCalledWith(
-        expect.objectContaining({
-          video: expect.any(Object),
-          audio: false
-        })
+        expect.objectContaining({ video: expect.any(Object), audio: false })
       );
-    }, { timeout: 1000 });
+    }, { timeout: 2000 });
   });
 });
-

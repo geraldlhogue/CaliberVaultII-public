@@ -14,24 +14,25 @@ describe('BarcodeCacheManager', () => {
     for (const db of dbs) {
       if (db.name) indexedDB.deleteDatabase(db.name);
     }
+    
     cacheManager = new BarcodeCacheManager();
+    await cacheManager.init();
+    
+    // Flush any pending timers from init
+    await vi.runAllTimersAsync();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    await vi.runAllTimersAsync();
     vi.clearAllTimers();
     vi.useRealTimers();
   });
 
   it('initializes cache manager', async () => {
     expect(cacheManager).toBeDefined();
-    await cacheManager.init();
-    vi.runAllTimers();
   });
 
   it('caches barcode data', async () => {
-    await cacheManager.init();
-    vi.runAllTimers();
-    
     const testData = {
       barcode: '123456',
       title: 'Test Product',
@@ -41,17 +42,16 @@ describe('BarcodeCacheManager', () => {
     };
     
     await cacheManager.set(testData);
-    vi.runAllTimers();
+    await vi.runAllTimersAsync();
     
     const retrieved = await cacheManager.get('123456');
+    await vi.runAllTimersAsync();
+    
     expect(retrieved).toBeDefined();
     expect(retrieved?.title).toBe('Test Product');
   });
 
   it('retrieves cached data', async () => {
-    await cacheManager.init();
-    vi.runAllTimers();
-    
     const testData = {
       barcode: '789012',
       title: 'Another Product',
@@ -61,25 +61,23 @@ describe('BarcodeCacheManager', () => {
     };
     
     await cacheManager.set(testData);
-    vi.runAllTimers();
+    await vi.runAllTimersAsync();
     
     const data = await cacheManager.get('789012');
+    await vi.runAllTimersAsync();
+    
     expect(data).toBeDefined();
     expect(data?.barcode).toBe('789012');
   });
 
   it('returns null for non-existent barcode', async () => {
-    await cacheManager.init();
-    vi.runAllTimers();
-    
     const data = await cacheManager.get('nonexistent');
+    await vi.runAllTimersAsync();
+    
     expect(data).toBeNull();
   });
 
   it('clears all cache', async () => {
-    await cacheManager.init();
-    vi.runAllTimers();
-    
     await cacheManager.set({
       barcode: '111111',
       title: 'Test',
@@ -87,12 +85,14 @@ describe('BarcodeCacheManager', () => {
       hitCount: 0,
       lastAccessed: new Date().toISOString()
     });
-    vi.runAllTimers();
+    await vi.runAllTimersAsync();
     
     await cacheManager.clear();
-    vi.runAllTimers();
+    await vi.runAllTimersAsync();
     
     const data = await cacheManager.get('111111');
+    await vi.runAllTimersAsync();
+    
     expect(data).toBeNull();
   });
 });
