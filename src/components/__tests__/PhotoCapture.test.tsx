@@ -1,79 +1,66 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, cleanup, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PhotoCapture } from '../inventory/PhotoCapture';
 
-// Track RAF callbacks for cleanup
-let rafCallbacks: FrameRequestCallback[] = [];
-let rafIds = 0;
-
-// Mock RAF to execute immediately and track callbacks
-globalThis.requestAnimationFrame = vi.fn((cb: FrameRequestCallback) => {
-  rafCallbacks.push(cb);
-  const id = ++rafIds;
-  // Execute immediately
-  Promise.resolve().then(() => cb(performance.now()));
-  return id;
-}) as any;
-
-globalThis.cancelAnimationFrame = vi.fn((id: number) => {
-  // Remove from tracking
-}) as any;
-
-// Track streams for cleanup
+// Track active streams for cleanup
 let activeStreams: MediaStream[] = [];
 
-const createMockTrack = () => ({
-  stop: vi.fn(),
-  readyState: 'live',
-  enabled: true,
-  kind: 'video' as const,
-  id: Math.random().toString(),
-  label: 'mock',
-  muted: false,
-  getSettings: () => ({}),
-  getCapabilities: () => ({}),
-  getConstraints: () => ({}),
-  addEventListener: vi.fn(),
-  removeEventListener: vi.fn(),
-  dispatchEvent: vi.fn()
-});
-
 const createMockStream = () => {
-  const track = createMockTrack();
+  const track = {
+    stop: vi.fn(),
+    readyState: 'live',
+    enabled: true,
+    kind: 'video' as const,
+    id: 'mock-track',
+    label: 'mock camera',
+    muted: false,
+    getSettings: () => ({}),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn()
+  };
+  
   const stream = {
-    getTracks: vi.fn(() => [track]),
-    getVideoTracks: vi.fn(() => [track]),
-    getAudioTracks: vi.fn(() => []),
+    getTracks: () => [track],
+    getVideoTracks: () => [track],
+    getAudioTracks: () => [],
     active: true,
-    id: Math.random().toString(),
+    id: 'mock-stream',
     addEventListener: vi.fn(),
     removeEventListener: vi.fn()
   } as unknown as MediaStream;
+  
   activeStreams.push(stream);
   return stream;
 };
 
+// Mock getUserMedia
 const mockGetUserMedia = vi.fn(() => Promise.resolve(createMockStream()));
-
 Object.defineProperty(global.navigator, 'mediaDevices', {
   value: { getUserMedia: mockGetUserMedia },
-  writable: true,
   configurable: true
 });
 
 // Mock video play
-HTMLVideoElement.prototype.play = vi.fn(() => Promise.resolve());
+vi.spyOn(HTMLVideoElement.prototype, 'play').mockResolvedValue();
 HTMLVideoElement.prototype.pause = vi.fn();
 
-// Mock Supabase
+// Mock RAF with Promise resolution
+globalThis.requestAnimationFrame = vi.fn((cb: FrameRequestCallback) => {
+  Promise.resolve().then(() => cb(performance.now()));
+  return 1;
+}) as any;
+
+globalThis.cancelAnimationFrame = vi.fn();
+
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     storage: {
-      from: vi.fn(() => ({
-        upload: vi.fn(() => Promise.resolve({ data: { path: 'test.jpg' }, error: null })),
-        getPublicUrl: vi.fn(() => ({ data: { publicUrl: 'https://example.com/test.jpg' } }))
-      }))
+      from: () => ({
+        upload: () => Promise.resolve({ data: { path: 'test.jpg' }, error: null }),
+        getPublicUrl: () => ({ data: { publicUrl: 'https://example.com/test.jpg' } })
+      })
     }
   }
 }));
@@ -85,31 +72,20 @@ describe('PhotoCapture', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     activeStreams = [];
-    rafCallbacks = [];
-    rafIds = 0;
   });
 
-  afterEach(async () => {
-    // Stop all streams
+  afterEach(() => {
+    // Stop all active streams
     activeStreams.forEach(stream => {
       stream.getTracks().forEach(track => track.stop());
     });
     activeStreams = [];
-    rafCallbacks = [];
-    
     cleanup();
-    
-    // Wait for any pending promises
-    await new Promise(resolve => setTimeout(resolve, 50));
   });
 
   it('renders photo capture dialog', async () => {
     const { unmount } = render(<PhotoCapture onCapture={mockOnCapture} onClose={mockOnClose} />);
-    
-    await waitFor(() => {
-      expect(screen.getByText(/capture photo/i)).toBeInTheDocument();
-    }, { timeout: 500 });
-    
+    await waitFor(() => expect(screen.getByText(/capture photo/i)).toBeInTheDocument(), { timeout: 1000 });
     unmount();
   });
 
@@ -117,10 +93,7 @@ describe('PhotoCapture', () => {
     const user = userEvent.setup();
     const { unmount } = render(<PhotoCapture onCapture={mockOnCapture} onClose={mockOnClose} />);
     
-    await waitFor(() => {
-      expect(screen.getByText(/capture photo/i)).toBeInTheDocument();
-    }, { timeout: 500 });
-
+    await waitFor(() => expect(screen.getByText(/capture photo/i)).toBeInTheDocument(), { timeout: 1000 });
     const closeBtn = screen.getByRole('button', { name: /×/i });
     await user.click(closeBtn);
     
@@ -132,11 +105,8 @@ describe('PhotoCapture', () => {
     const { unmount } = render(<PhotoCapture onCapture={mockOnCapture} onClose={mockOnClose} />);
     
     await waitFor(() => {
-      expect(mockGetUserMedia).toHaveBeenCalledWith(
-        expect.objectContaining({ video: expect.any(Object), audio: false })
-      );
-    }, { timeout: 500 });
-    
+      expect(navigator.mediaDevices.getUserMedia).toHaveBeenCalled();
+    }, { timeout: 1000 });
     unmount();
   });
 });

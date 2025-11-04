@@ -1,6 +1,6 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock dependencies BEFORE importing the service
+// Mock external dependencies BEFORE imports
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     functions: {
@@ -27,21 +27,24 @@ vi.mock('@/lib/barcodeCache', () => ({
   BarcodeData: {}
 }));
 
-// Import service AFTER mocks
-import { barcodeService, BarcodeService } from '../barcode/BarcodeService';
+// Import actual BarcodeService after mocks
+vi.mock('@/services/barcode/BarcodeService', async (importOriginal) => {
+  const actual = await importOriginal() as any;
+  return {
+    ...actual,
+    BarcodeService: actual.BarcodeService,
+    barcodeService: new actual.BarcodeService()
+  };
+});
+
+import { BarcodeService } from '../barcode/BarcodeService';
 
 describe('BarcodeService', () => {
   let service: BarcodeService;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // Create fresh instance for each test
     service = new BarcodeService();
-    service.resetApiCounter();
-  });
-
-  afterEach(() => {
-    vi.clearAllMocks();
   });
 
   it('should validate UPC format', () => {

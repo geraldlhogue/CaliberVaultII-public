@@ -6,30 +6,32 @@ describe('BarcodeCacheManager', () => {
   let cacheManager: BarcodeCacheManager;
 
   beforeEach(async () => {
-    // Delete the specific database we use
-    try {
-      indexedDB.deleteDatabase('BarcodeCacheDB');
-    } catch (e) {
-      // Ignore errors
-    }
+    // Delete existing database
+    const deleteRequest = indexedDB.deleteDatabase('BarcodeCacheDB');
+    await new Promise<void>((resolve, reject) => {
+      deleteRequest.onsuccess = () => resolve();
+      deleteRequest.onerror = () => resolve(); // Continue even if delete fails
+      deleteRequest.onblocked = () => resolve();
+    });
     
-    // Small delay to ensure deletion completes
-    await new Promise(resolve => setTimeout(resolve, 10));
+    // Wait for deletion to complete
+    await new Promise(resolve => setTimeout(resolve, 100));
     
+    // Create new instance and initialize
     cacheManager = new BarcodeCacheManager();
     await cacheManager.init();
+    
+    // Wait for initialization to complete
+    await new Promise(resolve => setTimeout(resolve, 50));
   });
 
   afterEach(async () => {
-    // Clear and cleanup
     try {
       await cacheManager.clear();
     } catch (e) {
-      // Ignore errors
+      // Ignore cleanup errors
     }
-    
-    // Small delay for cleanup
-    await new Promise(resolve => setTimeout(resolve, 10));
+    await new Promise(resolve => setTimeout(resolve, 100));
   });
 
   it('initializes cache manager', () => {
@@ -46,6 +48,8 @@ describe('BarcodeCacheManager', () => {
     };
     
     await cacheManager.set(testData);
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
     const retrieved = await cacheManager.get('123456');
     
     expect(retrieved).toBeDefined();
@@ -62,6 +66,8 @@ describe('BarcodeCacheManager', () => {
     };
     
     await cacheManager.set(testData);
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
     const data = await cacheManager.get('789012');
     
     expect(data).toBeDefined();
@@ -82,9 +88,11 @@ describe('BarcodeCacheManager', () => {
       lastAccessed: new Date().toISOString()
     });
     
+    await new Promise(resolve => setTimeout(resolve, 50));
     await cacheManager.clear();
-    const data = await cacheManager.get('111111');
+    await new Promise(resolve => setTimeout(resolve, 50));
     
+    const data = await cacheManager.get('111111');
     expect(data).toBeNull();
   });
 });
