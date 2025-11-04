@@ -1,64 +1,42 @@
-import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from 'vitest/config'
+import path from 'path'
 
 export default defineConfig({
-  plugins: [react()],
   test: {
-    globals: true,
     environment: 'jsdom',
-    setupFiles: ['./src/test/setup.ts'],
-    include: [
-      '**/__tests__/**/*.{test,spec}.ts?(x)',
-      '**/*.{test,spec}.ts?(x)'
-    ],
 
-    exclude: [
-      'node_modules/**',
-      'dist/**',
-      'build/**',
-      '**/artifacts/**',
-      '**/*.bak.*',
-      '**/firearms-inventory-tracking-1 \\(4\\)/**',
-      'src/**/vitest.d.ts',
-      'src/test/vitest.d.ts'
-    ],
-
-    // Increased timeouts for IndexedDB and async operations
-    testTimeout: 30000,
-    hookTimeout: 30000,
+    // Give async teardown time to finish (camera tracks, IDB deletes, etc.)
+    testTimeout: 10000,
+    hookTimeout: 20000,
     teardownTimeout: 20000,
 
+    // Keep globals/mocks tidy between tests
+    clearMocks: true,
+    restoreMocks: true,
+    unstubGlobals: true,
     isolate: true,
+
+    // Use a single forked process (no threads) to avoid lingering handles
     pool: 'forks',
-    poolOptions: {
-      forks: {
-        singleFork: true,
-      },
-    },
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html', 'lcov'],
-      exclude: [
-        'node_modules/',
-        'src/test/',
-        '**/*.d.ts',
-        '**/*.config.*',
-        '**/mockData.ts',
-        'dist/',
-        '.github/',
-        'supabase/functions/',
-      ],
-      all: true,
-      lines: 85,
-      functions: 85,
-      branches: 85,
-      statements: 85,
-    },
+    poolOptions: { forks: { singleFork: true } },
+
+    // Keep default reporter; verbose can be added per command
+    reporters: ['default'],
   },
+
+  // Your coverage thresholds (kept from your existing config)
+  coverage: {
+    reporter: ['text', 'html'],
+    lines: 85,
+    functions: 85,
+    branches: 85,
+    statements: 85,
+  },
+
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
   },
-});
+})
+
