@@ -87,7 +87,7 @@ export function PhotoCapture({ getMedia, disableLoop, onClose }: Props) {
       </div>
 
       <div className="flex-1 relative flex items-center justify-center bg-black">
-        {/* If camera is unavailable (e.g., in tests), we still render the video element */}
+        {/* Video is present (for refs/teardown), but visually hidden in this stub */}
         <video ref={videoRef} playsInline muted data-testid="photo-video" className="hidden" />
         <div className="text-white text-center p-4">
           <p className="text-xl mb-2">⚠️</p>
