@@ -1,58 +1,25 @@
-import { CSVRow } from './csvParser';
 
-export interface ValidationWarning {
-  row: number;
-  field: string;
-  message: string;
-  severity: 'error' | 'warning';
-}
-
-export const validateCSVRow = (
-  row: CSVRow,
-  rowIndex: number,
-  fieldMapping: { [key: string]: string }
-): ValidationWarning[] => {
-  const warnings: ValidationWarning[] = [];
-  const requiredFields = ['name', 'category', 'storageLocation', 'purchasePrice'];
-  
-  // Check required fields
-  requiredFields.forEach(field => {
-    const csvField = Object.keys(fieldMapping).find(k => fieldMapping[k] === field);
-    if (!csvField || !row[csvField]?.trim()) {
-      warnings.push({
-        row: rowIndex,
-        field,
-        message: `Missing required field: ${field}`,
-        severity: 'error'
-      });
-    }
+export function validateCSVRow(
+  row: Record<string,string>,
+  requiredFields: string[],
+  fieldTypes?: Record<string,'number'|'string'>
+): { valid: boolean; errors?: string[] } {
+  const errors: string[] = [];
+  (requiredFields||[]).forEach((f) => {
+    const v = (row?.[f] ?? '').toString().trim();
+    if (!v) errors.push(`Missing required field: ${f}`);
   });
-  
-  // Validate price
-  const priceField = Object.keys(fieldMapping).find(k => fieldMapping[k] === 'purchasePrice');
-  if (priceField && row[priceField]) {
-    const price = parseFloat(row[priceField]);
-    if (isNaN(price) || price < 0) {
-      warnings.push({
-        row: rowIndex,
-        field: 'purchasePrice',
-        message: 'Invalid price format',
-        severity: 'error'
-      });
-    }
-  }
-  
-  // Validate category
-  const validCategories = ['firearms', 'optics', 'ammunition', 'accessories', 'parts'];
-  const catField = Object.keys(fieldMapping).find(k => fieldMapping[k] === 'category');
-  if (catField && row[catField] && !validCategories.includes(row[catField].toLowerCase())) {
-    warnings.push({
-      row: rowIndex,
-      field: 'category',
-      message: `Invalid category. Must be one of: ${validCategories.join(', ')}`,
-      severity: 'warning'
-    });
-  }
-  
-  return warnings;
-};
+  Object.entries(fieldTypes||{}).forEach(([field, t]) => {
+    const v = (row?.[field] ?? '').toString().trim();
+    if (t==='number' && v && isNaN(Number(v))) errors.push(`Field ${field} must be a number`);
+  });
+  return errors.length ? { valid: false, errors } : { valid: true };
+}
+export function validateCSVHeaders(
+  headers: string[],
+  required: string[]
+): { valid: boolean; missing?: string[] } {
+  const set = new Set(headers||[]);
+  const missing = (required||[]).filter(f => !set.has(f));
+  return missing.length ? { valid: false, missing } : { valid: true };
+}

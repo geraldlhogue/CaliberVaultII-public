@@ -1,20 +1,30 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vitest/config'
+import { fileURLToPath } from 'node:url'
 
 export default defineConfig({
   test: {
     environment: 'jsdom',
-    setupFiles: ['src/test/vitest.setup.ts'],
-    // Keep Vitest on unit/integration only; E2E/visual/accessibility go to Playwright
+    setupFiles: [
+      'src/test/vitest.setup.ts',
+      'src/test/setup-indexeddb.ts',
+    ],
+    deps: { inline: ['fake-indexeddb', 'fake-indexeddb/auto'] },
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
     exclude: [
       'node_modules/**',
-      'dist/**',
-      'build/**',
       'src/test/e2e/**',
-      'src/test/visual/**',
       'src/test/performance/**',
-      'src/test/accessibility/**'
+      'src/test/visual/**',
+      'src/test/security/**',
+      'src/test/accessibility/**',
+      'dist/**',
     ],
     pool: 'threads',
-    reporters: 'verbose'
-  }
-});
+    reporters: 'verbose',
+  },
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+})

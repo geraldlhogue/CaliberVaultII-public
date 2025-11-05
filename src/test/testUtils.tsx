@@ -1,36 +1,12 @@
-import { ReactElement } from 'react';
-import { render, RenderOptions } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from '@/components/auth/AuthProvider';
+import React from 'react'
+import { render as rtlRender } from '@testing-library/react'
+export * from '@testing-library/react'
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: { retry: false },
-    mutations: { retry: false },
-  },
-});
-
-interface AllTheProvidersProps {
-  children: React.ReactNode;
+function Providers({ children }: { children: React.ReactNode }) {
+  // Add shared context/providers here if needed later
+  return <>{children}</>
 }
 
-const AllTheProviders = ({ children }: AllTheProvidersProps) => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          {children}
-        </AuthProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
-  );
-};
-
-const customRender = (
-  ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>,
-) => render(ui, { wrapper: AllTheProviders, ...options });
-
-export * from '@testing-library/react';
-export { customRender as render };
+export function render(ui: React.ReactElement, options?: any) {
+  return rtlRender(ui, { wrapper: Providers, ...options })
+}
