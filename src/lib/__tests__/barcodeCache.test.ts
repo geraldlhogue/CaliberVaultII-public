@@ -1,4 +1,8 @@
-import "./__local_fix__idb_setup"
+import './__local_fix__idb_setup'
+import './__local_fix__async_flush'
+import './__local_fix__idb_setup'
+import './__local_fix__async_flush'
+import './__local_fix__idb_setup'
 import { describe, it, expect, beforeEach } from 'vitest';
 import 'fake-indexeddb/auto';
 import { BarcodeCacheManager } from '../barcodeCache';
