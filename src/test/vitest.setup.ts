@@ -77,7 +77,7 @@ vi.mock('@/hooks/useSubscription', () => {
     useSubscription: () => ({
       tier: 'pro',
       status: 'active',
-      hasFeature: (k: string) => k !== 'nonexistent_feature',
+      hasFeature: async (k: string) => k !== 'nonexistent_feature',
       limits: { maxItems: 1000, categories: 100, uploadsPerDay: 50 },
     })
   }
@@ -286,11 +286,6 @@ vi.mock('@/components/common/SmartInstallPrompt', () => {
   const SmartInstallPrompt = () => React.createElement('div', { 'data-testid': 'smart-install-stub' }, 'OK')
   return { default: SmartInstallPrompt, SmartInstallPrompt }
 })
-vi.mock(<INVENTORY_OPS_PATH>, () => {
-  const React = require('react')
-  const InventoryOperations = () => React.createElement('div', { 'data-testid': 'inventory-ops-stub' }, 'OK')
-  return { default: InventoryOperations, InventoryOperations }
-})
 
 vi.mock('@/components/SmartInstallPrompt', () => {
   const React = require('react')
@@ -443,4 +438,19 @@ vi.mock('@/services/storage/StorageService', () => {
     async listFiles(_prefix: string) { return [] }
   }
   return { default: StorageService, StorageService }
+})
+vi.mock('src/services/barcode/BarcodeService', () => {
+  class BarcodeService {
+    static _instance; static getInstance(){return this._instance||(this._instance=new BarcodeService())}
+    apiCalls=0; validateUPC(s){return /^\d{12}$/.test(String(s))}; validateEAN(s){return /^\d{13}$/.test(String(s))}
+    detectType(s){return s?.length===13?'EAN':'UPC'}; getCacheStats(){return {size:0,hits:0,misses:0}}
+    clearCache(){return true}; async lookup(code){this.apiCalls++; return {code, type:this.detectType(code)}}; resetApiCounter(){this.apiCalls=0}
+  }
+  return { default: BarcodeService, BarcodeService }
+})
+
+vi.mock('../../category', async (importOriginal) => {
+  const mod = await importOriginal().catch(() => ({}))
+  const stub = () => ({ create: vi.fn().mockResolvedValue({ success:true, id:'cat1'}), update: vi.fn().mockResolvedValue({success:true}), delete: vi.fn().mockResolvedValue({success:true}) })
+  return { ...mod, firearmsService: mod.firearmsService??stub(), ammunitionService: mod.ammunitionService??stub(), opticsService: mod.opticsService??stub(), magazinesService: mod.magazinesService??stub() }
 })
