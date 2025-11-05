@@ -454,3 +454,25 @@ vi.mock('../../category', async (importOriginal) => {
   const stub = () => ({ create: vi.fn().mockResolvedValue({ success:true, id:'cat1'}), update: vi.fn().mockResolvedValue({success:true}), delete: vi.fn().mockResolvedValue({success:true}) })
   return { ...mod, firearmsService: mod.firearmsService??stub(), ammunitionService: mod.ammunitionService??stub(), opticsService: mod.opticsService??stub(), magazinesService: mod.magazinesService??stub() }
 })
+vi.mock('src/lib/supabase', () => {
+  const _final = (data, error=null)=>Promise.resolve({data,error})
+  return {
+    supabase: {
+      from: (_)=>({
+        select: (_)=>({ limit: (_)=>_final([]), order: (_)=>({ limit:(_)=>_final([]) }), single: ()=>_final(null), maybeSingle: ()=>_final(null) }),
+        insert: (payload)=>({ select: ()=>({ single: ()=>_final({id:'1', ...(Array.isArray(payload)?payload[0]:payload)}) }) }),
+        update: (_)=>({ eq: (_,_v)=>({ select: ()=>_final({updated:true}) }) }),
+        delete: (_)=>({ eq: (_,_v)=>_final({deleted:true}), select: ()=>_final([]) }),
+        eq: (_,_v)=>({ select: ()=>_final([]) }),
+      }),
+      channel: (_)=>({ on: ()=>({ subscribe: ()=>({ unsubscribe(){} }) }) }),
+      auth: { getSession: async()=>({data:{session:{user:{id:'test-user'}}},error:null}), getUser: async()=>({data:{user:{id:'test-user'}},error:null}), onAuthStateChange: ()=>({data:{subscription:{unsubscribe(){}}},error:null}) }
+    }
+  }
+})
+
+vi.mock('src/components/SmartInstallPrompt', () => {
+  const React = require('react')
+  const SmartInstallPrompt = () => React.createElement('div', {'data-testid':'smart-install-stub'}, 'OK')
+  return { default: SmartInstallPrompt, SmartInstallPrompt }
+})
