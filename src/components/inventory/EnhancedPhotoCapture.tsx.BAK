@@ -16,15 +16,15 @@ export function EnhancedPhotoCapture({ getMedia, disableLoop, onClose }: Props) 
 
     const start = async () => {
       const s = await (getMedia ? getMedia() : navigator.mediaDevices.getUserMedia({ video: true }))
-      if (!mounted) { try { s.getTracks().forEach(t => t.stop()) } catch {} ; return }
+      if (!mounted) { try { s.getTracks().forEach(t => t.stop()) } catch {}; return }
       stream = s
       const video = videoRef.current
       if (video) {
-        try { (video as any).srcObject = stream } catch {}
+        try { ;(video as any).srcObject = stream } catch {}
         try { void (video as any).play?.() } catch {}
       }
       if (!disableLoop) {
-        const tick = () => { if (!mounted) return ; rafId = requestAnimationFrame(tick) }
+        const tick = () => { if (!mounted) return; rafId = requestAnimationFrame(tick) }
         rafId = requestAnimationFrame(tick)
       }
     }
@@ -33,11 +33,11 @@ export function EnhancedPhotoCapture({ getMedia, disableLoop, onClose }: Props) 
 
     return () => {
       mounted = false
-      if (rafId != null) { try { cancelAnimationFrame(rafId) } catch {} ; rafId = null }
+      if (rafId != null) { try { cancelAnimationFrame(rafId) } catch {}; rafId = null }
       const video = videoRef.current
       if (video) {
-        try { (video as any).pause?.() } catch {}
-        try { (video as any).srcObject = null } catch {}
+        try { ;(video as any).pause?.() } catch {}
+        try { ;(video as any).srcObject = null } catch {}
       }
       const s = stream ?? (videoRef.current?.srcObject as MediaStream | null)
       if (s) { try { s.getTracks().forEach(t => { try { t.stop() } catch {} }) } catch {} }
