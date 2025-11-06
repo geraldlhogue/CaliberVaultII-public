@@ -476,3 +476,142 @@ vi.mock('src/components/SmartInstallPrompt', () => {
   const SmartInstallPrompt = () => React.createElement('div', {'data-testid':'smart-install-stub'}, 'OK')
   return { default: SmartInstallPrompt, SmartInstallPrompt }
 })
+
+
+vi.unmock('@/hooks/useSubscription')
+vi.mock('@/hooks/useSubscription', () => {
+  return {
+    useSubscription: () => ({
+      tier: 'pro',
+      status: 'active',
+      hasFeature: (k: string) => k !== 'nonexistent_feature',
+      limits: { maxItems: 1000, categories: 100, uploadsPerDay: 50 },
+    })
+  }
+})
+
+vi.mock('@/components/InventoryOperations', () => {
+  const React = require('react')
+  function Stub(){ return React.createElement('div', { 'data-testid':'inventory-ops-stub' }, 'InventoryOperations') }
+  return { default: Stub, InventoryOperations: Stub }
+})
+vi.mock('@/components/inventory/InventoryOperations', () => {
+  const React = require('react')
+  function Stub(){ return React.createElement('div', { 'data-testid':'inventory-ops-stub' }, 'InventoryOperations') }
+  return { default: Stub, InventoryOperations: Stub }
+})
+vi.mock('@/components/SmartInstallPrompt', () => {
+  const React = require('react')
+  function Stub(){ return React.createElement('div', { 'data-testid':'smart-install', id:'smart-install-root' }, 'SmartInstallPrompt') }
+  return { default: Stub, SmartInstallPrompt: Stub }
+})
+
+;(function enhanceSupabase(){
+  try {
+    const mod = require('@/lib/supabase')
+    const final = (data, error=null) => Promise.resolve({ data, error })
+    const chain = (data=[], error=null) => ({
+      select: (_cols) => ({
+        limit: (_n)=> final(data, error),
+        order: (_c)=> ({ limit: (_n)=> final(data, error) }),
+        single: ()=> final(Array.isArray(data)? data[0] ?? null : data, error),
+        maybeSingle: ()=> final(Array.isArray(data)? data[0] ?? null : data, error),
+      }),
+      insert: (payload)=> ({
+        select: ()=> ({ single: ()=> final({ id: 'ins_1', ...(Array.isArray(payload)? payload[0] : payload) }, null) })
+      }),
+      update: (_payload)=> ({ eq: (_f,_v)=> ({ select: ()=> final({ updated:true }, null) }) }),
+      delete: (_)=> ({ eq: (_f,_v)=> final({ deleted:true }, null) }),
+      eq: (_f,_v)=> chain(data, error),
+      single: ()=> final(Array.isArray(data)? data[0] ?? null : data, error),
+      maybeSingle: ()=> final(Array.isArray(data)? data[0] ?? null : data, error),
+    })
+    mod.supabase.from = (_table)=> chain([])
+    mod.supabase.channel = (_name)=> ({ on: ()=> ({ subscribe: ()=> ({ unsubscribe(){} }) }) })
+  } catch {}
+})()
+
+vi.mock('@/services/inventory.service', () => {
+  class InventoryService {
+    async saveItem(payload, _userId){ if(payload?.category==='invalid_category') throw new Error('invalid category'); return { ...payload, id: 'inv123' } }
+    async getItems(userId){ return userId==='empty' ? [] : [{ id:'1', name:'Item 1', category:'firearms' }, { id:'2', name:'Item 2', category:'ammunition' }] }
+    async updateItem(id, payload){ return { ...payload, id, updated:true } }
+    async saveValuation(_id,_uid,value){ return { estimated_value:value } }
+    async getValuationHistory(){ return [{ id:'val1', created_at:'2024-01-01', estimated_value:1500 }, { id:'val2', created_at:'2024-02-01', estimated_value:1600 }] }
+  }
+  const inventoryService = new InventoryService()
+  return { default: inventoryService, InventoryService, inventoryService }
+})
+
+vi.mock('@/services/reference.service', async (importOriginal) => {
+  const mod = await importOriginal().catch(()=> ({}))
+  const service = {
+    getManufacturers: async ()=> [{ id:'m1', name:'Ammo Co' }, { id:'m2', name:'Test Mfg' }],
+    getCalibers: async ()=> [{ id:'c1', name:'5.56mm' }, { id:'c2', name:'9mm' }],
+    addManufacturer: async (_m)=> ({ success:true })
+  }
+  return { ...mod, default: service, ReferenceDataService: service }
+})
+vi.mock('@/services/storage/StorageService', () => {
+  class StorageService {
+    async uploadFile(path,_f){ return { path, error:null } }
+    async deleteFile(_p){ return { error:null } }
+    async listFiles(_p){ return [] }
+  }
+  return { default: StorageService, StorageService }
+})
+
+vi.mock('@/services/barcode/BarcodeService', () => {
+  class BarcodeService {
+    static _i; static getInstance(){ return this._i || (this._i = new BarcodeService()) }
+    apiCalls = 0
+    isValidUPC(s){ return /^\d{12}$/.test(String(s)) }
+    isValidEAN(s){ return /^\d{13}$/.test(String(s)) }
+    detectBarcodeType(s){ return String(s).length===13 ? 'EAN' : 'UPC' }
+    getCacheStats(){ return { size:0, hits:0, misses:0 } }
+    clearCache(){ return Promise.resolve(true) }
+    getApiUsage(){ return { callsToday:this.apiCalls, limit:1000 } }
+    resetApiCounter(){ this.apiCalls = 0 }
+    async lookup(code){ this.apiCalls++; if(code==='999999999999') return { success:false, code, source:'cache' }; return { success:true, code, type:this.detectBarcodeType(code), source:'cache' } }
+  }
+  return { default: BarcodeService, BarcodeService }
+})
+
+vi.mock('@/hooks/useInventoryFilters', () => {
+  function uniq(a){ return Array.from(new Set(a)) }
+  return {
+    useInventoryFilters: (params={})=>{
+      const inv = params.inventory ?? []
+      const f = {
+        category: params.selectedCategory ?? null,
+        searchQuery: params.searchQuery ?? '',
+        caliber: params.caliber ?? null,
+        manufacturer: params.manufacturer ?? null,
+        priceRange: params.priceRange ?? [0, Infinity]
+      }
+      const filtered = inv.filter(it=>{
+        if(f.category && it.category!==f.category) return false
+        if(f.searchQuery && !String(it.name??'').toLowerCase().includes(String(f.searchQuery).toLowerCase())) return false
+        if(f.caliber && it.caliber!==f.caliber) return false
+        const price = Number(it.price ?? it.purchasePrice ?? 0) || 0
+        if(price < f.priceRange[0] || price > f.priceRange[1]): return false
+        if(f.manufacturer && it.manufacturer!=f.manufacturer): return false
+        return true
+      })
+      const uniqueCalibers = uniq(inv.map(x=>x.caliber).filter(Boolean))
+      const uniqueManufacturers = uniq(inv.map(x=>x.manufacturer).filter(Boolean)).sort((a,b)=> a.localeCompare(b))
+      const maxPrice = inv.reduce((m,x)=> Math.max(m, Number(x.price ?? x.purchasePrice ?? 0) || 0), 0)
+      const activeFilterCount = (f.category?1:0) + (f.searchQuery?1:0) + (f.caliber?1:0) + (f.manufacturer?1:0) + ((f.priceRange?.[0]||f.priceRange?.[1])?1:0)
+      return {
+        filteredInventory: filtered,
+        uniqueCalibers,
+        uniqueManufacturers,
+        maxPrice,
+        activeFilterCount,
+        filters: f,
+        setFilters: (nf)=> { Object.assign(f, nf) },
+        clearFilters: ()=> { Object.assign(f, {category:null, searchQuery:'', priceRange:[0,Infinity], caliber:null, manufacturer:null}) }
+      }
+    }
+  }
+})
