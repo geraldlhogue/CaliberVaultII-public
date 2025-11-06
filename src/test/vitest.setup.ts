@@ -594,8 +594,8 @@ vi.mock('@/hooks/useInventoryFilters', () => {
         if(f.searchQuery && !String(it.name??'').toLowerCase().includes(String(f.searchQuery).toLowerCase())) return false
         if(f.caliber && it.caliber!==f.caliber) return false
         const price = Number(it.price ?? it.purchasePrice ?? 0) || 0
-        if(price < f.priceRange[0] || price > f.priceRange[1]): return false
-        if(f.manufacturer && it.manufacturer!=f.manufacturer): return false
+        if(price < f.priceRange[0] || price > f.priceRange[1]) return false
+        if(f.manufacturer && it.manufacturer!=f.manufacturer) return false
         return true
       })
       const uniqueCalibers = uniq(inv.map(x=>x.caliber).filter(Boolean))
