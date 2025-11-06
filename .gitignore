@@ -32,3 +32,11 @@ Projects/
 
 Projects/
 
+
+vitest.out.txt
+coverage/
+playwright-report/
+node_modules/
+.vite/
+.vitest/
+src/test/e2e/.artifacts/
