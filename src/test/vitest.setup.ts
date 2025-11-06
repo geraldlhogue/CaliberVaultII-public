@@ -54,7 +54,7 @@ vi.mock('@/lib/supabase', () => {
   return {
     supabase: {
       from: (_table: string) => _chain([]),
-      channel: (_: string) => ({ on: () => ({ subscribe: () => ({ unsubscribe(){} }, error: null }) }),
+      channel: (_: string) => ({ on: () => ({ subscribe: () => ({ unsubscribe(){} }) }),
       auth: {
         getSession: async () => ({ data: { session: { user: { id: 'test-user' } } }, error: null }),
         getUser: async () => ({ data: { user: { id: 'test-user' } }, error: null }),
@@ -322,8 +322,7 @@ vi.mock('@/hooks/useSubscription', () => {
       update: (_data: any) => ({ eq: (_f?: any, _v?: any) => ({ select: () => _final({ updated: true }, null) }, error: null }),
       delete: (_?: any) => ({ eq: (_f?: any, _v?: any) => _final({ deleted: true }, null), select: () => _final([], null) }),
       eq: (_: any, __?: any) => ({ select: () => _final([], null) }),
-      channel: (_: string) => ({ on: () => ({ subscribe: () => ({ unsubscribe(){} }, error: null }) }),
-    })
+      channel: (_: string) => ({ on: () => ({ subscribe: () => ({ unsubscribe(){} }) }) })
   } catch {}
 })()
 vi.mock('@/services/inventory.service', () => {
