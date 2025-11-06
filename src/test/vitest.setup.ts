@@ -54,7 +54,7 @@ vi.mock('@/lib/supabase', () => {
   return {
     supabase: {
       from: (_table: string) => _chain([]),
-      channel: (_: string) => ({ on: () => ({ subscribe: () => ({ unsubscribe(){} }) }) }),
+      channel: (_: string) => ({ on: () => ({ subscribe: () => ({ unsubscribe(){} }, error: null }) }),
       auth: {
         getSession: async () => ({ data: { session: { user: { id: 'test-user' } } }, error: null }),
         getUser: async () => ({ data: { user: { id: 'test-user' } }, error: null }),
@@ -320,10 +320,10 @@ vi.unmock('@/lib/validation')
       insert: (payload: any) => ({
         select: () => ({ single: () => _final({ id: '1', ...(Array.isArray(payload) ? payload[0] : payload) }, null) }),
       }),
-      update: (_data: any) => ({ eq: (_f?: any, _v?: any) => ({ select: () => _final({ updated: true }, null) }) }),
+      update: (_data: any) => ({ eq: (_f?: any, _v?: any) => ({ select: () => _final({ updated: true }, null) }, error: null }),
       delete: (_?: any) => ({ eq: (_f?: any, _v?: any) => _final({ deleted: true }, null), select: () => _final([], null) }),
       eq: (_: any, __?: any) => ({ select: () => _final([], null) }),
-      channel: (_: string) => ({ on: () => ({ subscribe: () => ({ unsubscribe(){} }) }) }),
+      channel: (_: string) => ({ on: () => ({ subscribe: () => ({ unsubscribe(){} }, error: null }) }),
     })
   } catch {}
 })()
@@ -451,7 +451,7 @@ vi.mock('src/services/barcode/BarcodeService', () => {
 
 vi.mock('../../category', async (importOriginal) => {
   const mod = await importOriginal().catch(() => ({}))
-  const stub = () => ({ create: vi.fn().mockResolvedValue({ success:true, id:'cat1'}), update: vi.fn().mockResolvedValue({success:true}), delete: vi.fn().mockResolvedValue({success:true}) })
+  const stub = () => ({ create: vi.fn().mockResolvedValue({ success:true, id:'cat1'}), update: vi.fn().mockResolvedValue({success:true}), delete: vi.fn().mockResolvedValue({success:true}, error: null })
   return { ...mod, firearmsService: mod.firearmsService??stub(), ammunitionService: mod.ammunitionService??stub(), opticsService: mod.opticsService??stub(), magazinesService: mod.magazinesService??stub() }
 })
 vi.mock('src/lib/supabase', () => {
@@ -460,12 +460,12 @@ vi.mock('src/lib/supabase', () => {
     supabase: {
       from: (_)=>({
         select: (_)=>({ limit: (_)=>_final([]), order: (_)=>({ limit:(_)=>_final([]) }), single: ()=>_final(null), maybeSingle: ()=>_final(null) }),
-        insert: (payload)=>({ select: ()=>({ single: ()=>_final({id:'1', ...(Array.isArray(payload)?payload[0]:payload)}) }) }),
-        update: (_)=>({ eq: (_,_v)=>({ select: ()=>_final({updated:true}) }) }),
+        insert: (payload)=>({ select: ()=>({ single: ()=>_final({id:'1', ...(Array.isArray(payload)?payload[0]:payload)}, error: null }) }),
+        update: (_)=>({ eq: (_,_v)=>({ select: ()=>_final({updated:true}, error: null }) }),
         delete: (_)=>({ eq: (_,_v)=>_final({deleted:true}), select: ()=>_final([]) }),
         eq: (_,_v)=>({ select: ()=>_final([]) }),
       }),
-      channel: (_)=>({ on: ()=>({ subscribe: ()=>({ unsubscribe(){} }) }) }),
+      channel: (_)=>({ on: ()=>({ subscribe: ()=>({ unsubscribe(){} }, error: null }) }),
       auth: { getSession: async()=>({data:{session:{user:{id:'test-user'}}},error:null}), getUser: async()=>({data:{user:{id:'test-user'}},error:null}), onAuthStateChange: ()=>({data:{subscription:{unsubscribe(){}}},error:null}) }
     }
   }
@@ -520,14 +520,14 @@ vi.mock('@/components/SmartInstallPrompt', () => {
       insert: (payload)=> ({
         select: ()=> ({ single: ()=> final({ id: 'ins_1', ...(Array.isArray(payload)? payload[0] : payload) }, null) })
       }),
-      update: (_payload)=> ({ eq: (_f,_v)=> ({ select: ()=> final({ updated:true }, null) }) }),
+      update: (_payload)=> ({ eq: (_f,_v)=> ({ select: ()=> final({ updated:true }, null) }, error: null }),
       delete: (_)=> ({ eq: (_f,_v)=> final({ deleted:true }, null) }),
       eq: (_f,_v)=> chain(data, error),
       single: ()=> final(Array.isArray(data)? data[0] ?? null : data, error),
       maybeSingle: ()=> final(Array.isArray(data)? data[0] ?? null : data, error),
     })
     mod.supabase.from = (_table)=> chain([])
-    mod.supabase.channel = (_name)=> ({ on: ()=> ({ subscribe: ()=> ({ unsubscribe(){} }) }) })
+    mod.supabase.channel = (_name)=> ({ on: ()=> ({ subscribe: ()=> ({ unsubscribe(){} }, error: null }) })
   } catch {}
 })()
 
@@ -634,7 +634,7 @@ vi.mock('@/lib/validation', async (importActual) => {
     const ok = (data) => Promise.resolve({ data, error: null });
 
     mod.supabase.channel = mod.supabase.channel || ((name) => ({
-      on: () => ({ subscribe: () => ({ unsubscribe(){} }) }),
+      on: () => ({ subscribe: () => ({ unsubscribe(){} }, error: null }),
       subscribe: () => ({ unsubscribe(){} }),
       name
     }));
@@ -642,15 +642,15 @@ vi.mock('@/lib/validation', async (importActual) => {
     mod.supabase.from = (_table) => ({
       // SELECT chains
       select: (_cols) => ({
-        order: (_c) => ({ limit: (_n) => ok([]) }),
-        limit: (_n) => ok([]),
-        single: () => ok(null),
-        maybeSingle: () => ok(null),
+        order: (_c) => ({ limit: (_n) => ({ data: [], error: null }, error: null }),
+        limit: (_n) => ({ data: [], error: null }),
+        single: () => ({ data: null, error: null }),
+        maybeSingle: () => ({ data: null, error: null }),
       }),
       // INSERT chains
       insert: (payload) => ({
         select: () => ({
-          single: () => ok({
+          single: () => ({ data: {
             id: 'ins_1',
             ...(Array.isArray(payload) ? payload[0] : payload)
           })
