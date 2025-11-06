@@ -50,11 +50,7 @@ const _chain = (data: any = [], error: any = null) => ({
   maybeSingle: () => _final(Array.isArray(data) ? data[0] ?? null : data, error),
 })
 
-vi.mock('@/lib/supabase', () => {
-  return {
-    supabase: {
-      from: (_table: string) => _chain([]),
-      channel: (_: string) => ({ on: () => ({ subscribe: () => ({ unsubscribe(){} }) }),
+}),
       auth: {
         getSession: async () => ({ data: { session: { user: { id: 'test-user' } } }, error: null }),
         getUser: async () => ({ data: { user: { id: 'test-user' } }, error: null }),
@@ -954,4 +950,50 @@ vi.mock('@/services/inventory.service.enhanced', () => {
   }
   return { default: inventoryService, inventoryService }
 })
+
+
+
+vi.mock('@/lib/supabase', () => {
+  const ok = (data, error = null) => ({ data, error });
+
+  const chainFromData = (_arr) => ({
+    select: (_cols) => ({
+      order: (_c) => ({ limit: (_n) => ok([]) }),
+      limit: (_n) => ok([]),
+      single: () => ok(null),
+      maybeSingle: () => ok(null),
+    }),
+    insert: (payload) => ({
+      select: () => ({
+        single: () =>
+          ok({
+            id: 'ins_1',
+            ...(Array.isArray(payload) ? payload[0] : payload),
+          }),
+      }),
+    }),
+    update: (payload) => ({
+      eq: (_f, _v) => ({
+        select: () => ok({ updated: true, ...payload }),
+      }),
+    }),
+    delete: (_payload) => ({
+      eq: (_f, _v) => ok({ deleted: true }),
+    }),
+    eq: (_f, _v) => ({ select: (_c) => ok([]) }),
+  });
+
+  const supabase = {
+    from: (_table) => chainFromData([]),
+    channel: (_name) => ({
+      on: () => ({ subscribe: () => ({ unsubscribe(){} }) }),
+    }),
+    auth: {
+      getSession: async () => ok({ session: { user: { id: 'test-user' } } }),
+      getUser: async () => ok({ user: { id: 'test-user' } }),
+    },
+  };
+
+  return { supabase };
+});
 
