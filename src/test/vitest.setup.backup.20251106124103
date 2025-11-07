@@ -1,0 +1,92 @@
+/* Vitest setup (minimal reset, no JSX) */
+import { vi } from 'vitest'
+import 'fake-indexeddb/auto'
+import '@testing-library/jest-dom/vitest'
+
+;(globalThis as any).matchMedia ||= (() => ({matches:false, media:'', onchange:null,
+  addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){},
+  dispatchEvent(){ return false }
+}))
+;(globalThis as any).ResizeObserver ||= class { observe(){} unobserve(){} disconnect(){} }
+;(function(){
+  const s = new Map<string,string>()
+  ;(globalThis as any).localStorage = {
+    getItem:(k:string)=> s.has(k)? s.get(k)! : null,
+    setItem:(k:string,v:any)=>{ s.set(k, String(v)) },
+    removeItem:(k:string)=>{ s.delete(k) },
+    clear:()=>{ s.clear() },
+    key:(i:number)=> Array.from(s.keys())[i] ?? null,
+    get length(){ return s.size }
+  }
+})()
+
+export {}
+
+vi.mock('react-router-dom', async (importOriginal) => {
+  const mod: any = await importOriginal()
+  return { ...mod, useNavigate: () => () => {} }
+})
+
+return { unsubscribe(){} } }
+  }
+  return { InventoryAPIService, default: InventoryAPIService }
+})
+
+vi.mock('@/services/storage.service', () => {
+  class StorageService {
+    async uploadFile(_f:any){ return { path:'path/file.png' } }
+    async deleteFile(_p:string){ return { success:true } }
+    async listFiles(_?:string){ return [{ name:'a.png' }] }
+  }
+  return { StorageService, default: StorageService }
+})
+
+vi.mock('@/services/reference.service', () => {
+  class ReferenceDataService {
+    async getManufacturers(){ return [{ id:'m1', name:'Test Mfg' }] }
+    async getCalibers(){ return [{ id:'c1', name:'5.56mm' }] }
+    async addManufacturer(m:any){
+      const nameFromGet = (typeof m?.get === 'function') ? m.get('name') : undefined;
+      const name = (m?.name ?? nameFromGet ?? 'New');
+      return { id:'m2', name };
+    } }
+  }
+  return { ReferenceDataService, default: ReferenceDataService }
+})
+
+const __catAgg = () => {
+  const okCreate = async (x:any)=>({ success:true, data:{ id:'itm_1', ...x }})
+  const okUpdate = async ()=>({ success:true })
+  const okDelete = async ()=>({ success:true })
+  const firearmsService   = { createFirearm:okCreate,   updateFirearm:okUpdate,   deleteFirearm:okDelete,   getFirearmById:async()=>({id:'1',category:'firearms'}) }
+  const ammunitionService = { createAmmunition:okCreate,updateAmmunition:okUpdate,deleteAmmunition:okDelete,getAmmunitionById:async()=>({id:'2',category:'ammunition'}) }
+  const opticsService     = { createOptic:okCreate,     updateOptic:okUpdate,     deleteOptic:okDelete,     getOpticById:async()=>({id:'3',category:'optics'}) }
+  const magazinesService  = { createMagazine:okCreate,  updateMagazine:okUpdate,  deleteMagazine:okDelete,  getMagazineById:async()=>({id:'4',category:'magazines'}) }
+  return { firearmsService, ammunitionService, opticsService, magazinesService }
+}
+vi.mock('@/services/category', () => __catAgg())
+vi.mock('src/services/category', () => __catAgg())
+vi.mock('../category', () => __catAgg())
+vi.mock('../../category', () => __catAgg())
+
+export {}
+
+vi.mock('@/services/reference.service', () => {
+  class ReferenceDataService {
+    async getManufacturers(){ return [{ id:'m1', name:'Test Mfg' }] }
+    async getCalibers(){ return [{ id:'c1', name:'5.56mm' }] }
+    async addManufacturer(m:any){
+      const nameFromGet = (typeof m?.get === 'function') ? m.get('name') : undefined;
+      const name = (m?.name ?? nameFromGet ?? 'New');
+      return { id:'m2', name };
+    };
+    }
+  }
+  return { ReferenceDataService, default: ReferenceDataService };
+});
+
+vi.mock('@/lib/utils', () => {
+  const safeNumber = (v:any) => Number.isFinite(+v) ? +v : 0;
+  const cn = (...cls:any[]) => cls.flat().filter(Boolean).join(' ');
+  return { safeNumber, cn, default: { safeNumber, cn } };
+});

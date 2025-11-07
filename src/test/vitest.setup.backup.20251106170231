@@ -1,0 +1,67 @@
+import { vi } from 'vitest';
+
+/* minimal globals */
+if (!(globalThis).fetch) {
+  (globalThis).fetch = vi.fn(async () => ({ ok:true, status:200, json:async()=>({}), text:async()=>'', arrayBuffer:async()=>new ArrayBuffer(0) }));
+}
+
+/* ====== KEY TARGETED MOCKS (match Vite's resolved IDs from your log) ====== */
+
+/* 1) Supabase: provide auth.getUser and auth.getSession */
+vi.mock('/src/lib/supabase.ts', () => {
+  const ok = (data) => ({ data, error: null });
+  const auth = {
+    getUser:    vi.fn(async () => ok({ user: { id: 'test-user' } })),
+    getSession: vi.fn(async () => ok({ session: { user: { id: 'test-user' } } })),
+  };
+  const from = vi.fn((_table) => ({
+    select: vi.fn(async () => ok([])),
+    insert: vi.fn(async (rows) => ok(Array.isArray(rows) ? rows : [rows])),
+    update: vi.fn(async () => ({ eq: vi.fn(async () => ok([])) })),
+    delete: vi.fn(async () => ({ eq: vi.fn(async () => ok({ deleted:true })) })),
+    eq:     vi.fn(async () => ok([])),
+  }));
+  const channel = vi.fn((_name) => ({ on: vi.fn(() => ({ subscribe: vi.fn(() => ({ unsubscribe(){} })) })) }));
+  const supabase = { from, channel, auth };
+  return { supabase, from, channel, auth, default: supabase };
+});
+
+/* 2) BarcodeService: static getInstance() required by tests */
+vi.mock('/src/services/barcode/BarcodeService.ts', () => {
+  class _BarcodeService {
+    static #inst;
+    static getInstance() {
+      if (!this.#inst) this.#inst = new _BarcodeService();
+      return this.#inst;
+    }
+    validateUPC(_s) { return true; }
+    validateEAN(_s) { return true; }
+    detectType(_s)  { return 'UPC'; }
+    trackUsage()    { return; }
+    resetCounter()  { return; }
+  }
+  return { BarcodeService: _BarcodeService, default: _BarcodeService };
+});
+
+/* 3) Category barrel: must export ammunitionService et al. */
+vi.mock('/src/services/category/index.ts', () => {
+  const mk = () => ({
+    list: vi.fn(async () => []),
+    get:  vi.fn(async () => null),
+    create: vi.fn(async (x) => ({ id: 'new', ...x })),
+  });
+  const firearmsService   = mk();
+  const ammunitionService = mk();
+  const opticsService     = mk();
+  const magazinesService  = mk();
+  const accessoriesService= mk();
+  return {
+    firearmsService, ammunitionService, opticsService, magazinesService, accessoriesService,
+    default: { firearmsService, ammunitionService, opticsService, magazinesService, accessoriesService }
+  };
+});
+
+/* router stub (keeps component tests calm) */
+vi.mock('react-router-dom', () => ({ useNavigate: () => () => {}, Link: () => null, NavLink: () => null }));
+
+export {};

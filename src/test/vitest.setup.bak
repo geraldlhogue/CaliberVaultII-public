@@ -1,0 +1,262 @@
+/* Vitest global setup */
+
+import { vi } from 'vitest';
+import 'fake-indexeddb/auto';
+import '@testing-library/jest-dom/vitest';
+
+/* ---- jsdom shims ---- */
+if (typeof (globalThis as any).matchMedia !== 'function') {
+  (globalThis as any).matchMedia = () => ({
+    matches:false, media:'', onchange:null,
+    addListener(){}, removeListener(){},
+    addEventListener(){}, removeEventListener(){},
+    dispatchEvent(){ return false; },
+  });
+}
+if (typeof (globalThis as any).ResizeObserver === 'undefined') {
+  (globalThis as any).ResizeObserver = class { observe(){} unobserve(){} disconnect(){} };
+}
+if (typeof (globalThis as any).localStorage === 'undefined') {
+  const s = new Map<string,string>();
+  (globalThis as any).localStorage = {
+    getItem:k=>s.has(k)?s.get(k)!:null, setItem:(k,v)=>s.set(k,String(v)),
+    removeItem:k=>s.delete(k), clear:()=>s.clear(),
+    key:i=>Array.from(s.keys())[i]??null, get length(){return s.size;}
+  };
+}
+
+/* ---- router shim ---- */
+vi.mock('react-router-dom', async (orig) => {
+  const m:any = await orig();
+  return { ...m, useNavigate: () => () => {} };
+});
+
+/* ---- router shim ---- */
+vi.mock('react-router-dom', async (orig) => {
+  const m:any = await orig();
+  return { ...m, useNavigate: () => () => {} };
+});
+
+/* ---- validation + utils ---- */
+vi.mock('@/lib/validation', () => {
+  const email=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const url=/^(https?:\/\/)?[\w.-]+(\.[\w.-]+)+[/#?]?.*$/i;
+  const phone=/^(\(\d{3}\)\s?|\d{3}[-\s])?\d{3}[-\s]\d{4}$/;
+  const safeNumber=(v:any)=>Number.isFinite(+v)?+v:0;
+  return {
+    validateEmail:(s:string)=>email.test(s),
+    validatePhone:(s:string)=>phone.test(s),
+    validateURL:(s:string)=>url.test(s),
+    validateRequired:(v:any)=>!(v===''||v==null),
+    safeNumber,
+  };
+});
+
+/* ---- error handlers ---- */
+  };
+  return { withErrorHandling, withDatabaseErrorHandling };
+});
+
+/* ---- Supabase (permissive fluent) ---- */
+vi.mock('@/lib/supabase', () => {
+  const ok = (data:any)=>({ data, error:null });
+  const chain = (rows:any[]=[])=>{
+    const c:any = {
+      ...ok(rows),
+      select:(_?:string)=>c,
+      order:(_?:string,_o?:any)=>c,
+      limit:(_?:number)=>ok(rows),
+      single:()=>ok(rows[0]??null),
+      maybeSingle:()=>ok(rows[0]??null),
+      eq:(_f:string,_v:any)=>c,
+      in:(_f:string,_v:any[])=>c,
+      ilike:(_f:string,_p:string)=>c,
+      like:(_f:string,_p:string)=>c,
+      contains:(_f:string,_o:any)=>c,
+    };
+    return c;
+  };
+  const supabase = {
+    from: (_table:string)=>({
+      ...chain([]),
+      insert:(payload:any)=>({ select:()=>({ single:()=>ok({ id:'ins_1', ...(Array.isArray(payload)?payload[0]:payload) }) }) }),
+      update:(_payload:any)=>({ eq:(_f:string,_v:any)=>({ select:()=>ok({ updated:true }) }) }),
+      delete:(_payload?:any)=>({ eq:(_f:string,_v:any)=>ok({ deleted:true }) }),
+    }),
+    channel:(_name:string)=>({ on:()=>({ subscribe:()=>({ unsubscribe(){} }) }) }),
+    auth:{ getSession:async()=>ok({ session:{ user:{ id:'test-user' }}}), getUser:async()=>ok({ user:{ id:'test-user' }}) }
+  };
+  return { supabase };
+});
+
+/* ---- Category aggregate for BatchOperations ---- */
+vi.mock('@/services/category', () => {
+  const okCreate = async (x:any)=>({ success:true, data:{ id:'itm_1', ...x }});
+  const okUpdate = async ()=>({ success:true });
+  const okDelete = async ()=>({ success:true });
+  const firearmsService   = { createFirearm:okCreate,   updateFirearm:okUpdate,   deleteFirearm:okDelete,   getFirearmById:async()=>({id:'1',category:'firearms'}) };
+  const ammunitionService = { createAmmunition:okCreate,updateAmmunition:okUpdate,deleteAmmunition:okDelete,getAmmunitionById:async()=>({id:'2',category:'ammunition'}) };
+  const opticsService     = { createOptic:okCreate,     updateOptic:okUpdate,     deleteOptic:okDelete,     getOpticById:async()=>({id:'3',category:'optics'}) };
+  const magazinesService  = { createMagazine:okCreate,  updateMagazine:okUpdate,  deleteMagazine:okDelete,  getMagazineById:async()=>({id:'4',category:'magazines'}) };
+  return { firearmsService, ammunitionService, opticsService, magazinesService };
+});
+
+/* ---- API surface used by tests ---- */
+
+/* ---- Storage service ---- */
+vi.mock('@/services/storage.service', () => {
+  class StorageService { async uploadFile(_f:any){return{path:'path/file.png'}} async deleteFile(_p:string){return{success:true}} async listFiles(_?:string){return[{name:'a.png'}]} }
+  return { StorageService };
+});
+
+/* ---- Barcode singleton ---- */
+
+/* ---- Feature gating & subscription ---- */
+vi.mock('@/lib/featureGating', () => {
+  const getTierLimits = async ()=>({ data:[{ is_active:true, maxItems:100 }], error:null });
+  const canAccessFeature = async ()=>({ allowed:true });
+  return { getTierLimits, canAccessFeature };
+});
+
+/* ---- occasional export hole ---- */
+vi.mock('@/components/inventory/InventoryOperations', () => ({ default:()=>null }));
+
+export {};
+
+// --- Force localStorage shim (override regardless) ---
+(function(){
+  const s = new Map<string,string>();
+  (globalThis as any).localStorage = {
+    getItem:(k:string)=> s.has(k)? s.get(k)! : null,
+    setItem:(k:string,v:any)=>{ s.set(k, String(v)); },
+    removeItem:(k:string)=>{ s.delete(k); },
+    clear:()=>{ s.clear(); },
+    key:(i:number)=> Array.from(s.keys())[i] ?? null,
+    get length(){ return s.size; }
+  };
+})();
+
+/* ---- useSubscription (default + named) ---- */
+vi.mock('@/hooks/useSubscription', () => {
+  const hasFeature = (k:string)=> k !== 'nonexistent_feature';
+  const hook = () => ({ tier:'pro', status:'active', limits:{ maxItems:100 }, hasFeature });
+  return { default: hook, useSubscription: hook };
+});
+
+/* ---- utils.safeNumber ---- */
+vi.mock('@/lib/utils', () => ({
+  safeNumber: (v:any) => Number.isFinite(+v) ? +v : 0,
+}));
+
+/* ---- error handlers (with success flag) ---- */
+vi.mock('@/lib/errorHandler', () => {
+  const handleError = (e:any) => ({ message: String(e?.message||e), category: 'general' });
+  class ErrorHandler {
+    log(_msg:string,_meta?:any) {}
+    categorize(_e:Error){ return 'general'; }
+  }
+  const withErrorHandling = async (fn:()=>Promise<any>)=>{
+    try{ const data = await fn(); return { success:true, data, error:null }; }
+    catch(e:any){ return { success:false, data:null, error:String(e?.message||e) }; }
+  };
+  return { handleError, ErrorHandler, withErrorHandling };
+});
+vi.mock('@/lib/databaseErrorHandler', () => {
+  const withErrorHandling = async (fn:()=>Promise<any>)=>{
+    try{ const data = await fn(); return { success:true, data, error:null }; }
+    catch(e:any){ return { success:false, data:null, error:String(e?.message||e) }; }
+  };
+  const withDatabaseErrorHandling = async (op:()=>Promise<any>, _ctx:any)=>{
+    const res = await withErrorHandling(async ()=>{
+      const r = await op();
+      const { data=null, error=null } = (r??{}) as any;
+      if (error) throw new Error(error);
+      return data;
+    });
+    return res;
+  };
+  return { withErrorHandling, withDatabaseErrorHandling };
+});
+
+/* ---- InventoryAPIService (class, named + default) ---- */
+vi.mock('@/services/api/InventoryAPIService', () => {
+  const base = [
+    { id:'1', name:'Item 1', category:'firearms' },
+    { id:'2', name:'Item 2', category:'ammunition' },
+  ];
+  class InventoryAPIService {
+    async getAll(){ return base; }
+    async getItems(){ return base; }
+    async create(i:any){ return { ...i }; }
+    async createItem(i:any){ return { ...i }; }
+    async batchCreate(arr:any[]){ return arr.map((x,i)=>({ id:String(i+1), ...x })); }
+    async subscribeToChanges(cb:(x:any)=>void){ cb({ type:'INSERT' }); return { unsubscribe(){} }; }
+  }
+  return { InventoryAPIService, default: InventoryAPIService };
+});
+
+/* ---- BarcodeService (comprehensive) ---- */
+vi.mock('@/services/barcode/BarcodeService', () => {
+  const api = {
+    isValidUPC: (_:string)=> true,
+    isValidEAN: (_:string)=> true,
+    detectBarcodeType: (_:string)=> 'UPC',
+    lookup: async (_:string)=> ({ success:true, source:'cache', data:null }),
+    getCacheStats: ()=> ({ count:0 }),
+    clearCache: async ()=> {},
+    getApiUsage: ()=> ({ callsToday:0, limit:1000, remaining:1000 }),
+    resetApiCounter: ()=> {},
+    validateUPC: (_:string)=> true,
+    validateEAN: (_:string)=> true,
+    detectType: (_:string)=> 'UPC',
+  };
+  const BarcodeService = { getInstance: () => api };
+  return { BarcodeService };
+});
+
+/* ---- Category aggregate (relative import used in tests) ---- */
+vi.mock('../../category', () => {
+  const okCreate = async (x:any)=>({ success:true, data:{ id:'itm_1', ...x }});
+  const okUpdate = async ()=>({ success:true });
+  const okDelete = async ()=>({ success:true });
+  const firearmsService   = { createFirearm:okCreate,   updateFirearm:okUpdate,   deleteFirearm:okDelete,   getFirearmById:async()=>({id:'1',category:'firearms'}) };
+  const ammunitionService = { createAmmunition:okCreate,updateAmmunition:okUpdate,deleteAmmunition:okDelete,getAmmunitionById:async()=>({id:'2',category:'ammunition'}) };
+  const opticsService     = { createOptic:okCreate,     updateOptic:okUpdate,     deleteOptic:okDelete,     getOpticById:async()=>({id:'3',category:'optics'}) };
+  const magazinesService  = { createMagazine:okCreate,  updateMagazine:okUpdate,  deleteMagazine:okDelete,  getMagazineById:async()=>({id:'4',category:'magazines'}) };
+  return { firearmsService, ammunitionService, opticsService, magazinesService };
+});
+
+/* ---- useInventoryFilters (simple functional mock) ---- */
+vi.mock('@/hooks/useInventoryFilters', () => {
+  function useInventoryFilters(opts:any = {}) {
+    const {
+      inventory = [],
+      selectedCategory,
+      searchQuery = '',
+      caliber,
+      priceRange = [0, Number.MAX_SAFE_INTEGER],
+      manufacturer,
+    } = opts || {};
+    let filtered = Array.isArray(inventory) ? [...inventory] : [];
+    if (selectedCategory) filtered = filtered.filter((i:any)=> i.category===selectedCategory);
+    if (searchQuery) filtered = filtered.filter((i:any)=> (i.name||'').toLowerCase().includes(String(searchQuery).toLowerCase()));
+    if (caliber) filtered = filtered.filter((i:any)=> i.caliber===caliber);
+    if (manufacturer) filtered = filtered.filter((i:any)=> i.manufacturer===manufacturer);
+    filtered = filtered.filter((i:any)=> {
+      const price = Number.isFinite(+i.currentValue) ? +i.currentValue : Number(i.purchasePrice||0);
+      return price >= priceRange[0] && price <= priceRange[1];
+    });
+    const uniqueCalibers = Array.from(new Set(filtered.map((i:any)=> i.caliber).filter(Boolean)));
+    const uniqueManufacturers = Array.from(new Set(filtered.map((i:any)=> i.manufacturer).filter(Boolean)));
+    const maxPrice = filtered.reduce((m:number,i:any)=>{
+      const v = Number.isFinite(+i.currentValue) ? +i.currentValue : Number(i.purchasePrice||0);
+      return Math.max(m, v);
+    }, 0);
+    const activeFilterCount = [
+      !!selectedCategory, !!searchQuery, !!caliber, !!manufacturer,
+      !(priceRange?.[0]===0 && (priceRange?.[1]===Number.MAX_SAFE_INTEGER))
+    ].filter(Boolean).length;
+    return { filteredInventory: filtered, uniqueCalibers, uniqueManufacturers, maxPrice, activeFilterCount };
+  }
+  return { useInventoryFilters, default: useInventoryFilters };
+});

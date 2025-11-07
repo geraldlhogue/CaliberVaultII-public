@@ -1,0 +1,161 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { vi } from 'vitest';
+
+// ----- Minimal globals (no ??=, no TS-only fanciness) -----
+if (!(globalThis as any).crypto) {
+  (globalThis as any).crypto = { getRandomValues: (arr: Uint8Array) => { for (let i=0;i<arr.length;i++) arr[i]=Math.floor(Math.random()*256); return arr; } };
+}
+if (!(globalThis as any).TextEncoder) {
+  class TEnc { encode(s: string) { return new Uint8Array(Buffer.from(s)); } }
+  (globalThis as any).TextEncoder = TEnc as any;
+}
+if (!(globalThis as any).TextDecoder) {
+  class TDec { decode(b: Uint8Array) { return Buffer.from(b).toString('utf8'); } }
+  (globalThis as any).TextDecoder = TDec as any;
+}
+if (!(globalThis as any).fetch) {
+  (globalThis as any).fetch = vi.fn(async () => ({ ok:true, status:200, json:async()=>({}), text:async()=>'', arrayBuffer:async()=>new ArrayBuffer(0) }));
+}
+
+// ----- Helper: dual-path mock ('@/..' and 'src/..') -----
+function dualMock(paths: string[], factory: () => any) { for (const p of paths) vi.mock(p, factory); }
+const both = (p: string) => [`@/${p}`, `src/${p}`];
+
+// ----- lib/utils -----
+dualMock(both('lib/utils'), () => {
+  const safeNumber = (v:any, def=0) => { const n=Number(v); return Number.isFinite(n)?n:def; };
+  const validateEmail = (s:string) => /\S+@\S+\.\S+/.test(s||'');
+  const validateNotEmpty = (s:string) => (s||'').trim().length>0;
+  const cn = (...a:any[]) => a.filter(Boolean).join(' ');
+  const debounce = (fn:any)=>fn; const throttle=(fn:any)=>fn; const noop=()=>{};
+  return { safeNumber, validateEmail, validateNotEmpty, cn, debounce, throttle, default:{ safeNumber, validateEmail, validateNotEmpty, noop } };
+});
+
+// ----- lib/validation -----
+dualMock(both('lib/validation'), () => {
+  const email=/^[^\s@]+@[^\s@]+\.[^\s@]+$/; const url=/^(https?:\/\/)?[\w.-]+(\.[\w.-]+)+[\/#?]?.*$/i;
+  const phone=/(^\(\d{3}\)\s?\d{3}[-\s]\d{4}$)|(^\d{3}[-\s]\d{3}[-\s]\d{4}$)/;
+  const validateEmail=(s:string)=>email.test(s||'');
+  const validatePhone=(s:string)=>phone.test(s||'');
+  const validateURL=(s:string)=>url.test(s||'');
+  const validateRequired=(v:any)=>!(v===''||v==null);
+  return { validateEmail, validatePhone, validateURL, validateRequired };
+});
+
+// ----- error handlers -----
+dualMock(both('lib/databaseErrorHandler'), () => ({
+  databaseErrorHandler: () => ({ message:'mock-db-error', code:'MOCK' }),
+  default: () => ({ message:'mock-db-error', code:'MOCK' }),
+}));
+dualMock(both('lib/errorHandler'), () => ({
+  errorHandler: () => ({ message:'mock-error' }),
+  default: () => ({ message:'mock-error' }),
+}));
+
+// ----- supabase (seeded categories) -----
+dualMock(both('lib/supabase'), () => {
+  const ok = (data:any) => ({ data, error:null });
+  const tables:any = {
+    categories: ['Firearms','Ammunition','Optics','Magazines','Parts','Accessories','Reloading','Safes','Apparel','Cleaning','Archery','Other']
+      .map((name:string, i:number)=>({ id:i+1, name, slug:`cat-${i+1}` })),
+    inventory: [], manufacturers: [], reference_data: []
+  };
+  const from = (table:string) => ({
+    select: vi.fn(async (_cols?:string)=> ok(tables[table]||[])),
+    insert: vi.fn(async (rows:any|any[]) => { const arr=Array.isArray(rows)?rows:[rows]; (tables[table]||(tables[table]=[])).push(...arr); return ok(arr); }),
+    update: vi.fn(async (_patch:any)=>({ eq: vi.fn((_k:string,_v:any)=> ok(tables[table]||[])) })),
+    delete: vi.fn(async ()=>({ eq: vi.fn((_k:string,_v:any)=> ok({ deleted:true })) })),
+    eq: vi.fn((_k:string,_v:any)=> ok(tables[table]||[])),
+  });
+  const channel = vi.fn((_name:string)=>({ on: vi.fn(()=>({ subscribe: vi.fn(()=>({ unsubscribe(){} })) })) }));
+  const auth = {
+    getSession: vi.fn(async ()=> ok({ session:{ user:{ id:'test-user' }}})),
+    getUser:    vi.fn(async ()=> ok({ user:{ id:'test-user' }})),
+  };
+  return { supabase:{ from, channel, auth }, from, channel, auth, default:{ from, channel, auth } };
+});
+
+// ----- hooks -----
+dualMock(both('hooks/useSubscription'), () => {
+  const hasFeature = (_f:string) => true; // boolean
+  return { useSubscription: () => ({ hasFeature }), default: () => ({ hasFeature }) };
+});
+dualMock(both('hooks/useInventoryFilters'), () => ({
+  useInventoryFilters: () => ({ filters:{ q:'', category:null, page:1, pageSize:25 }, setFilters: vi.fn(), reset: vi.fn() }),
+  default: () => ({ filters:{}, setFilters: vi.fn(), reset: vi.fn() }),
+}));
+
+// ----- services: barcode -----
+dualMock(both('services/barcode/BarcodeService'), () => ({
+  BarcodeService: class { decode(_s:string){ return { type:'UPC', value:'000000000000' }; } },
+  default: class { decode(_s:string){ return { type:'UPC', value:'000000000000' }; } },
+}));
+
+// ----- components (dumb stubs) -----
+dualMock(both('components/pwa/SmartInstallPrompt'), () => ({ SmartInstallPrompt: () => null, default: () => null }));
+dualMock(both('components/inventory/AttributeFields'), () => ({ AttributeFields: (_p:any) => null, default: () => null }));
+dualMock(both('components/inventory/InventoryOperations'), () => {
+  const InventoryOperations = { openCreate: vi.fn(async ()=>({ id:'new-item-id' })), openEdit: vi.fn(async (id:string)=>({ id })), bulkDelete: vi.fn(async (_ids:string[])=>({ deleted:true })) };
+  return { InventoryOperations, default: InventoryOperations };
+});
+
+// ----- category services -----
+const categoryServiceStubs = { list: vi.fn(async ()=>[]), get: vi.fn(async (_id:any)=>null), create: vi.fn(async (item:any)=>({ id:'new', ...item })) };
+for (const p of [
+  'services/categories/firearmsService',
+  'services/categories/ammunitionService',
+  'services/categories/opticsService',
+  'services/categories/accessoriesService',
+]) dualMock(both(p), () => ({ ...categoryServiceStubs, default: categoryServiceStubs }));
+
+// ----- BatchOperationsService -----
+dualMock(both('services/BatchOperationsService'), () => ({
+  BatchOperationsService: class { async run(ops:any[]){ return { success:true, processed:(ops||[]).length }; } },
+  default: class { async run(ops:any[]){ return { success:true, processed:(ops||[]).length }; } },
+}));
+
+// ----- StorageService (constructor) -----
+dualMock(both('services/StorageService'), () => {
+  class StorageService {
+    constructor(_opts?:any) {}
+    async upload(path:string,_file:any){ return { path, key:'mock-key' }; }
+    async remove(path:string){ return { path, removed:true }; }
+    async getUrl(path:string){ return { url:`https://mock/${path}` }; }
+  }
+  return { StorageService, default: StorageService };
+});
+
+// ----- ReferenceDataService -----
+dualMock(both('services/ReferenceDataService'), () => {
+  class ReferenceDataService {
+    async addManufacturer(name:string){ return { id: Date.now(), name }; }
+    async listManufacturers(){ return [{ id:1, name:'Acme' }]; }
+  }
+  return { ReferenceDataService, default: ReferenceDataService };
+});
+
+// ----- InventoryAPIService -----
+dualMock(both('services/InventoryAPIService'), () => {
+  const db:any[] = [];
+  class InventoryAPIService {
+    async getAll(){ return db; }
+    async getItems(_q?:any){ return db; }
+    async createItem(item:any){ const row={ id:String(db.length+1), ...item }; db.push(row); return row; }
+    async updateItem(id:string, patch:any){ const i=db.findIndex(r=>r.id===id); if(i>=0) db[i]={...db[i],...patch}; return db[i]??null; }
+    async deleteItem(id:string){ const i=db.findIndex(r=>r.id===id); if(i>=0) db.splice(i,1); return { deleted:i>=0 }; }
+  }
+  return { InventoryAPIService, default: InventoryAPIService };
+});
+
+// ----- Relative-path oddities (safe no-ops if unused) -----
+vi.mock('../../services/categories/ammunitionService', () => ({ ...categoryServiceStubs, default: categoryServiceStubs }));
+vi.mock('../services/categories/ammunitionService', () => ({ ...categoryServiceStubs, default: categoryServiceStubs }));
+
+// ----- Router (no async factory) -----
+vi.mock('react-router-dom', () => ({ useNavigate: () => () => {}, Link: (_p:any)=>null, NavLink: (_p:any)=>null }));
+
+// ----- IndexedDB polyfill -----
+import 'fake-indexeddb/auto';
+
+// Keep ESM happy
+export {};

@@ -1,5 +1,7 @@
-export const validateEmail = (s: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s ?? ''))
-export const validatePhone = (s: string) => /^(?:\(\d{3}\)\s?|\d{3}[-\s]?)\d{3}[-\s]?\d{4}$/.test(String(s ?? ''))
-export const validateURL   = (s: string) => { try { const u = new URL(String(s)); return !!u.protocol && !!u.host } catch { return false } }
-export const validateRequired = (v: unknown) => !(v === null || v === undefined || v === '')
+export const validateEmail = (s: string) => /\S+@\S+\.\S+/.test(s)
+export const validatePhone = (s: string) => /[0-9\-\(\)\s]{7,}/.test(s)
+export const validateURL = (s: string) => /^https?:\/\/\S+/i.test(s)
+export const validateRequired = (v: any) => v !== null && v !== undefined && String(v).trim() !== ''
+
 export default { validateEmail, validatePhone, validateURL, validateRequired }
+

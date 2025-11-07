@@ -1,0 +1,43 @@
+
+ RUN  v2.1.9 /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVaultII
+
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have ammunition table with correct schema
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have bullets table with correct schema
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have magazines table
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have accessories table
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should fetch all categories from categories table
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should create ammunition item successfully
+ ↓ src/test/integration/data-migration.test.ts > Data Migration Validation > should create magazine item successfully
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate UPC format
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate EAN format
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should detect barcode type
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should track API usage
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should reset API counter
+stdout | src/services/__tests__/sync.service.test.ts > SyncService > should process queue successfully
+[SyncService] Sync complete: { success: 0, failed: 0, conflicts: 0 }
+
+stdout | src/services/__tests__/sync.service.test.ts > SyncService > should not process queue if already processing
+[SyncService] Sync already in progress
+
+ ✓ src/services/__tests__/team.service.test.ts > TeamService > should create team
+ ✓ src/services/__tests__/team.service.test.ts > TeamService > should add team member
+ ✓ src/services/__tests__/team.service.test.ts > TeamService > should list team members
+ ✓ src/services/__tests__/team.service.test.ts > TeamService > should remove team member
+ ✓ src/services/__tests__/team.service.test.ts > TeamService > should get teams
+ ✓ src/services/__tests__/team.service.test.ts > TeamService > should update team
+ ✓ src/services/__tests__/team.service.test.ts > TeamService > should delete team
+ ✓ src/services/__tests__/sync.service.test.ts > SyncService > should process queue successfully
+ ✓ src/services/__tests__/sync.service.test.ts > SyncService > should subscribe to sync status updates
+ ✓ src/services/__tests__/sync.service.test.ts > SyncService > should not process queue if already processing
+ × src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Barcode Validation > validates UPC-A format (12 digits)
+   → BarcodeService.getInstance is not a function
+ × src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkCreate > should create multiple items successfully
+   → [vitest] No "ammunitionService" export is defined on the "../../category" mock. Did you forget to return it from "vi.mock"?
+If you need to partially mock a module, you can use "importOriginal" helper inside:
+
+
+ Test Files  3 failed | 5 passed | 7 skipped (49)
+      Tests  2 failed | 15 passed | 7 skipped (87)
+   Start at  16:36:52
+   Duration  6.00s (transform 3.25s, setup 19.32s, collect 7.61s, tests 20ms, environment 12.69s, prepare 1.77s)
+

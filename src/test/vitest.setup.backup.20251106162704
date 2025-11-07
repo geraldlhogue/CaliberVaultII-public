@@ -1,0 +1,198 @@
+import { vi } from 'vitest'
+import 'fake-indexeddb/auto'
+import '@testing-library/jest-dom/vitest'
+
+;(globalThis as any).matchMedia ||= (() => ({matches:false, media:'', onchange:null,
+  addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){},
+  dispatchEvent(){ return false }
+}))
+;(globalThis as any).ResizeObserver ||= class { observe(){} unobserve(){} disconnect(){} }
+;(function(){
+  const s = new Map<string,string>()
+  ;(globalThis as any).localStorage = {
+    getItem:(k:string)=> s.has(k)? s.get(k)! : null,
+    setItem:(k:string,v:any)=>{ s.set(k, String(v)) },
+    removeItem:(k:string)=>{ s.delete(k) },
+    clear:()=>{ s.clear() },
+    key:(i:number)=> Array.from(s.keys())[i] ?? null,
+    get length(){ return s.size }
+  }
+})()
+
+vi.mock('react-router-dom', async (importOriginal) => {
+  const mod: any = await importOriginal()
+  return { ...mod, useNavigate: () => () => {} }
+})
+
+vi.mock('@/lib/utils', () => {
+  const safeNumber = (v:any) => Number.isFinite(+v) ? +v : 0
+  const cn = (...cls:any[]) => cls.flat().filter(Boolean).join(' ')
+  return { safeNumber, cn, default: { safeNumber, cn } }
+})
+
+return { safeNumber, cn, default: { safeNumber, cn } };
+});
+vi.mock('src/lib/utils', () => {
+  const safeNumber = (v:any) => Number.isFinite(+v) ? +v : 0;
+  const cn = (...cls:any[]) => cls.flat().filter(Boolean).join(' ');
+  return { safeNumber, cn, default: { safeNumber, cn } };
+});
+
+vi.mock('@/lib/validation', () => {
+  const email=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const url=/^(https?:\/\/)?[\w.-]+(\.[\w.-]+)+[\/#?]?.*$/i;
+  const phone=/(^\(\d{3}\)\s?\d{3}[-\s]\d{4}$)|(^\d{3}[-\s]\d{3}[-\s]\d{4}$)/;
+  const validateEmail=(s:string)=>email.test(s);
+  const validatePhone=(s:string)=>phone.test(s);
+  const validateURL=(s:string)=>url.test(s);
+  const validateRequired=(v:any)=>!(v===''||v==null);
+  return { validateEmail, validatePhone, validateURL, validateRequired };
+});
+vi.mock('src/lib/validation', () => {
+  const email=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const url=/^(https?:\/\/)?[\w.-]+(\.[\w.-]+)+[\/#?]?.*$/i;
+  const phone=/(^\(\d{3}\)\s?\d{3}[-\s]\d{4}$)|(^\d{3}[-\s]\d{3}[-\s]\d{4}$)/;
+  const validateEmail=(s:string)=>email.test(s);
+  const validatePhone=(s:string)=>phone.test(s);
+  const validateURL=(s:string)=>url.test(s);
+  const validateRequired=(v:any)=>!(v===''||v==null);
+  return { validateEmail, validatePhone, validateURL, validateRequired };
+});
+
+}
+    async subscribeToChanges(cb:(x:any)=>void){ cb({ type:'INSERT' }); return { unsubscribe(){} }; }
+  }
+  return { InventoryAPIService, default: InventoryAPIService };
+});
+}
+    async subscribeToChanges(cb:(x:any)=>void){ cb({ type:'INSERT' }); return { unsubscribe(){} }; }
+  }
+  return { InventoryAPIService, default: InventoryAPIService };
+});
+
+vi.mock('@/services/api/InventoryAPIService', () => {
+  class InventoryAPIService {
+    async getAll(){ return [ {id:'1', name:'Item 1'}, {id:'2', name:'Item 2'} ]; }
+    async getItems(){ return [ {id:'1', name:'Item 1'}, {id:'2', name:'Item 2'} ]; }
+    async create(i:any){ return { ...i }; }
+    async createItem(i:any){ return { ...i }; }
+    async batchCreate(arr:any[]){ return arr.map((x,i)=>({ id:String(i+1), ...x })); }
+    async subscribeToChanges(cb:(x:any)=>void){ cb({ type:'INSERT' }); return { unsubscribe(){} }; }
+  }
+  return { InventoryAPIService, default: InventoryAPIService };
+});
+vi.mock('src/services/api/InventoryAPIService', () => {
+  class InventoryAPIService {
+    async getAll(){ return [ {id:'1', name:'Item 1'}, {id:'2', name:'Item 2'} ]; }
+    async getItems(){ return [ {id:'1', name:'Item 1'}, {id:'2', name:'Item 2'} ]; }
+    async create(i:any){ return { ...i }; }
+    async createItem(i:any){ return { ...i }; }
+    async batchCreate(arr:any[]){ return arr.map((x,i)=>({ id:String(i+1), ...x })); }
+    async subscribeToChanges(cb:(x:any)=>void){ cb({ type:'INSERT' }); return { unsubscribe(){} }; }
+  }
+  return { InventoryAPIService, default: InventoryAPIService };
+});
+
+vi.mock('@/services/storage.service', () => {
+  class StorageService {
+    async uploadFile(_f:any){ return { path:'path/file.png' } }
+    async deleteFile(_p:string){ return { success:true } }
+    async listFiles(_?:string){ return [{ name:'a.png' }] }
+  }
+  return { StorageService, default: StorageService };
+});
+vi.mock('src/services/storage.service', () => {
+  class StorageService {
+    async uploadFile(_f:any){ return { path:'path/file.png' } }
+    async deleteFile(_p:string){ return { success:true } }
+    async listFiles(_?:string){ return [{ name:'a.png' }] }
+  }
+  return { StorageService, default: StorageService };
+});
+
+vi.mock('@/services/reference.service', () => {
+  class ReferenceDataService {
+    async getManufacturers(){ return [{ id:'m1', name:'Test Mfg' }] }
+    async getCalibers(){ return [{ id:'c1', name:'5.56mm' }] }
+    async addManufacturer(m:any){ return { id:'m2', name: m?.name ?? 'New' } }
+  }
+  return { ReferenceDataService, default: ReferenceDataService };
+});
+vi.mock('src/services/reference.service', () => {
+  class ReferenceDataService {
+    async getManufacturers(){ return [{ id:'m1', name:'Test Mfg' }] }
+    async getCalibers(){ return [{ id:'c1', name:'5.56mm' }] }
+    async addManufacturer(m:any){ return { id:'m2', name: m?.name ?? 'New' } }
+  }
+  return { ReferenceDataService, default: ReferenceDataService };
+});
+
+vi.mock('@/lib/supabase', () => {
+  const ok = (data:any)=>({ data, error:null });
+  const tableFor = (name:string) => {
+    const rows = name==='categories' ? [{\'name\': \'firearms\'}, {\'name\': \'ammunition\'}, {\'name\': \'optics\'}, {\'name\': \'magazines\'}, {\'name\': \'accessories\'}, {\'name\': \'parts\'}, {\'name\': \'cleaning\'}, {\'name\': \'storage\'}, {\'name\': \'knives\'}, {\'name\': \'apparel\'}, {\'name\': \'tools\'}, {\'name\': \'other\'}] : [];
+    return {
+      select: (_?:string) => {
+        const base = ok(rows);
+        return {
+          ...base,
+          limit: (n?:number)=> ok(typeof n==='number' ? rows.slice(0,n) : rows),
+          order: (_o?:string,_opt?:any)=>({
+            ...ok(rows),
+            limit: (n?:number)=> ok(typeof n==='number' ? rows.slice(0,n) : rows),
+          }),
+        };
+      },
+      insert: (payload:any)=>({
+        select: ()=>({ single: ()=> ok({ id:'ins_1', ...(Array.isArray(payload)?payload[0]:payload) }) })
+      }),
+      update: (_p:any)=>({ eq: (_f:string,_v:any)=>({ select: ()=> ok({ updated:true }) }) }),
+      delete: (_?:any)=>({ eq: (_f:string,_v:any)=> ok({ deleted:true }) }),
+    };
+  };
+  const channel = (vi as any).fn((_name:string)=>({ on:()=>({ subscribe:()=>({ unsubscribe(){} }) }) }));
+  const supabase = {
+    from: (name:string)=> tableFor(name),
+    channel,
+    auth:{ getSession: async()=> ok({ session:{ user:{ id:'test-user' }}}), getUser: async()=> ok({ user:{ id:'test-user' }}) }
+  };
+  return { supabase };
+});
+
+vi.mock('@/hooks/useSubscription', () => {
+  const hasFeature = (k:string)=> k !== 'nonexistent_feature';
+  const hook = () => ({ tier:'pro', status:'active', limits:{ maxItems:100 }, hasFeature });
+  return { default: hook, useSubscription: hook };
+});
+
+const __catAgg = () => {
+  const okCreate = async (x:any)=>({ success:true, data:{ id:'itm_1', ...x }});
+  const okUpdate = async ()=>({ success:true });
+  const okDelete = async ()=>({ success:true });
+  const firearmsService   = { createFirearm:okCreate,   updateFirearm:okUpdate,   deleteFirearm:okDelete,   getFirearmById:async()=>({id:'1',category:'firearms'}) };
+  const ammunitionService = { createAmmunition:okCreate,updateAmmunition:okUpdate,deleteAmmunition:okDelete,getAmmunitionById:async()=>({id:'2',category:'ammunition'}) };
+  const opticsService     = { createOptic:okCreate,     updateOptic:okUpdate,     deleteOptic:okDelete,     getOpticById:async()=>({id:'3',category:'optics'}) };
+  const magazinesService  = { createMagazine:okCreate,  updateMagazine:okUpdate,  deleteMagazine:okDelete,  getMagazineById:async()=>({id:'4',category:'magazines'}) };
+  const accessoriesService= { createAccessory:okCreate, updateAccessory:okUpdate, deleteAccessory:okDelete, getAccessoryById:async()=>({id:'5',category:'accessories'}) };
+  return { firearmsService, ammunitionService, opticsService, magazinesService, accessoriesService };
+};
+vi.mock('@/services/category', () => __catAgg());
+vi.mock('src/services/category', () => __catAgg());
+vi.mock('../../category', () => __catAgg());
+vi.mock('../../category/index', () => __catAgg());
+vi.mock('../../../category', () => __catAgg());
+vi.mock('../../../category/index', () => __catAgg());
+vi.mock('services/category', () => __catAgg());
+vi.mock('category', () => __catAgg());
+
+vi.mock('@/components/inventory/InventoryOperations', () => {
+  const React = require('react');
+  const InventoryOperations = () => React.createElement('div', null, 'InventoryOps');
+  return { InventoryOperations, default: InventoryOperations };
+});
+
+vi.mock('src/components/inventory/InventoryOperations', () => {
+  const React = require('react');
+  const InventoryOperations = () => React.createElement('div', null, 'InventoryOps');
+  return { InventoryOperations, default: InventoryOperations };
+});

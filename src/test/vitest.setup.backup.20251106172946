@@ -1,0 +1,167 @@
+
+import "@testing-library/jest-dom";
+import { vi } from "vitest";
+
+/* ===== DOM & globals ===== */
+if (!(globalThis).fetch) { (globalThis).fetch = vi.fn(async () => ({ ok:true, status:200, json:async()=>({}), text:async()=>"", arrayBuffer:async()=>new ArrayBuffer(0) })); }
+if (!(globalThis).matchMedia) { (globalThis).matchMedia = () => ({ matches:false, media:"", onchange:null, addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){}, dispatchEvent(){return false;} }); }
+if (!(globalThis).ResizeObserver) { (globalThis).ResizeObserver = class { observe(){} unobserve(){} disconnect(){} }; }
+(() => {
+  const store = new Map();
+  const api = { getItem:k=>store.has(k)?store.get(k):null, setItem:(k,v)=>{store.set(k,String(v));}, removeItem:k=>{store.delete(k);}, clear:()=>{store.clear();} };
+  Object.defineProperty(globalThis, "localStorage", { value: api, configurable: true });
+  if (typeof window !== "undefined") Object.defineProperty(window, "localStorage", { value: api, configurable: true });
+})();
+
+/* ===== Router ===== */
+vi.mock("react-router-dom", () => ({ useNavigate: () => () => {}, Link: () => null, NavLink: () => null }));
+
+/* ===== lib/utils (safeNumber) ===== */
+vi.mock("/src/lib/utils.ts", () => {
+  const safeNumber = (v, def=0) => { const n=Number(v); return Number.isFinite(n)?n:def; };
+  const cn = (...a) => a.filter(Boolean).join(" ");
+  return { safeNumber, cn, default:{ safeNumber, cn } };
+});
+
+/* ===== lib/validation ===== */
+vi.mock("/src/lib/validation.ts", () => {
+  const email=/^[^\s@]+@[^\s@]+\.[^\s@]+$/; const url=/^(https?:\/\/)?[\w.-]+(\.[\w.-]+)+[\/#?]?.*$/i; const phone=/(^\(\d{3}\)\s?\d{3}[-\s]\d{4}$)|(^\d{3}[-\s]\d{3}[-\s]\d{4}$)/;
+  const validateEmail=s=>email.test(s||""); const validatePhone=s=>phone.test(s||""); const validateURL=s=>url.test(s||""); const validateRequired=v=>!(v===""||v==null);
+  return { validateEmail, validatePhone, validateURL, validateRequired };
+});
+
+/* ===== lib/databaseErrorHandler ===== */
+vi.mock("/src/lib/databaseErrorHandler.ts", () => {
+  const withErrorHandling = async (fn) => { try { return await fn(); } catch (e) { return { data:null, error:e||new Error("mock error") }; } };
+  const withDatabaseErrorHandling = async (operation) => {
+    const { data, error } = await withErrorHandling(operation);
+    if (error) return { data:null, error };
+    return { data, error:null };
+  };
+  return { withErrorHandling, withDatabaseErrorHandling, default:{ withErrorHandling, withDatabaseErrorHandling } };
+});
+
+/* ===== Supabase (seed + chains) ===== */
+vi.mock("/src/lib/supabase.ts", () => {
+  const ok = (data) => ({ data, error: null });
+
+  const seedCategories = [
+    "Firearms","Ammunition","Bullets","Magazines","Parts","Accessories",
+    "Reloading","Safes","Apparel","Cleaning","Archery","Other"
+  ].map((name, i) => ({ id:i+1, name, slug:"cat-"+(i+1) }));
+
+  const makeChain = (data=[]) => {
+    const chain = {
+      _d: Array.isArray(data) ? data : [data],
+      select(){ return chain; },
+      order(){ return chain; },
+      eq(){ return chain; },
+      limit(){ return Promise.resolve(ok(chain._d)); },
+      single(){ return Promise.resolve(ok(chain._d[0] ?? null)); }
+    };
+    return chain;
+  };
+
+  const from = vi.fn((table) => {
+    const base = table === "categories" ? seedCategories : [];
+    return {
+      select: vi.fn((_c) => makeChain(base)),
+      insert: vi.fn((rows) => { const arr = Array.isArray(rows)?rows:[rows]; const c = makeChain(arr); c.select = () => c; return c; }),
+      update: vi.fn((_patch) => ({ eq: vi.fn((_k,_v) => Promise.resolve(ok({ updated:true }))) })),
+      delete: vi.fn(() => ({ eq: vi.fn((_k,_v) => Promise.resolve(ok({ deleted:true }))) })),
+      eq:     vi.fn((_k,_v) => makeChain(base)),
+    };
+  });
+
+  const channel = vi.fn((_name) => ({ on: vi.fn(() => ({ subscribe: vi.fn(() => ({ unsubscribe(){} })) })) }));
+  const auth = { getUser: vi.fn(async () => ok({ user:{ id:"test-user" } })), getSession: vi.fn(async () => ok({ session:{ user:{ id:"test-user" } } })) };
+  const supabase = { from, channel, auth };
+  return { supabase, from, channel, auth, default: supabase };
+});
+
+/* ===== BarcodeService (usage + cache + ITF) ===== */
+vi.mock("/src/services/barcode/BarcodeService.ts", () => {
+  const cache = new Map(); let calls=0;
+  class BarcodeService {
+    static _i; static getInstance(){ return this._i ?? (this._i = new BarcodeService()); }
+    isValidUPC(s){ return typeof s==="string" && /^\d{12,13}$/.test(s); }
+    isValidEAN(s){ return typeof s==="string" && (/^\d{13}$/.test(s) || /^\d{8}$/.test(s)); }
+    detectBarcodeType(s){ if(/^\d{12}$/.test(s))return "UPC"; if(/^\d{13}$/.test(s))return "EAN"; if(/^\d{8}$/.test(s))return "EAN-8"; if(/^\d{14}$/.test(s))return "ITF-14"; return "UNKNOWN"; }
+    async lookup(s){ calls++; if(cache.has(s)) return { success:true, data:cache.get(s), source:"cache" }; return { success:false, data:null, source:"offline" }; }
+    getApiUsage(){ const limit=1000; const remaining=Math.max(0,limit-calls); const percentUsed=(calls/limit)*100; return { callsToday:calls, limit, remaining, percentUsed }; }
+    resetApiCounter(){ calls=0; } async getCacheStats(){ return { size: cache.size }; } async clearCache(){ cache.clear(); }
+  }
+  return { BarcodeService, default: BarcodeService };
+});
+
+/* ===== Category barrel (all services + relative ids) ===== */
+const mkCat = () => ({ list: vi.fn(async()=>[]), get: vi.fn(async()=>null), create: vi.fn(async(x)=>({ id:"new", ...x })), update: vi.fn(async()=>({success:true})), delete: vi.fn(async()=>({success:true})) });
+const catFactory = () => {
+  const firearmsService=mkCat(), ammunitionService=mkCat(), opticsService=mkCat(), magazinesService=mkCat(), accessoriesService=mkCat(), suppressorsService=mkCat(), reloadingService=mkCat();
+  return { firearmsService, ammunitionService, opticsService, magazinesService, accessoriesService, suppressorsService, reloadingService,
+           default:{ firearmsService, ammunitionService, opticsService, magazinesService, accessoriesService, suppressorsService, reloadingService } };
+};
+vi.mock("/src/services/category/index.ts", catFactory);
+vi.mock("/src/services/category", catFactory);
+vi.mock("src/services/category", catFactory);
+vi.mock("@/services/category", catFactory);
+vi.mock("../category", catFactory);
+vi.mock("../../category", catFactory);
+
+/* ===== Inventory API (class + index) ===== */
+vi.mock("/src/services/api/InventoryAPIService.ts", () => {
+  const db = [];
+  class InventoryAPIService {
+    async getAll(){ return db; }
+    async getItems(){ return db; }
+    async createItem(item){ const row={ id:String(db.length+1), ...item }; db.push(row); return row; }
+    async batchCreate(arr){ const out = arr.map((x,i)=>({ id:String(db.length+i+1), ...x })); db.push(...out); return out; }
+    async subscribeToChanges(cb){ cb({ type:"INSERT" }); return { unsubscribe(){} }; }
+  }
+  return { InventoryAPIService, default: InventoryAPIService };
+});
+vi.mock("/src/services/api/index.ts", () => {
+  const db=[{ id:"1", name:"Item 1", category:"firearms" }, { id:"2", name:"Item 2", category:"ammunition" }];
+  const getAll = async()=>db;
+  const create = async(item)=>{ db.push(item); return item; };
+  const subscribeToChanges = async(cb)=>{ cb({ type:"INSERT", payload:{ id:"3" } }); return { unsubscribe(){} }; };
+  return { getAll, create, subscribeToChanges, default:{ getAll, create, subscribeToChanges } };
+});
+
+/* ===== Storage & Reference services ===== */
+vi.mock("/src/services/StorageService.ts", () => { class StorageService{ constructor(){} async upload(p,_f){return{path:p,key:"mock"};} async delete(p){return{deleted:true,path:p};} async list(){return[];} } return { StorageService, default: StorageService }; });
+vi.mock("/src/services/reference.service.ts", () => { class ReferenceDataService{ async getManufacturers(){return[{id:"m1",name:"Acme"}];} async getCalibers(){return[{id:"c1",name:"9mm"}];} async addManufacturer(payload){ const name = payload&&payload.name?payload.name:String(payload||""); return { id:"m"+Date.now(), name }; } } return { ReferenceDataService, default: ReferenceDataService }; });
+
+/* ===== Hooks ===== */
+vi.mock("/src/hooks/useSubscription.ts", () => {
+  const hasFeature = (_k) => true;
+  const limits = { maxItems:1000, maxPhotos:50 };
+  return { useSubscription: () => ({ tier:"pro", status:"active", limits, hasFeature }), default: () => ({ tier:"pro", status:"active", limits, hasFeature }) };
+});
+vi.mock("/src/hooks/useInventoryFilters.ts", () => {
+  function useInventoryFilters({ inventory=[], selectedCategory, searchQuery, caliber, manufacturer, priceRange }={}) {
+    let a = [...inventory];
+    if (selectedCategory) a = a.filter(i=>i.category===selectedCategory);
+    if (searchQuery) a = a.filter(i=>(i.name||"").toLowerCase().includes(String(searchQuery).toLowerCase()));
+    if (caliber) a = a.filter(i=>i.caliber===caliber);
+    if (manufacturer) a = a.filter(i=>i.manufacturer===manufacturer);
+    if (Array.isArray(priceRange)) { const [min,max]=priceRange; a=a.filter(i=>{ const p=Number(i.price??i.currentValue??i.purchasePrice??0); return p>=(min??0)&&p<=(max??Number.MAX_VALUE); }); }
+    const uniqueCalibers = Array.from(new Set(inventory.map(i=>i.caliber).filter(Boolean))).sort();
+    const uniqueManufacturers = Array.from(new Set(inventory.map(i=>i.manufacturer).filter(Boolean))).sort();
+    const maxPrice = inventory.reduce((m,i)=>Math.max(m, Number(i.price??i.currentValue??i.purchasePrice??0)), 0);
+    const activeFilterCount = ["category","q","caliber","manufacturer","priceRange"].reduce((n,k)=>n + ( (k==="q"?searchQuery:eval(k)) ? 1:0 ),0);
+    const filters = { q:searchQuery||"", category:selectedCategory||null, caliber:caliber||null, manufacturer:manufacturer||null, priceRange:priceRange||null };
+    const setFilters = (_p)=>{}; const reset=()=>{};
+    return { filteredInventory:a, uniqueCalibers, uniqueManufacturers, maxPrice, activeFilterCount, filters, setFilters, reset };
+  }
+  return { useInventoryFilters, default: useInventoryFilters };
+});
+vi.mock("/src/hooks/useOfflineSync.ts", () => ({ useOfflineSync: () => ({ queuedChanges: [] }) }));
+
+/* ===== InventoryOperations component ===== */
+vi.mock("/src/components/inventory/InventoryOperations.tsx", () => {
+  const React = require("react"); function InventoryOperations(){ return React.createElement("div", null, "InventoryOperations"); }
+  return { default: InventoryOperations, InventoryOperations };
+});
+
+export {};

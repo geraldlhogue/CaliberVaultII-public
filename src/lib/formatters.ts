@@ -1,15 +1,17 @@
-
-export function formatCurrency(n: number): string {
-  return n.toLocaleString(undefined, { style: 'currency', currency: 'USD', minimumFractionDigits: 2 });
+export function formatCurrency(n: number, currency = 'USD', locale = 'en-US') {
+  if (typeof n !== 'number' || Number.isNaN(n)) return '$0.00'
+  return new Intl.NumberFormat(locale, { style: 'currency', currency, maximumFractionDigits: 2 }).format(n)
 }
-export function formatDate(s: string): string {
-  const d = new Date(s);
-  if (isNaN(d.getTime())) return 'Invalid Date';
-  return d.toISOString().slice(0,10);
+export function formatNumber(n: number, fractionDigits = 0, locale = 'en-US') {
+  if (typeof n !== 'number' || Number.isNaN(n)) return '0'
+  return new Intl.NumberFormat(locale, { minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits }).format(n)
 }
-export function formatNumber(n: number): string {
-  return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+export function formatPercentage(v: number, fractionDigits = 2, locale = 'en-US') {
+  if (typeof v !== 'number' || Number.isNaN(v)) return '0%'
+  return `${formatNumber(v * 100, fractionDigits, locale)}%`
 }
-export function formatPercentage(n: number): string {
-  return (n * 100).toFixed(2) + '%';
+export function formatDate(value: string | number | Date, locale = 'en-US') {
+  const d = new Date(value)
+  return Number.isNaN(d.getTime()) ? 'Invalid Date' : d.toLocaleString(locale)
 }
+export default { formatCurrency, formatNumber, formatPercentage, formatDate }

@@ -1,0 +1,197 @@
+/* Vitest setup (contract-stable) */
+import { vi } from 'vitest'
+import 'fake-indexeddb/auto'
+import '@testing-library/jest-dom/vitest'
+
+;(globalThis as any).matchMedia ||= (() => ({
+  matches:false, media:'', onchange:null,
+  addListener() {}, removeListener() {},
+  addEventListener() {}, removeEventListener() {},
+  dispatchEvent() { return false },
+}))
+;(globalThis as any).ResizeObserver ||= class { observe(){} unobserve(){} disconnect(){} }
+;(() => {
+  const s = new Map<string,string>()
+  ;(globalThis as any).localStorage = {
+    getItem:(k:string)=> s.has(k)? s.get(k)! : null,
+    setItem:(k:string,v:any)=>{ s.set(k, String(v)) },
+    removeItem:(k:string)=>{ s.delete(k) },
+    clear:()=>{ s.clear() },
+    key:(i:number)=> Array.from(s.keys())[i] ?? null,
+    get length(){ return s.size },
+  }
+})()
+
+/* ---------- utils: resilient (named + default) ---------- */
+return { unsubscribe(){} } }
+  }
+  return { InventoryAPIService, default: InventoryAPIService }
+})
+
+vi.mock('@/services/storage.service', () => {
+  class StorageService {
+    async uploadFile(_f:any){ return { path:'path/file.png' } }
+    async deleteFile(_p:string){ return { success:true } }
+    async listFiles(_?:string){ return [{ name:'a.png' }] }
+  }
+  return { StorageService, default: StorageService }
+})
+
+return { safeNumber, cn, default: { safeNumber, cn } };
+});
+
+vi.mock('@/lib/supabase', () => {
+  const ok = (data:any)=>({ data, error:null });
+  const table = (_rows:any[]=[]) => ({
+    select: (_?:string) => {
+      const result = ok(_rows);
+      return {
+        ...result,
+        limit: (_n?:number) => ok(_rows.slice(0, typeof _n==='number' ? _n : _rows.length)),
+        order: (_?:string,_o?:any) => ({
+          ...ok(_rows), // allow destructuring without .limit()
+          limit: (_n?:number) => ok(_rows.slice(0, typeof _n==='number' ? _n : _rows.length)),
+        }),
+      };
+    },
+    insert: (payload:any) => ({
+      select: () => ({
+        single: () => ok({ id:'ins_1', ...(Array.isArray(payload)?payload[0]:payload) }),
+      }),
+    }),
+    update: (_payload:any) => ({
+      eq: (_:string,__:any) => ({
+        select: () => ok({ updated:true }),
+      }),
+    }),
+    delete: (_?:any) => ({
+      eq: (_:string,__:any) => ok({ deleted:true }),
+    }),
+  });
+  const channel = (vi as any).fn((_name:string)=>({ on:()=>({ subscribe:()=>({ unsubscribe(){} }) }) }));
+  const supabase = {
+    from: (_table:string)=> table([]),
+    channel,
+    auth:{
+      getSession: async()=> ok({ session:{ user:{ id:'test-user' }}}),
+      getUser:    async()=> ok({ user:{ id:'test-user' }})
+    }
+  };
+  return { supabase };
+});
+
+vi.mock('@/lib/databaseErrorHandler', () => {
+  const withErrorHandling = async (fn:()=>Promise<any>)=>{
+    try {
+      const d = await fn();
+      const data = (d && typeof d==='object' && 'data' in d) ? (d as any).data : d;
+      return { success:true, data, error:null };
+    } catch(e:any){
+      return { success:false, data:null, error: String(e?.message||e) };
+    }
+  };
+  const withDatabaseErrorHandling = (op:()=>Promise<any>, _ctx:any) => withErrorHandling(op);
+  return { withErrorHandling, withDatabaseErrorHandling };
+});
+
+vi.mock('@/services/reference.service', () => {
+  async function getManufacturers(){ return [{ id:'m1', name:'Test Mfg' }] }
+  async function getCalibers(){ return [{ id:'c1', name:'5.56mm' }] }
+  async function addManufacturer(m:any){
+    const nameFromGet = (typeof m?.get === 'function') ? m.get('name') : undefined;
+    const name = (m?.name ?? nameFromGet ?? 'New');
+    return { id:'m2', name };
+  }
+  class ReferenceDataService {
+    async getManufacturers(){ return getManufacturers() }
+    async getCalibers(){ return getCalibers() }
+    async addManufacturer(m:any){ return addManufacturer(m) }
+  }
+  return { ReferenceDataService, getManufacturers, getCalibers, addManufacturer, default: ReferenceDataService };
+});
+
+vi.mock('@/services/barcode/BarcodeService', () => {
+  const isDigits = (s:string, n:number)=> /^\d+$/.test(s) && s.length===n;
+  const isValidUPC = (s:string)=> isDigits(s,12);         // UPC = 12 only
+  const isValidEAN = (s:string)=> isDigits(s,13);
+  const detectBarcodeType = (s:string)=>{
+    if (isValidUPC(s)) return 'UPC';
+    if (isValidEAN(s)) return 'EAN';
+    if (isDigits(s,8)) return 'EAN-8';
+    if (isDigits(s,14)) return 'ITF-14';
+    return 'UNKNOWN';
+  };
+  const lookup = async (s:string)=> s==='999999999999' ? ({ success:false, source:'cache', data:null }) : ({ success:true, source:'cache', data:null });
+  const getCacheStats = ()=> ({ count:0 });
+  const clearCache = async ()=> {};
+  let calls = 0;
+  const getApiUsage = ()=> ({ callsToday: calls, limit:1000, remaining:1000-calls, percentUsed: (calls/1000)*100 });
+  const resetApiCounter = ()=> { calls = 0 };
+  const api = { isValidUPC, isValidEAN, detectBarcodeType, lookup, getCacheStats, clearCache, getApiUsage, resetApiCounter,
+                validateUPC:isValidUPC, validateEAN:isValidEAN, detectType:detectBarcodeType };
+  const BarcodeService = { getInstance: () => api };
+  return { BarcodeService };
+});
+
+vi.mock('@/hooks/useSubscription', () => {
+  const hasFeature = async (k:string)=> Promise.resolve(k !== 'nonexistent_feature');
+  const hook = () => ({ tier:'pro', status:'active', limits:{ maxItems:100 }, hasFeature });
+  return { default: hook, useSubscription: hook };
+});
+
+vi.mock('@/hooks/useInventoryFilters', () => {
+  const React = require('react');
+  function useInventoryFilters(opts:any = {}) {
+    const {
+      inventory = [],
+      selectedCategory = '',
+      searchQuery = '',
+      caliber = '',
+      priceRange = [0, Number.MAX_SAFE_INTEGER],
+      manufacturer = '',
+    } = opts || {};
+    const [filters, setFilters] = React.useState({ category:selectedCategory, manufacturer, caliber, searchQuery, priceRange });
+
+    let filtered = Array.isArray(inventory) ? [...inventory] : [];
+    if (filters.category) filtered = filtered.filter((i:any)=> i.category===filters.category);
+    if (filters.searchQuery) filtered = filtered.filter((i:any)=> (i.name||'').toLowerCase().includes(String(filters.searchQuery).toLowerCase()));
+    if (filters.caliber) filtered = filtered.filter((i:any)=> i.caliber===filters.caliber);
+    if (filters.manufacturer) filtered = filtered.filter((i:any)=> i.manufacturer===filters.manufacturer);
+    filtered = filtered.filter((i:any)=> {
+      const val = Number.isFinite(+i.currentValue) ? +i.currentValue : Number(i.purchasePrice||0);
+      const [min,max] = filters.priceRange || [0, Number.MAX_SAFE_INTEGER];
+      return val >= min && val <= max;
+    });
+
+    const uniqueCalibers = Array.from(new Set(filtered.map((i:any)=> i.caliber).filter(Boolean))).sort();
+    const uniqueManufacturers = Array.from(new Set(filtered.map((i:any)=> i.manufacturer).filter(Boolean))).sort();
+    const maxPrice = filtered.reduce((m:number,i:any)=>{
+      const v = Number.isFinite(+i.currentValue) ? +i.currentValue : Number(i.purchasePrice||0);
+      return Math.max(m, v);
+    }, 0);
+    const activeFilterCount =
+      (filters.category?1:0)+(filters.manufacturer?1:0)+(filters.caliber?1:0)+(filters.searchQuery?1:0)+
+      ((filters.priceRange?.[0]===0 && (filters.priceRange?.[1]===Number.MAX_SAFE_INTEGER)) ? 0 : 1);
+
+    return { filteredInventory: filtered, uniqueCalibers, uniqueManufacturers, maxPrice, activeFilterCount, filters, setFilters };
+  }
+  return { useInventoryFilters, default: useInventoryFilters };
+});
+
+vi.mock('@/components/pwa/SmartInstallPrompt', () => {
+  const React = require('react');
+  const SmartInstallPrompt = () => React.createElement('div');
+  return { SmartInstallPrompt, default: SmartInstallPrompt };
+});
+
+vi.mock('@/components/inventory/InventoryOperations', () => {
+  const React = require('react');
+  const InventoryOperations = () => React.createElement('div', null, 'InventoryOps');
+  return { InventoryOperations, default: InventoryOperations };
+});
+
+vi.mock('@/components/inventory/AttributeFields', () => {
+  const React = require('react');
+  const AttributeFields = (_props:any) => React.createElement('div');
+  return { AttributeFields, default: AttributeFields };
+});

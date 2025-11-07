@@ -1,0 +1,57 @@
+import { vi } from 'vitest';
+
+/* globals */
+if (!(globalThis).fetch) { (globalThis).fetch = vi.fn(async () => ({ ok:true, status:200, json:async()=>({}), text:async()=>'', arrayBuffer:async()=>new ArrayBuffer(0) })); }
+
+/* router */
+vi.mock('react-router-dom', () => ({ useNavigate: () => () => {}, Link: () => null, NavLink: () => null }));
+
+/* supabase – minimal but chainable */
+vi.mock('/src/lib/supabase.ts', () => {
+  const ok = (data) => ({ data, error: null });
+  const builder = (data=[]) => {
+    const b = {
+      _d: Array.isArray(data) ? data : [data],
+      select(){ return b; },
+      order(){ return b; },
+      limit(){ return b; },
+      single(){ b._d = [b._d[0] ?? null]; return b; },
+      eq(){ return b; },
+      then(res, rej){ Promise.resolve(ok(b._d.length === 1 ? b._d[0] : b._d)).then(res, rej); }
+    };
+    return b;
+  };
+  const from = vi.fn((_table) => ({
+    select: vi.fn((_cols) => builder([])),
+    insert: vi.fn((rows) => { const arr = Array.isArray(rows) ? rows : [rows]; const b = builder(arr); b.select = () => b; return b; }),
+    update: vi.fn((_patch) => ({ eq: vi.fn((_k,_v) => builder([])) })),
+    delete: vi.fn(() => ({ eq: vi.fn((_k,_v) => builder({ deleted:true })) })),
+    eq: vi.fn((_k,_v) => builder([])),
+  }));
+  const channel = vi.fn((_name) => ({ on: vi.fn(() => ({ subscribe: vi.fn(() => ({ unsubscribe(){} })) })) }));
+  const auth = { getUser: vi.fn(async () => ok({ user:{ id:'test-user' } })), getSession: vi.fn(async () => ok({ session:{ user:{ id:'test-user' } } })) };
+  const supabase = { from, channel, auth };
+  return { supabase, from, channel, auth, default: supabase };
+});
+
+/* BarcodeService – with static getInstance */
+vi.mock('/src/services/barcode/BarcodeService.ts', () => {
+  class BarcodeService {
+    static _i; static getInstance(){ return this._i ?? (this._i = new BarcodeService()); }
+    isValidUPC(s){ return typeof s==='string' && /^\d{12}$/.test(s); }
+    isValidEAN(s){ return typeof s==='string' && (/^\d{13}$/.test(s) || /^\d{8}$/.test(s)); }
+    detectBarcodeType(s){ if (/^\d{12}$/.test(s)) return 'UPC'; if (/^\d{13}$/.test(s)) return 'EAN'; if (/^\d{8}$/.test(s)) return 'EAN-8'; if (/^\d{14}$/.test(s)) return 'ITF-14'; return 'UNKNOWN'; }
+    async lookup(_s){ return { success:false, data:null, source:'offline' }; }
+  }
+  return { BarcodeService, default: BarcodeService };
+});
+
+/* category barrel – exports ammunitionService et al. */
+vi.mock('/src/services/category/index.ts', () => {
+  const mk = () => ({ list: vi.fn(async ()=>[]), get: vi.fn(async ()=>null), create: vi.fn(async (x)=>({ id:'new', ...x })) });
+  const firearmsService=mk(), ammunitionService=mk(), opticsService=mk(), magazinesService=mk(), accessoriesService=mk(), suppressorsService=mk();
+  return { firearmsService, ammunitionService, opticsService, magazinesService, accessoriesService, suppressorsService,
+           default:{ firearmsService, ammunitionService, opticsService, magazinesService, accessoriesService, suppressorsService } };
+});
+
+export {};

@@ -1,0 +1,462 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import "@testing-library/jest-dom/vitest";
+import { vi } from "vitest";
+
+/* ===========================
+   Minimal globals / DOM shims
+   =========================== */
+if (!(globalThis as any).fetch) {
+  (globalThis as any).fetch = vi.fn(async () => ({
+    ok: true,
+    status: 200,
+    json: async () => ({}),
+    text: async () => "",
+    arrayBuffer: async () => new ArrayBuffer(0),
+  }));
+}
+
+if (!(globalThis as any).matchMedia) {
+  (globalThis as any).matchMedia = () => ({
+    matches: false,
+    media: "",
+    onchange: null,
+    addListener() {},
+    removeListener() {},
+    addEventListener() {},
+    removeEventListener() {},
+    dispatchEvent() {
+      return false;
+    },
+  });
+}
+
+if (!(globalThis as any).ResizeObserver) {
+  (globalThis as any).ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  };
+}
+
+if (!(globalThis as any).localStorage) {
+  const store = new Map<string, string>();
+  const api = {
+    getItem(k: string) {
+      return store.has(k) ? store.get(k)! : null;
+    },
+    setItem(k: string, v: string) {
+      store.set(k, String(v));
+    },
+    removeItem(k: string) {
+      store.delete(k);
+    },
+    clear() {
+      store.clear();
+    },
+  };
+  (globalThis as any).localStorage = api;
+  if (typeof window !== "undefined") (window as any).localStorage = api;
+}
+
+/* ===========================
+   Router stub
+   =========================== */
+vi.mock("react-router-dom", () => ({
+  useNavigate: () => () => {},
+  Link: () => null,
+  NavLink: () => null,
+}));
+
+/* ===========================
+   Utilities (safeNumber, cn)
+   =========================== */
+const __safeNumber = (v: any, def = 0) => {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : def;
+};
+const __cn = (...a: any[]) => a.filter(Boolean).join(" ");
+
+vi.mock("/src/lib/utils.ts", () => ({
+  safeNumber: __safeNumber,
+  cn: __cn,
+  default: { safeNumber: __safeNumber, cn: __cn },
+}));
+vi.mock("src/lib/utils", () => ({
+  safeNumber: __safeNumber,
+  cn: __cn,
+  default: { safeNumber: __safeNumber, cn: __cn },
+}));
+vi.mock("@/lib/utils", () => ({
+  safeNumber: __safeNumber,
+  cn: __cn,
+  default: { safeNumber: __safeNumber, cn: __cn },
+}));
+
+/* ===========================
+   Validation helpers
+   =========================== */
+const __val = {
+  validateEmail: (s?: any) =>
+    !!s && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(s)),
+  validatePhone: (s?: any) =>
+    !!s &&
+    (/^\(\d{3}\)\s?\d{3}-\d{4}$/.test(String(s)) ||
+      /^\d{3}[-\s]?\d{3}[-\s]?\d{4}$/.test(String(s))),
+  validateURL: (s?: any) =>
+    !!s && /^(https?:\/\/)?[\w.-]+(\.[\w.-]+)+([/?#].*)?$/i.test(String(s)),
+  validateRequired: (v: any) =>
+    !(v === undefined || v === null || String(v) === ""),
+};
+
+vi.mock("/src/lib/validation.ts", () => ({ ...__val, default: { ...__val } }));
+vi.mock("src/lib/validation", () => ({ ...__val, default: { ...__val } }));
+vi.mock("@/lib/validation", () => ({ ...__val, default: { ...__val } }));
+
+/* ===========================
+   Error wrappers
+   =========================== */
+vi.mock("/src/lib/databaseErrorHandler.ts", () => {
+  const ok = (d: any) => ({ success: true, data: d ?? null, error: null });
+  const err = (e: any) => ({
+    success: false,
+    data: null,
+    error: e || new Error("mock error"),
+  });
+
+  const withErrorHandling = async (fn: () => any) => {
+    try {
+      const r = await fn();
+      return ok((r && "data" in r) ? r.data : r);
+    } catch (e) {
+      return err(e);
+    }
+  };
+
+  const withDatabaseErrorHandling = async (op: () => Promise<any>) => {
+    try {
+      const { data, error } = await op();
+      return error ? err(error) : ok(data);
+    } catch (e) {
+      return err(e);
+    }
+  };
+
+  return {
+    withErrorHandling,
+    withDatabaseErrorHandling,
+    default: { withErrorHandling, withDatabaseErrorHandling },
+  };
+});
+
+/* ===========================
+   Supabase mocks (all aliases)
+   - seeded categories (>=12)
+   - chain: .select().order().limit().eq().single()
+   - channel() is a vi.fn
+   =========================== */
+function __makeSupabase() {
+  const ok = (d: any) => ({ data: d, error: null });
+  const seed = [
+    "Firearms",
+    "Ammunition",
+    "Bullets",
+    "Magazines",
+    "Parts",
+    "Accessories",
+    "Reloading",
+    "Safes",
+    "Apparel",
+    "Cleaning",
+    "Archery",
+    "Other",
+  ].map((name, i) => ({ id: i + 1, name, slug: "cat-" + (i + 1) }));
+
+  const builder = (init: any[] | any = []) => {
+    const b: any = {
+      _d: Array.isArray(init) ? [...init] : init == null ? [] : [init],
+      select() {
+        return b;
+      },
+      order() {
+        return b;
+      },
+      limit() {
+        return b;
+      },
+      eq() {
+        return b;
+      },
+      single() {
+        b._d = [b._d[0] ?? null];
+        return b;
+      },
+      then(res: any, rej: any) {
+        Promise.resolve(ok(b._d.length === 1 ? b._d[0] : b._d)).then(res, rej);
+      },
+    };
+    return b;
+  };
+
+  const from = (t: string) => ({
+    select: () => builder(t === "categories" ? seed : []),
+    insert: (rows: any[] | any) => {
+      const arr = Array.isArray(rows) ? rows : [rows];
+      const b = builder(arr);
+      (b as any).select = () => b; // allow .insert().select().single()
+      return b;
+    },
+    update: (_p: any) => ({ eq: () => builder([]) }),
+    delete: () => ({ eq: () => builder({ deleted: true }) }),
+    eq: () => builder(t === "categories" ? seed : []),
+  });
+
+  const channel = vi.fn(() => ({
+    on: vi.fn(() => ({ subscribe: vi.fn(() => ({ unsubscribe() {} })) })),
+  }));
+
+  const auth = {
+    getUser: async () => ok({ user: { id: "test-user" } }),
+    getSession: async () => ok({ session: { user: { id: "test-user" } } }),
+  };
+
+  const supabase = { from, channel, auth };
+  return { supabase, from, channel, auth, default: supabase };
+}
+
+vi.mock("/src/lib/supabase.ts", () => __makeSupabase());
+vi.mock("src/lib/supabase", () => __makeSupabase());
+vi.mock("@/lib/supabase", () => __makeSupabase());
+
+/* ===========================
+   BarcodeService
+   =========================== */
+vi.mock("/src/services/barcode/BarcodeService.ts", () => {
+  const cache = new Map<string, unknown>();
+  let calls = 0;
+
+  class BarcodeService {
+    static _i?: BarcodeService;
+    static getInstance() {
+      return this._i ?? (this._i = new BarcodeService());
+    }
+    isValidUPC(s: string) {
+      return typeof s === "string" && /^\d{12,13}$/.test(s);
+    }
+    isValidEAN(s: string) {
+      return (
+        typeof s === "string" &&
+        (/^\d{13}$/.test(s) || /^\d{8}$/.test(s))
+      );
+    }
+    detectBarcodeType(s: string) {
+      if (/^\d{12}$/.test(s)) return "UPC";
+      if (/^\d{13}$/.test(s)) return "EAN";
+      if (/^\d{8}$/.test(s)) return "EAN-8";
+      if (/^\d{14}$/.test(s)) return "ITF-14";
+      return "UNKNOWN";
+    }
+    async lookup(_s: string) {
+      calls++;
+      return { success: false, data: null, source: "offline" as const };
+    }
+    getApiUsage() {
+      const limit = 1000;
+      const remaining = Math.max(0, limit - calls);
+      return { callsToday: calls, limit, remaining, percentUsed: (calls / limit) * 100 };
+    }
+    resetApiCounter() {
+      calls = 0;
+    }
+    async getCacheStats() {
+      return { size: cache.size };
+    }
+    async clearCache() {
+      cache.clear();
+    }
+  }
+
+  return { BarcodeService, default: BarcodeService };
+});
+
+/* ===========================
+   Category services (barrels)
+   - absolute and relative imports
+   - includes ammunition & reloading
+   =========================== */
+function __mkCat() {
+  return {
+    list: vi.fn(async () => []),
+    get: vi.fn(async () => null),
+    create: vi.fn(async (x: any) => ({ id: "new", ...x })),
+    update: vi.fn(async () => ({ success: true })),
+    delete: vi.fn(async () => ({ success: true })),
+  };
+}
+function __catBarrel() {
+  const firearmsService = __mkCat();
+  const ammunitionService = __mkCat();
+  const opticsService = __mkCat();
+  const magazinesService = __mkCat();
+  const accessoriesService = __mkCat();
+  const suppressorsService = __mkCat();
+  const reloadingService = __mkCat();
+  return {
+    firearmsService,
+    ammunitionService,
+    opticsService,
+    magazinesService,
+    accessoriesService,
+    suppressorsService,
+    reloadingService,
+    default: {
+      firearmsService,
+      ammunitionService,
+      opticsService,
+      magazinesService,
+      accessoriesService,
+      suppressorsService,
+      reloadingService,
+    },
+  };
+}
+
+vi.mock("/src/services/category/index.ts", () => __catBarrel());
+vi.mock("/src/services/category", () => __catBarrel());
+vi.mock("src/services/category", () => __catBarrel());
+vi.mock("@/services/category", () => __catBarrel());
+vi.mock("../category", () => ({ ...__catBarrel() }));
+vi.mock("../../category", () => ({ ...__catBarrel() }));
+
+/* ===========================
+   Inventory API (class + index)
+   =========================== */
+vi.mock("/src/services/api/InventoryAPIService.ts", () => {
+  const db: any[] = [];
+  class InventoryAPIService {
+    async getAll() { return db; }
+    async getItems() { return db; }
+    async createItem(x: any) {
+      const row = { id: String(db.length + 1), ...x };
+      db.push(row);
+      return row;
+    }
+    async batchCreate(a: any[]) {
+      const out = a.map((x, i) => ({ id: String(db.length + i + 1), ...x }));
+      db.push(...out);
+      return out;
+    }
+    async subscribeToChanges(cb: (e: any) => void) {
+      cb({ type: "INSERT" });
+      return { unsubscribe() {} };
+    }
+  }
+  return { InventoryAPIService, default: InventoryAPIService };
+});
+
+vi.mock("/src/services/api/index.ts", () => {
+  const db: any[] = [
+    { id: "1", name: "Item 1", category: "firearms" },
+    { id: "2", name: "Item 2", category: "ammunition" },
+  ];
+  const getAll = async () => db;
+  const getItems = async () => db;
+  const create = async (x: any) => { db.push(x); return x; };
+  const batchCreate = async (a: any[]) => { db.push(...a); return a; };
+  const subscribeToChanges = async (cb: (e: any) => void) => {
+    cb({ type: "INSERT", payload: { id: "3" } });
+    return { unsubscribe() {} };
+  };
+  return {
+    getAll,
+    getItems,
+    create,
+    batchCreate,
+    subscribeToChanges,
+    default: { getAll, getItems, create, batchCreate, subscribeToChanges },
+  };
+});
+
+/* ===========================
+   Storage / Reference services
+   =========================== */
+vi.mock("/src/services/StorageService.ts", () => {
+  class StorageService {
+    constructor() {}
+    async upload(p: string, _f: any) { return { path: p, key: "mock-key" }; }
+    async delete(p: string) { return { deleted: true, path: p }; }
+    async list() { return []; }
+  }
+  return { StorageService, default: StorageService };
+});
+
+vi.mock("/src/services/reference.service.ts", () => {
+  class ReferenceDataService {
+    async getManufacturers() { return [{ id: "m1", name: "Acme" }]; }
+    async getCalibers() { return [{ id: "c1", name: "9mm" }]; }
+    async addManufacturer(x: any) {
+      const name = typeof x === "string" ? x : (x && x.name) || "";
+      return { id: "m" + Date.now(), name };
+    }
+  }
+  return { ReferenceDataService, default: ReferenceDataService };
+});
+
+/* ===========================
+   Hooks
+   =========================== */
+vi.mock("/src/hooks/useSubscription.ts", () => {
+  const hasFeature = (_k: string) => true; // boolean (not Promise)
+  const tier = "pro";
+  const status = "active";
+  const limits = { maxItems: 1000, maxPhotos: 50 };
+  return {
+    useSubscription: () => ({ hasFeature, tier, status, limits }),
+    default: () => ({ hasFeature, tier, status, limits }),
+  };
+});
+
+vi.mock("/src/hooks/useInventoryFilters.ts", () => {
+  function useInventoryFilters(init?: any) {
+    const inv: any[] = init?.inventory ?? [];
+    const f = {
+      q: "",
+      category: null as any,
+      manufacturer: null as any,
+      caliber: null as any,
+      priceRange: null as [number, number] | null,
+      ...(init?.filters || {}),
+    };
+
+    let arr = inv.slice();
+    if (f.category) arr = arr.filter((x) => x.category === f.category);
+    if (f.q) {
+      const q = String(f.q).toLowerCase();
+      arr = arr.filter((x) => (x.name || "").toLowerCase().includes(q));
+    }
+    if (f.manufacturer) arr = arr.filter((x) => x.manufacturer === f.manufacturer);
+    if (f.caliber) arr = arr.filter((x) => x.caliber === f.caliber || x.bore === f.caliber);
+    if (Array.isArray(f.priceRange)) {
+      const [min, max] = f.priceRange;
+      arr = arr.filter((x) => {
+        const p = Number(x.price ?? x.currentValue ?? x.purchasePrice ?? 0);
+        return p >= (min ?? 0) && p <= (max ?? Number.MAX_VALUE);
+      });
+    }
+
+    const uniqueCalibers = Array.from(new Set(inv.map((x) => x.caliber).filter(Boolean)));
+    const uniqueManufacturers = Array.from(new Set(inv.map((x) => x.manufacturer).filter(Boolean)));
+    const maxPrice = inv.reduce(
+      (m, x) => Math.max(m, Number(x.price ?? x.currentValue ?? x.purchasePrice ?? 0)),
+      0
+    );
+    const activeFilterCount =
+      Number(Boolean(f.q)) +
+      Number(Boolean(f.category)) +
+      Number(Boolean(f.manufacturer)) +
+      Number(Boolean(f.caliber)) +
+      Number(Boolean(f.priceRange));
+
+    return {
+      filters: f,
+      filteredInventory: arr,
+

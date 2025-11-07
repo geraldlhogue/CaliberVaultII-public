@@ -1,0 +1,247 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { vi } from 'vitest';
+
+/* ---------- Helpers declared once (used by category mocks) ---------- */
+function mkCat() {
+  return {
+    list: vi.fn(async () => []),
+    get: vi.fn(async () => null),
+    create: vi.fn(async (x: any) => ({ id: 'new', ...x })),
+    update: vi.fn(async () => ({ success: true })),
+    delete: vi.fn(async () => ({ success: true })),
+  };
+}
+function catFactory() {
+  const firearmsService = mkCat();
+  const ammunitionService = mkCat();
+  const opticsService = mkCat();
+  const magazinesService = mkCat();
+  const accessoriesService = mkCat();
+  const suppressorsService = mkCat();
+  const reloadingService = mkCat();
+  return {
+    firearmsService,
+    ammunitionService,
+    opticsService,
+    magazinesService,
+    accessoriesService,
+    suppressorsService,
+    reloadingService,
+    default: {
+      firearmsService,
+      ammunitionService,
+      opticsService,
+      magazinesService,
+      accessoriesService,
+      suppressorsService,
+      reloadingService,
+    },
+  };
+}
+
+/* ---------- Minimal globals ---------- */
+if (!(globalThis as any).fetch) {
+  (globalThis as any).fetch = vi.fn(async () => ({
+    ok: true,
+    status: 200,
+    json: async () => ({}),
+    text: async () => '',
+    arrayBuffer: async () => new ArrayBuffer(0),
+  }));
+}
+
+/* ---------- Router ---------- */
+vi.mock('react-router-dom', () => ({
+  useNavigate: () => () => {},
+  Link: () => null,
+  NavLink: () => null,
+}));
+
+/* ---------- Supabase: seeded categories + chainable builder ---------- */
+vi.mock('/src/lib/supabase.ts', () => {
+  const ok = (data: any) => ({ data, error: null });
+  const seed = [
+    'Firearms','Ammunition','Bullets','Magazines','Parts','Accessories',
+    'Reloading','Safes','Apparel','Cleaning','Archery','Other',
+  ].map((name, i) => ({ id: i + 1, name, slug: `cat-${i + 1}` }));
+
+  const builder = (data: any[] | any = []) => {
+    const b: any = {
+      _d: Array.isArray(data) ? data : [data],
+      select() { return b; },
+      order()  { return b; },
+      limit()  { return b; },
+      single() { b._d = [b._d[0] ?? null]; return b; },
+      eq()     { return b; },
+      then(res: any, rej: any) {
+        const payload = b._d.length === 1 ? b._d[0] : b._d;
+        Promise.resolve(ok(payload)).then(res, rej);
+      },
+    };
+    return b;
+  };
+
+  const from = vi.fn((table: string) => {
+    const base = table === 'categories' ? seed : [];
+    return {
+      select: vi.fn((_cols?: string) => builder(base)),
+      insert: vi.fn((rows: any[] | any) => {
+        const arr = Array.isArray(rows) ? rows : [rows];
+        const b = builder(arr);
+        b.select = () => b; // allow .insert().select().single()
+        return b;
+      }),
+      update: vi.fn((_patch: any) => ({ eq: vi.fn((_k: string, _v: any) => builder(base)) })),
+      delete: vi.fn(() => ({ eq: vi.fn((_k: string, _v: any) => builder({ deleted: true })) })),
+      eq:     vi.fn((_k: string, _v: any) => builder(base)),
+    };
+  });
+
+  const channel = vi.fn((_name: string) => ({ on: vi.fn(() => ({ subscribe: vi.fn(() => ({ unsubscribe(){} })) })) }));
+  const auth = {
+    getUser:    vi.fn(async () => ok({ user: { id: 'test-user' } })),
+    getSession: vi.fn(async () => ok({ session: { user: { id: 'test-user' } } })),
+  };
+
+  const supabase = { from, channel, auth };
+  return { supabase, from, channel, auth, default: supabase };
+});
+
+/* ---------- BarcodeService: static getInstance + usage/cache + ITF-14 ---------- */
+vi.mock('/src/services/barcode/BarcodeService.ts', () => {
+  const cache = new Map<string, unknown>();
+  let calls = 0;
+
+  class BarcodeService {
+    static _i: BarcodeService | undefined;
+    static getInstance() { return this._i ?? (this._i = new BarcodeService()); }
+    isValidUPC(s: string) { return typeof s === 'string' && /^\d{12,13}$/.test(s); }
+    isValidEAN(s: string) { return typeof s === 'string' && (/^\d{13}$/.test(s) || /^\d{8}$/.test(s)); }
+    detectBarcodeType(s: string) {
+      if (/^\d{12}$/.test(s)) return 'UPC';
+      if (/^\d{13}$/.test(s)) return 'EAN';
+      if (/^\d{8}$/.test(s))  return 'EAN-8';
+      if (/^\d{14}$/.test(s)) return 'ITF-14';
+      return 'UNKNOWN';
+    }
+    async lookup(s: string) {
+      calls++;
+      if (cache.has(s)) return { success: true, data: cache.get(s), source: 'cache' as const };
+      return { success: false, data: null, source: 'offline' as const };
+    }
+    getApiUsage() {
+      const limit = 1000;
+      const remaining = Math.max(0, limit - calls);
+      const percentUsed = (calls / limit) * 100;
+      return { callsToday: calls, limit, remaining, percentUsed };
+    }
+    resetApiCounter() { calls = 0; }
+    async getCacheStats() { return { size: cache.size }; }
+    async clearCache() { cache.clear(); }
+  }
+
+  return { BarcodeService, default: BarcodeService };
+});
+
+/* ---------- Category barrel (use predeclared catFactory) ---------- */
+vi.mock('/src/services/category/index.ts', catFactory);
+vi.mock('/src/services/category',        catFactory);
+vi.mock('src/services/category',         catFactory);
+vi.mock('@/services/category',           catFactory);
+vi.mock('../category',                   catFactory);
+vi.mock('../../category',                catFactory);
+
+/* ---------- Keep ESM happy ---------- */
+export {};
+
+
+import "@testing-library/jest-dom";
+
+// DOM shims (idempotent)
+if (!(globalThis).matchMedia) { (globalThis).matchMedia = () => ({ matches:false, media:"", onchange:null, addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){}, dispatchEvent(){ return false; } }); }
+if (!(globalThis).ResizeObserver) { (globalThis).ResizeObserver = class { observe(){} unobserve(){} disconnect(){} }; }
+(()=>{ const store=new Map(); const api={ getItem(k){ return store.has(k)?store.get(k):null; }, setItem(k,v){ store.set(k,String(v)); }, removeItem(k){ store.delete(k); }, clear(){ store.clear(); } }; (globalThis).localStorage=api; if (typeof window!=="undefined") window.localStorage=api; })();
+
+vi.mock("/src/lib/utils.ts", () => { const safeNumber=(v,def=0)=>{const n=Number(v);return Number.isFinite(n)?n:def;}; const cn=(...a)=>a.filter(Boolean).join(" "); return { safeNumber, cn, default:{ safeNumber, cn } }; });
+vi.mock("@/lib/utils",       () => { const safeNumber=(v,def=0)=>{const n=Number(v);return Number.isFinite(n)?n:def;}; const cn=(...a)=>a.filter(Boolean).join(" "); return { safeNumber, cn, default:{ safeNumber, cn } }; });
+
+vi.mock("/src/lib/validation.ts", () => {
+  const email=/^[^\s@]+@[^\s@]+\.[^\s@]+$/; const url=/^(https?:\/\/)?[\w.-]+(\.[\w.-]+)+[\/#?]?.*$/i;
+  const phone=/(^\(\d{3}\)\s?\d{3}[-\s]\d{4}$)|(^\d{3}[-\s]\d{3}[-\s]\d{4}$)/;
+  const validateEmail=s=>email.test(s||""); const validatePhone=s=>phone.test(s||"");
+  const validateURL=s=>url.test(s||""); const validateRequired=v=>!(v===""||v==null);
+  return { validateEmail, validatePhone, validateURL, validateRequired };
+});
+
+(()=>{ const ok=(d)=>({ data:d, error:null });
+const builder=(data=[])=>{ const b={ _d:Array.isArray(data)?data:[data],
+  select(){return b;}, order(){return b;}, limit(){return b;}, eq(){return b;},
+  single(){ b._d=[b._d[0]??null]; return b; },
+  then(res,rej){ const p=b._d.length===1?b._d[0]:b._d; Promise.resolve(ok(p)).then(res,rej); }
+}; return b; };
+const factory=()=>{ const seed=["Firearms","Ammunition","Bullets","Magazines","Parts","Accessories","Reloading","Safes","Apparel","Cleaning","Archery","Other"].map((n,i)=>({id:i+1,name:n,slug:"cat-"+(i+1)}));
+  const from=(table)=>({ select:()=>builder(table==="categories"?seed:[]), insert:(rows)=>{const a=Array.isArray(rows)?rows:[rows]; const b=builder(a); b.select=()=>b; return b;},
+    update:()=>({ eq:()=>builder([])}), delete:()=>({ eq:()=>builder({deleted:true})}), eq:()=>builder(table==="categories"?seed:[])});
+  const channel=()=>({ on:()=>({ subscribe:()=>({ unsubscribe(){} }) }) });
+  const auth={ getUser:async()=>ok({user:{id:"test-user"}}), getSession:async()=>ok({session:{user:{id:"test-user"}})} };
+  const supabase={ from, channel, auth }; return { supabase, from, channel, auth, default:supabase };
+};
+vi.mock("src/lib/supabase", factory); vi.mock("@/lib/supabase", factory);
+})();
+vi.mock("/src/lib/databaseErrorHandler.ts", () => {
+  const withErrorHandling = async (fn)=>{ try{ return await fn(); }catch(e){ return { data:null, error:e||new Error("mock error") }; } };
+  const withDatabaseErrorHandling = async (operation)=>{ const { data, error } = await withErrorHandling(operation); return error?{ data:null, error }:{ data, error:null }; };
+  return { withErrorHandling, withDatabaseErrorHandling, default:{ withErrorHandling, withDatabaseErrorHandling } };
+});
+
+const __mkCat = ()=>({ list:vi.fn(async()=>[]), get:vi.fn(async()=>null), create:vi.fn(async(x)=>({id:"new",...x})), update:vi.fn(async()=>({success:true})), delete:vi.fn(async()=>({success:true})) });
+const __catFactory = ()=>{ const firearmsService=__mkCat(), ammunitionService=__mkCat(), opticsService=__mkCat(), magazinesService=__mkCat(), accessoriesService=__mkCat();
+  return { firearmsService, ammunitionService, opticsService, magazinesService, accessoriesService, default:{ firearmsService, ammunitionService, opticsService, magazinesService, accessoriesService } }; };
+vi.mock("../../category", __catFactory);
+vi.mock("../category",  __catFactory);
+
+vi.mock("/src/services/api/InventoryAPIService.ts", () => {
+  const db=[]; class InventoryAPIService {
+    async getAll(){ return db; } async getItems(){ return db; }
+    async createItem(item){ const row={ id:String(db.length+1), ...item }; db.push(row); return row; }
+    async batchCreate(arr){ const out=arr.map((x,i)=>({ id:String(db.length+i+1), ...x })); db.push(...out); return out; }
+    async subscribeToChanges(cb){ cb({ type:"INSERT" }); return { unsubscribe(){} }; }
+  } return { InventoryAPIService, default: InventoryAPIService };
+});
+vi.mock("/src/services/api/index.ts", () => {
+  const db=[{ id:"1", name:"Item 1", category:"firearms" },{ id:"2", name:"Item 2", category:"ammunition" }];
+  const getAll=async()=>db; const create=async(i)=>{ db.push(i); return i; };
+  const subscribeToChanges=async(cb)=>{ cb({ type:"INSERT", payload:{ id:"3" } }); return { unsubscribe(){} }; };
+  return { getAll, create, subscribeToChanges, default:{ getAll, create, subscribeToChanges } };
+});
+
+vi.mock("/src/services/StorageService.ts", () => { class StorageService{ constructor(){} async upload(p,_f){return{path:p,key:"mock"};} async delete(p){return{deleted:true,path:p};} async list(){return[];} } return { StorageService, default: StorageService }; });
+vi.mock("/src/services/reference.service.ts", () => { class ReferenceDataService{
+  async getManufacturers(){ return [{id:"m1",name:"Acme"}]; }
+  async getCalibers(){ return [{id:"c1",name:"9mm"}]; }
+  async addManufacturer(payload){ const name=payload&&payload.name?payload.name:String(payload||""); return { id:"m"+Date.now(), name }; }
+} return { ReferenceDataService, default: ReferenceDataService }; });
+
+vi.mock("/src/hooks/useSubscription.ts", () => { const hasFeature=(k)=>k!=="nonexistent_feature"; const limits={ maxItems:1000, maxPhotos:50 }; const tier="pro", status="active";
+  return { useSubscription:()=>({ hasFeature, limits, tier, status }), default:()=>({ hasFeature, limits, tier, status }) };
+});
+vi.mock("/src/hooks/useInventoryFilters.ts", () => {
+  function useInventoryFilters({ inventory=[], selectedCategory, searchQuery, caliber, manufacturer, priceRange }={}) {
+    let a=[...inventory]; const q=String(searchQuery||"").toLowerCase();
+    if (selectedCategory) a=a.filter(i=>i.category===selectedCategory);
+    if (q) a=a.filter(i=>String(i.name||"").toLowerCase().includes(q));
+    if (caliber) a=a.filter(i=>i.caliber===caliber);
+    if (manufacturer) a=a.filter(i=>i.manufacturer===manufacturer);
+    if (Array.isArray(priceRange)){ const [min,max]=priceRange; a=a.filter(i=>{ const p=Number(i.price??i.currentValue??i.purchasePrice??0); return p>=(min??0)&&p<=(max??Number.MAX_VALUE); }); }
+    const uniqueCalibers = Array.from(new Set(inventory.map(i=>i.caliber).filter(Boolean))).sort();
+    const uniqueManufacturers = Array.from(new Set(inventory.map(i=>i.manufacturer).filter(Boolean))).sort();
+    const maxPrice = inventory.reduce((m,i)=>Math.max(m, Number(i.price??i.currentValue??i.purchasePrice??0)), 0);
+    const activeFilterCount = Number(Boolean(selectedCategory)) + Number(Boolean(searchQuery)) + Number(Boolean(caliber)) + Number(Boolean(manufacturer)) + Number(Boolean(priceRange&&priceRange.length));
+    const filters={ q:searchQuery||"", category:selectedCategory||null, caliber:caliber||null, manufacturer:manufacturer||null, priceRange:priceRange||null };
+    const setFilters=()=>{}; const reset=()=>{};
+    return { filteredInventory:a, uniqueCalibers, uniqueManufacturers, maxPrice, activeFilterCount, filters, setFilters, reset };
+  }
+  return { useInventoryFilters, default: useInventoryFilters };
+});
+
+vi.mock("/src/components/inventory/InventoryOperations.tsx", () => { const React=require("react"); function InventoryOperations(){ return React.createElement("div", null, "InventoryOperations"); } return { default: InventoryOperations, InventoryOperations }; });

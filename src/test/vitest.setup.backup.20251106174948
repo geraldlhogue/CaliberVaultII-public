@@ -1,0 +1,70 @@
+
+import { vi } from "vitest";
+
+/* helpers declared once */
+function mkCat(){ return { list:vi.fn(async()=>[]), get:vi.fn(async()=>null), create:vi.fn(async(x)=>({id:"new",...x})), update:vi.fn(async()=>({success:true})), delete:vi.fn(async()=>({success:true})) }; }
+function catFactory(){
+  const firearmsService=mkCat(), ammunitionService=mkCat(), opticsService=mkCat(), magazinesService=mkCat(), accessoriesService=mkCat(), suppressorsService=mkCat(), reloadingService=mkCat();
+  return { firearmsService, ammunitionService, opticsService, magazinesService, accessoriesService, suppressorsService, reloadingService,
+           default:{ firearmsService, ammunitionService, opticsService, magazinesService, accessoriesService, suppressorsService, reloadingService } };
+}
+
+/* minimal globals */
+if (!(globalThis).fetch) { (globalThis).fetch = vi.fn(async () => ({ ok:true, status:200, json:async()=>({}), text:async()=>"", arrayBuffer:async()=>new ArrayBuffer(0) })); }
+
+/* router */
+vi.mock("react-router-dom", () => ({ useNavigate: () => () => {}, Link: () => null, NavLink: () => null }));
+
+/* supabase: seeded categories + chainable builder (single factory) */
+const supabaseFactory = () => {
+  const ok = (data) => ({ data, error: null });
+  const seed = ["Firearms","Ammunition","Bullets","Magazines","Parts","Accessories","Reloading","Safes","Apparel","Cleaning","Archery","Other"]
+    .map((name,i)=>({ id:i+1, name, slug:"cat-"+(i+1) }));
+  const builder = (data=[]) => {
+    const b = { _d:Array.isArray(data)?data:[data],
+      select(){return b;}, order(){return b;}, limit(){return b;}, eq(){return b;},
+      single(){ b._d=[b._d[0]??null]; return b; },
+      then(res,rej){ const payload = b._d.length===1 ? b._d[0] : b._d; Promise.resolve(ok(payload)).then(res,rej); }
+    }; return b;
+  };
+  const from = vi.fn((table)=>({
+    select: vi.fn(()=>builder(table==="categories"?seed:[])),
+    insert: vi.fn((rows)=>{ const arr=Array.isArray(rows)?rows:[rows]; const b=builder(arr); b.select=()=>b; return b; }),
+    update: vi.fn(()=>({ eq: vi.fn(()=>builder([])) })),
+    delete: vi.fn(()=>({ eq: vi.fn(()=>builder({ deleted:true })) })),
+    eq:     vi.fn(()=>builder(table==="categories"?seed:[])),
+  }));
+  const channel = vi.fn(()=>({ on: vi.fn(()=>({ subscribe: vi.fn(()=>({ unsubscribe(){} })) })) }));
+  const auth = { getUser:async()=>ok({ user:{ id:"test-user" } }), getSession:async()=>ok({ session:{ user:{ id:"test-user" } } }) };
+  const supabase = { from, channel, auth };
+  return { supabase, from, channel, auth, default: supabase };
+};
+vi.mock("/src/lib/supabase.ts", supabaseFactory);
+vi.mock("src/lib/supabase",   supabaseFactory);
+vi.mock("@/lib/supabase",     supabaseFactory);
+
+/* BarcodeService: static getInstance + usage/cache + ITF-14 + 12/13 UPC */
+vi.mock("/src/services/barcode/BarcodeService.ts", () => {
+  const cache = new Map(); let calls=0;
+  class BarcodeService {
+    static _i; static getInstance(){ return this._i ?? (this._i = new BarcodeService()); }
+    isValidUPC(s){ return typeof s==="string" && /^\d{12,13}$/.test(s); }
+    isValidEAN(s){ return typeof s==="string" && (/^\d{13}$/.test(s) || /^\d{8}$/.test(s)); }
+    detectBarcodeType(s){ if(/^\d{12}$/.test(s))return "UPC"; if(/^\d{13}$/.test(s))return "EAN"; if(/^\d{8}$/.test(s))return "EAN-8"; if(/^\d{14}$/.test(s))return "ITF-14"; return "UNKNOWN"; }
+    async lookup(s){ calls++; if(cache.has(s)) return { success:true, data:cache.get(s), source:"cache" }; return { success:false, data:null, source:"offline" }; }
+    getApiUsage(){ const limit=1000; const remaining=Math.max(0,limit-calls); const percentUsed=(calls/limit)*100; return { callsToday:calls, limit, remaining, percentUsed }; }
+    resetApiCounter(){ calls=0; } async getCacheStats(){ return { size: cache.size }; } async clearCache(){ cache.clear(); }
+  }
+  return { BarcodeService, default: BarcodeService };
+});
+
+/* category barrel: use helper factory across all resolver variants */
+vi.mock("/src/services/category/index.ts", catFactory);
+vi.mock("/src/services/category",          catFactory);
+vi.mock("src/services/category",           catFactory);
+vi.mock("@/services/category",             catFactory);
+vi.mock("../category",                     catFactory);
+vi.mock("../../category",                  catFactory);
+
+/* keep esm happy */
+export {};
