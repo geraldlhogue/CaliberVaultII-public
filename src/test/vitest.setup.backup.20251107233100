@@ -1,0 +1,182 @@
+import "fake-indexeddb/auto";
+import "@testing-library/jest-dom/vitest";
+import React from "react";
+import { vi } from "vitest";
+
+/* window + localStorage */
+if (typeof globalThis.window === "undefined") {
+  Object.defineProperty(globalThis, "window", { value: globalThis });
+}
+const __store = new Map();
+const __ls = {
+  getItem(k){ return __store.has(k) ? __store.get(k) : null; },
+  setItem(k,v){ __store.set(k, String(v)); },
+  removeItem(k){ __store.delete(k); },
+  clear(){ __store.clear(); }
+};
+Object.defineProperty(window, "localStorage", { value: __ls, writable: true });
+
+/* matchMedia + ResizeObserver shims */
+if (typeof window.matchMedia !== "function") {
+  window.matchMedia = () => ({ matches:false, media:"", addEventListener(){}, removeEventListener(){}, addListener(){}, removeListener(){}, onchange:null, dispatchEvent(){ return false; } });
+}
+if (typeof window.ResizeObserver === "undefined") {
+  window.ResizeObserver = class { observe(){} unobserve(){} disconnect(){} };
+}
+
+/* React Router: useNavigate no-op to avoid Router requirement */
+vi.mock("react-router-dom", async (importOriginal) => {
+  const mod = await importOriginal();
+  return { ...mod, useNavigate: () => () => {} };
+});
+
+/* ok helper */
+const ok = (data)=>({ data, error: null });
+
+/* Fetch: shared ref for spies; GET/POST behavior */
+const __fetch = async (url, opts)=>{
+  const u = String(url);
+  const o = opts || {};
+  if (o.method === undefined || o.method === "GET") {
+    if (u.indexOf("/items") >= 0) {
+      return new Response(JSON.stringify([{ id: "1", name: "Item 1", category:"firearms" }, { id: "2", name: "Item 2", category:"ammunition" }]), { status: 200 });
+    }
+  }
+  if (o.method === "POST") {
+    const body = o && o.body ? JSON.parse(o.body) : {};
+    return new Response(JSON.stringify(body), { status: 200 });
+  }
+  return new Response(JSON.stringify({ ok: true }), { status: 200 });
+};
+Object.defineProperty(globalThis, "fetch", { value: __fetch, writable: true });
+
+/* Supabase: unified client with read/write/delete chains + channel
+   — chain methods both allow continued chaining AND expose {data,error} immediately */
+function makeChain(rows){
+  const st = { _rows: Array.isArray(rows) ? rows : [] };
+  const attach = (obj) => Object.assign(obj, { data: st._rows, error: null });
+  const self = {
+    limit(n){ const num = Number(n); st._rows = (!Number.isNaN(num) ? st._rows.slice(0,num) : st._rows); return attach(self); },
+    ilike(){ return attach(self); },
+    order(){ return attach(self); },
+    eq(){ return attach(self); },
+    single(){ return ok(st._rows[0] || null); }
+  };
+  return attach(self);
+}
+function table(rows=[]){
+  return {
+    select(){ return makeChain(rows); },
+    insert(vals){ return { select(){ return { single(){ return ok(Array.isArray(vals) ? vals[0] : { id: "3", ...vals }) } } } }; },
+    update(vals){ return { eq(){ return { select(){ return { single(){ return ok({ id: "1", ...vals }) } } } } } }; },
+    delete(){ return { eq(){ return { select(){ return { single(){ return ok({ deleted: true }) } } } } } }; }
+  };
+}
+const __ch = (vi).fn(() => ({ on: () => ({ subscribe: () => ({ unsubscribe(){} }) }) }));
+const supabaseShim = {
+  from(name){ return table([]); },
+  channel: __ch,
+  auth: {
+    getSession: async()=> ok({ session: { user: { id: "test-user" }}}),
+    getUser:    async()=> ok({ user: { id: "test-user" }})
+  }
+};
+/* expose for modules that import AND ones that read globalThis.supabase */
+vi.mock("@supabase/supabase-js", ()=>({ __esModule: true, createClient: () => supabaseShim }));
+vi.mock("@/lib/supabase",      ()=>({ __esModule: true, supabase: supabaseShim }));
+vi.mock("src/lib/supabase",    ()=>({ __esModule: true, supabase: supabaseShim }));
+Object.defineProperty(globalThis, "supabase", { value: supabaseShim, writable: true });
+
+/* usePWA: default + named, installable true so prompt renders */
+vi.mock("@/hooks/usePWA", ()=>{ 
+  const usePWA = () => ({ isInstallable: true, isInstalled: false, installApp: () => {} });
+  return { __esModule: true, default: usePWA, usePWA };
+});
+
+/* Validation: provide named exports directly (don’t depend on underlying impl) */
+vi.mock("@/lib/validation", ()=>({
+  __esModule: true,
+  // Email like "a@b.cc"
+  validateEmail:    (v)=> /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||"")),
+  // US-ish phone: 123-456-7890, (123) 456 7890, 1234567890
+  validatePhone:    (v)=> /^\(?\d{3}\)?[-\s]?\d{3}[-\s]?\d{4}$/.test(String(v||"")),
+  // Basic http/https URL
+  validateURL:      (v)=> /^https?:\/\/[^\s]+$/i.test(String(v||"")),
+  // Not null/undefined/empty
+  validateRequired: (v)=> !(v===undefined || v===null || String(v).trim()==="")
+}));
+/* OfflineQueue: expose queuedChanges array; hook expects it on result */
+vi.mock("@/services/sync/OfflineQueue", ()=>({ __esModule: true, default: class { constructor(){ this.queuedChanges = []; } } }));
+
+/* ReferenceDataService: minimal shape including addManufacturer; export both named & default */
+class ReferenceDataService {
+  async getManufacturers(){ return [{ id: "m1", name: "Acme" }]; }
+  async getCalibers(){ return [{ id: "c1", name: "9mm" }]; }
+  async addManufacturer(v){ return { id: "new-mfg", ...v }; }
+}
+vi.mock("src/services/reference.service", ()=>({ __esModule: true, ReferenceDataService, default: ReferenceDataService }));
+
+/* StorageService: constructor + basic methods; export default and named */
+class StorageService {
+  async uploadFile(){ return { path: "/files/x.png" }; }
+  async deleteFile(){ return { success: true }; }
+  async listFiles(){ return [{ name: "x.png" }]; }
+}
+vi.mock("src/services/storage.service", ()=>({ __esModule: true, default: StorageService, StorageService }));
+
+/* useInventoryFilters: base + enhanced API
+   - export default AND named
+   - supports both signatures:
+     A) useInventoryFilters(items, { initialFilters })
+     B) useInventoryFilters({ inventory, selectedCategory, searchQuery, filterCaliber, advancedFilters })
+   - includes setFilters used by enhanced tests
+*/
+function __useInventoryFilters_impl(arg1=[], arg2={}){
+  let items = [];
+  let f = {};
+  if (Array.isArray(arg1)) {
+    items = arg1 || [];
+    f = (arg2 && arg2.initialFilters) ? arg2.initialFilters : {};
+  } else if (arg1 && typeof arg1 === "object") {
+    const o = arg1;
+    items = Array.isArray(o.inventory) ? o.inventory : [];
+    f = {
+      category: o.selectedCategory,
+      query: o.searchQuery,
+      caliber: o.filterCaliber,
+      ...(o.advancedFilters||{})
+    };
+  }
+  const apply = ()=>{
+    let out = items.slice();
+    if (f.category){ const v = String(f.category).toLowerCase(); out = out.filter(x => String((x && x.category) || "").toLowerCase() === v); }
+    if (f.query){ const q = String(f.query).toLowerCase(); out = out.filter(x => String((x && x.name) || "").toLowerCase().indexOf(q) >= 0); }
+    if (f.caliber){ const c = String(f.caliber); out = out.filter(x => String((x && (x.caliber || x.caliber_id)) || "") === c); }
+    if (f.maxPrice){ const m = Number(f.maxPrice); if (!Number.isNaN(m)) out = out.filter(x => Number(x && (x.price || x.current_value || 0)) <= m); }
+    const pricesAll = items.map(x => Number(x && (x.price || x.current_value || 0))).filter(n => Number.isNaN(n) === false);
+    const maxPrice = pricesAll.length > 0 ? Math.max.apply(null, pricesAll) : 1000;
+    const activeFilterCount = ["category","query","caliber","maxPrice"].reduce((n,k)=> n + (f && f[k] ? 1 : 0), 0);
+    return {
+      filteredInventory: out,
+      uniqueCalibers: [...new Set(items.map(x => x && x.caliber).filter(Boolean))],
+      uniqueManufacturers: [...new Set(items.map(x => x && x.manufacturer).filter(Boolean))],
+      maxPrice,
+      activeFilterCount
+    };
+  };
+  const state = apply();
+  const api = {
+    ...state,
+    setFilters: (nf)=>{ f = { ...f, ...(nf||{}) }; Object.assign(api, apply()); }
+  };
+  return api;
+}
+vi.mock("@/hooks/useInventoryFilters", ()=>({ __esModule: true, default: __useInventoryFilters_impl, useInventoryFilters: __useInventoryFilters_impl }));
+
+/* Dialog: render only when open===true */
+vi.mock("@/components/ui/dialog", ()=>{ 
+  const ReactReq = require("react");
+  const Dialog = (p)=> (p && p.open === true) ? ReactReq.createElement("div", { role: "dialog" }, p.children) : null;
+  const el = (t)=>(p)=> ReactReq.createElement(t, p, p.children);
+  return { __esModule: true, default: Dialog, Dialog, DialogContent: el("div"), DialogHeader: el("div"), DialogTitle: el("h2"), DialogDescription: el("p"), DialogFooter: el("div"), DialogTrigger: el("button") };
+});

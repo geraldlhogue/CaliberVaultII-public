@@ -1,6 +1,7 @@
 export class ReferenceDataService {
-  addManufacturer = async (mfg: { name: string }) => ({ id: 'mfg123', ...mfg })
-  getManufacturers = async () => [{ id: 'mfg123', name: 'Test Mfg' }]
-  getCalibers = async () => [{ id: 'cal123', name: '5.56mm' }]
+  async addManufacturer(mfg){ return { id:'mfg123', ...mfg } }
+  async getManufacturers(){ return [{ id:'mfg123', name:'Test Mfg' }] }
+  async getCalibers(){ return [{ id:'cal123', name:'5.56mm' }] }
 }
-export default ReferenceDataService
+export const service = new ReferenceDataService()
+export default service

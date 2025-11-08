@@ -1,3 +1,3 @@
 import React from 'react'
-export const InventoryOperations: React.FC = () => <div data-testid="inventory-ops">Inventory Operations</div>
+export function InventoryOperations(){ return <div data-testid="inventory-ops" /> }
 export default InventoryOperations

@@ -1,1 +1,1 @@
-export { StorageService as default, StorageService } from './StorageService'
+export { default, StorageService } from './StorageService'

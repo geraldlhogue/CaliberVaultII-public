@@ -1,0 +1,195 @@
+import 'fake-indexeddb/auto'
+import '@testing-library/jest-dom/vitest'
+import React from 'react'
+import { vi } from 'vitest'
+
+function ok(data){ return { data, error: null } }
+
+/* window + localStorage + matchMedia (bind exactly where jsdom reads) */
+if (typeof globalThis.window === 'undefined') Object.defineProperty(globalThis, 'window', { value: globalThis })
+const store = new Map()
+const ls = {
+  getItem(k){ return store.has(k) ? store.get(k) : null },
+  setItem(k,v){ store.set(k, String(v)) },
+  removeItem(k){ store.delete(k) },
+  clear(){ store.clear() }
+}
+Object.defineProperty(window, 'localStorage', { value: ls, writable: true })
+Object.defineProperty(globalThis, 'localStorage', { value: ls, writable: true })
+const mm = () => ({ matches:false, media:'', onchange:null, addEventListener(){}, removeEventListener(){}, addListener(){}, removeListener(){}, dispatchEvent(){ return false } })
+if (!('matchMedia' in window)) Object.defineProperty(window, 'matchMedia', { value: mm, writable: true })
+if (!('matchMedia' in globalThis)) Object.defineProperty(globalThis, 'matchMedia', { value: mm, writable: true })
+
+/* fetch: single live reference (spies override both window & global) */
+const baseFetch = async (input, init) => {
+  const url = typeof input === 'string' ? input : String(input?.url ?? '')
+  const method = String((init?.method ?? 'GET')).toUpperCase()
+  if (url.startsWith('/api/items')) {
+    if (method === 'POST') {
+      const body = typeof init?.body === 'string' ? JSON.parse(init.body) : (init?.body ?? {})
+      return new Response(JSON.stringify(body), { status: 200 })
+    }
+    return new Response(JSON.stringify([{ id:'1', name:'Item 1' }, { id:'2', name:'Item 2' }]), { status: 200 })
+  }
+  return new Response(JSON.stringify({ ok:true }), { status: 200 })
+}
+let liveFetch = baseFetch
+Object.defineProperty(window, 'fetch',   { get(){ return liveFetch }, set(fn){ liveFetch = fn } })
+Object.defineProperty(globalThis,'fetch',{ get(){ return liveFetch }, set(fn){ liveFetch = fn } })
+
+/* in-memory tables */
+const tables = {
+  categories: [
+    { id:'cat-firearms', name:'Firearms' },{ id:'cat-ammunition', name:'Ammunition' },
+    { id:'cat-bullets', name:'Bullets' },{ id:'cat-magazines', name:'Magazines' },
+    { id:'cat-accessories', name:'Accessories' },{ id:'cat-suppressors', name:'Suppressors' },
+    { id:'cat-lowers', name:'Lowers' },{ id:'cat-uppers', name:'Uppers' },
+    { id:'cat-reloading', name:'Reloading' },{ id:'cat-parts', name:'Parts' },
+    { id:'cat-kits', name:'Kits' },{ id:'cat-tools', name:'Tools' }
+  ],
+  inventory: [
+    { id:'1', name:'Item 1', category:'firearms',   user_id:'user123', price:1000 },
+    { id:'2', name:'Item 2', category:'ammunition', user_id:'user123', price:200 }
+  ],
+  migrations: []
+}
+
+function applyFilter(rows, col, val, op){
+  if (!col) return rows
+  if (op === 'eq')    return rows.filter(r => r?.[col] === val)
+  if (op === 'ilike'){ const n=String(val??'').toLowerCase().replace(/%/g,''); return rows.filter(r => String(r?.[col]??'').toLowerCase().includes(n)) }
+  return rows
+}
+
+/* read chain: select/eq/ilike/order/limit -> {data,error}, single -> {data,error} */
+function makeRead(rows){
+  let list = rows.slice()
+  const c = {
+    data:list, error:null,
+    select(){ return c },
+    eq(col,val){ list = applyFilter(list,col,val,'eq'); c.data=list; return c },
+    ilike(col,val){ list = applyFilter(list,col,val,'ilike'); c.data=list; return c },
+    order(){ return c },
+    limit(n){ const count = typeof n==='number'? n : list.length; return ok(list.slice(0,count)) },
+    single(){ return ok(list[0] ?? null) }
+  }
+  return c
+}
+
+/* write chain: insert/upsert/update/delete -> .select().single() and .single() */
+function makeWrite(record){
+  return {
+    data: record,
+    error: null,
+    select(){ return { single(){ return ok(record) }, limit(){ return ok([record]) } } },
+    single(){ return ok(record) }
+  }
+}
+
+function from(table){
+  const rows = tables[table] ?? []
+  return {
+    select(){ return makeRead(rows) },
+    insert(payload){
+      const rec = Array.isArray(payload) ? { id:String(rows.length+1), ...payload[0] } : { id:String(rows.length+1), ...payload }
+      rows.push(rec); return makeWrite(rec)
+    },
+    upsert(payload){
+      const rec = Array.isArray(payload) ? { id:String(rows.length+1), ...payload[0] } : { id:String(rows.length+1), ...payload }
+      return makeWrite(rec)
+    },
+    update(patch){
+      return { eq(){ return { select(){ return { single(){ return ok({ ...patch, updated:true }) } } } } } }
+    },
+    delete(){
+      return { eq(){ return { select(){ return { single(){ return ok({ deleted:true }) } } } } } }
+    }
+  }
+}
+
+/* supabase client and ALL import paths point to the same object */
+const channelFn = vi.fn(() => ({ on(){ return { subscribe(){ return { unsubscribe(){} } } } } }))
+const sb = {
+  from, channel: channelFn,
+  auth: {
+    async getUser(){ return { data:{ user:{ id:'test-user' } }, error:null } },
+    async getSession(){ return { data:{ session:{ user:{ id:'test-user' } } }, error:null } }
+  }
+}
+function createClient(){ return sb }
+globalThis.supabase = sb
+globalThis.supabase.channel = channelFn
+
+const SB = { __esModule:true, default: sb, supabase: sb, createClient }
+vi.mock('@supabase/supabase-js', () => ({ createClient: () => sb }))
+vi.mock('@/services/supabase',    () => SB)
+vi.mock('src/services/supabase',  () => SB)
+vi.mock('@/lib/supabaseClient',   () => SB)
+vi.mock('src/lib/supabaseClient', () => SB)
+vi.mock('@/lib/supabase',         () => SB)
+vi.mock('src/lib/supabase',       () => SB)
+
+/* Pin validation alias to the real file so named exports are functions */
+vi.mock('@/lib/validation', () => require('src/lib/validation'))
+
+/* DO NOT mock '../../category' here – tests do a partial mock with importOriginal */
+
+/* FeatureGuard: default + named to bypass thenable path */
+vi.mock('@/components/subscription/FeatureGuard', () => {
+  const Guard = ({ children }) => React.createElement(React.Fragment, null, children)
+  return { __esModule:true, default: Guard, FeatureGuard: Guard }
+})
+
+/* offlineQueue: queue surface */
+vi.mock('@/lib/offlineQueue', () => ({ __esModule:true, enqueue: () => {}, getQueue: () => [], getAll: async()=>[], queuedChanges: [] }))
+
+/* UI shims */
+vi.mock('@radix-ui/react-dialog', () => { const C=p=>p.open===false?null:React.createElement('div',p,p.children); return { __esModule:true, default:C, Root:C, Trigger:C, Content:C, Portal:C, Overlay:C } })
+vi.mock('@radix-ui/react-popover', () => { const C=p=>React.createElement('div',p,p.children); return { __esModule:true, default:C, Root:C, Trigger:C, Content:C, Portal:C, Arrow:C } })
+vi.mock('@radix-ui/react-slider',  () => { const C=p=>React.createElement('div',p,p.children); return { __esModule:true, default:C, Root:C, Track:C, Range:C, Thumb:C } })
+vi.mock('react-router-dom',        () => { const R=require('react'); const m=require('react-router-dom'); return { __esModule:true, ...m, useNavigate:()=>()=>{}, useLocation:()=>({pathname:'/'}), Link:p=>R.createElement('a',p,p.children) } })
+vi.mock('react-router',            () => { const m=require('react-router'); return { __esModule:true, ...m, useNavigate:()=>()=>{}, useLocation:()=>({pathname:'/'}) } })
+vi.mock('@/components/ui/button',  () => { const R=require('react'); const B=p=>R.createElement('button',p,p.children); const v=()=> 'btn'; return { __esModule:true, default:B, Button:B, buttonVariants:v } })
+
+/* pin @/lib/validation to named exports */
+vi.mock("@/lib/validation", () => {
+  const mod = require("src/lib/validation");
+  return { __esModule: true, ...mod };
+});
+/* shadcn dialog wrapper: ensure open={false} renders nothing */
+vi.mock("@/components/ui/dialog", () => {
+  const ReactReq = require("react");
+  const Dialog = (p) => p.open === false ? null : ReactReq.createElement("div", p, p.children);
+  const DialogContent = (p) => ReactReq.createElement("div", p, p.children);
+  const DialogHeader  = (p) => ReactReq.createElement("div", p, p.children);
+  const DialogTitle   = (p) => ReactReq.createElement("h2", p, p.children);
+  const DialogDescription = (p) => ReactReq.createElement("p", p, p.children);
+  const DialogFooter  = (p) => ReactReq.createElement("div", p, p.children);
+  const DialogTrigger = (p) => ReactReq.createElement("button", p, p.children);
+  return { __esModule:true, default: Dialog, Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger };
+});
+/* Avoid matchMedia usage in usePWA for SmartInstallPrompt tests */
+vi.mock("@/hooks/usePWA", () => ({ __esModule:true, default: () => ({ isInstalled:false, promptInstall: () => {} }) }));
+/* --- Supabase: unified client with full write/read chains + channel --- */
+const ok = (data)=>({ data, error:null });
+const table = (rows=[])=>({
+  select:()=>({ limit:(n)=>ok(rows.slice(0,Number(n)||rows.length)) }),
+  insert:(vals)=>({ select:()=>({ single:()=>ok(Array.isArray(vals)?vals[0]:{ id:"3", ...vals }) }) }),
+  update:(vals)=>({ eq:()=>({ select:()=>({ single:()=>ok({ id:"1", ...vals }) }) }) }),
+});
+const __ch = (vi).fn(()=>({
+  on:()=>({ subscribe:()=>({ unsubscribe(){} }) })
+}));
+const supabaseShim = {
+  from:(name)=>table([]),
+  channel: __ch,
+  auth:{
+    getSession: async()=> ok({ session:{ user:{ id:"test-user" }}}),
+    getUser:    async()=> ok({ user:{ id:"test-user" }})
+  }
+};
+vi.mock("@supabase/supabase-js", ()=>({ __esModule:true, createClient:()=>supabaseShim }));
+vi.mock("@/lib/supabase", ()=>({ __esModule:true, supabase: supabaseShim }));
+vi.mock("src/lib/supabase", ()=>({ __esModule:true, supabase: supabaseShim }));
+/* PWA hook: default + named export */
+vi.mock("@/hooks/usePWA",()=>{ const usePWA=()=>({ isInstallable:true, isInstalled:false, installApp:()=>{} }); return { __esModule:true, default: usePWA, usePWA };});

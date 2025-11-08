@@ -1,10 +1,9 @@
 import { withErrorHandling } from './errorHandler'
-export async function withDatabaseErrorHandling<T>(operation: () => Promise<{ data: any; error: any }>, _ctx?: any) {
-  const result = await withErrorHandling(async () => {
-    const { data, error } = await operation()
+export async function withDatabaseErrorHandling<T>(op: ()=>Promise<{data:any,error:any}>){
+  return withErrorHandling(async () => {
+    const { data, error } = await op()
     if (error) throw error
-    return data
+    return { success: true, data }
   })
-  return result
 }
 export default { withDatabaseErrorHandling }

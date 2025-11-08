@@ -1,7 +1,9 @@
-import React from 'react';
-export const Dialog: React.FC<React.HTMLAttributes<HTMLDivElement>> = (p)=> <div role="dialog" {...p} />;
-export const DialogContent: React.FC<React.HTMLAttributes<HTMLDivElement>> = (p)=> <div {...p} />;
-export const DialogHeader: React.FC<React.HTMLAttributes<HTMLDivElement>> = (p)=> <div {...p} />;
-export const DialogTitle: React.FC<React.HTMLAttributes<HTMLHeadingElement>> = (p)=> <h2 {...p} />;
-export const DialogDescription: React.FC<React.HTMLAttributes<HTMLParagraphElement>> = (p)=> <p {...p} />;
-export default Dialog;
+import React from 'react'
+export const Dialog = (p:any)=> <div {...p}>{p.children}</div>
+export const DialogContent = (p:any)=> <div {...p}>{p.children}</div>
+export const DialogHeader = (p:any)=> <div {...p}>{p.children}</div>
+export const DialogTitle = (p:any)=> <h2 {...p}>{p.children}</h2>
+export const DialogDescription = (p:any)=> <p {...p}>{p.children}</p>
+export const DialogFooter = (p:any)=> <div {...p}>{p.children}</div>
+export const DialogTrigger = (p:any)=> <button {...p}>{p.children}</button>
+export default Dialog

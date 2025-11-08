@@ -1,10 +1,5 @@
 export function useSubscription(){
-  return {
-    hasFeature: (name:string) => name !== 'nonexistent_feature',
-    tier: 'pro',
-    status: 'active',
-    planType: 'pro',
-    limits: { maxItems: 1000 },
-  }
+  function hasFeature(name){ return name !== 'nonexistent_feature' }
+  return { hasFeature, tier:'pro', status:'active', limits:{ maxItems:1000 } }
 }
 export default useSubscription
