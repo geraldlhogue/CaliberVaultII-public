@@ -40,3 +40,7 @@ node_modules/
 .vite/
 .vitest/
 src/test/e2e/.artifacts/
+
+# allow publishing test logs
+!test-artifacts/
+!test-artifacts/*.txt
