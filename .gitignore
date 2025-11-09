@@ -60,3 +60,7 @@ src/test/e2e/.artifacts/
 # publish test logs
 !test-artifacts/
 !test-artifacts/*.txt
+
+# publish test logs
+!test-artifacts/
+!test-artifacts/*.txt
