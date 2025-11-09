@@ -44,3 +44,7 @@ src/test/e2e/.artifacts/
 # allow publishing test logs
 !test-artifacts/
 !test-artifacts/*.txt
+
+# publish test logs
+!test-artifacts/
+!test-artifacts/*.txt
