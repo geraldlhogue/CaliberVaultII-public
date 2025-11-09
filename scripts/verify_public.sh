@@ -1,7 +1,5 @@
 #!/usr/bin/env zsh
 set -e
-REPO="/Users/ghogue/Desktop/CaliberVaultII"
-cd "$REPO"
 RAW_MAIN=https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main
 curl -I -fSL "$RAW_MAIN/src/test/vitest.setup.ts"
 curl -I -fSL "$RAW_MAIN/vitest.override.ts"

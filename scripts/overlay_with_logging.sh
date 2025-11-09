@@ -6,6 +6,6 @@ cd "$REPO"
 mkdir -p artifacts
 tar -czf ~/Desktop/CaliberVaultII.backup.tgz .
 rsync -avni "$DROP/" . > artifacts/overlay.dryrun.txt
-rsync -avi "$DROP/" . > artifacts/overlay.applied.txt
+rsync -avi "$DROP/" .  > artifacts/overlay.applied.txt
 git status -sb > artifacts/git_status_after_overlay.txt
 git diff --name-status > artifacts/git_diff_name_status.txt || true
