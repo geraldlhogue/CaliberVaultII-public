@@ -1,0 +1,28 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0  0  3449    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+HTTP/2 200 
+cache-control: max-age=300
+content-security-policy: default-src 'none'; style-src 'unsafe-inline'; sandbox
+content-type: text/plain; charset=utf-8
+etag: "c207003b942f93a0f64f6ef67b30baad6923bccefa237fac0679a197ab7297db"
+strict-transport-security: max-age=31536000
+x-content-type-options: nosniff
+x-frame-options: deny
+x-xss-protection: 1; mode=block
+x-github-request-id: 15A2:104571:251C4EA:2BEF80F:691122CD
+accept-ranges: bytes
+date: Sun, 09 Nov 2025 23:25:01 GMT
+via: 1.1 varnish
+x-served-by: cache-den-kden1300066-DEN
+x-cache: MISS
+x-cache-hits: 0
+x-timer: S1762730702.641496,VS0,VE97
+vary: Authorization,Accept-Encoding
+access-control-allow-origin: *
+cross-origin-resource-policy: cross-origin
+x-fastly-request-id: 97b0f6d0e94aaf4f74873ce20386cf70729c1cdb
+expires: Sun, 09 Nov 2025 23:30:01 GMT
+source-age: 0
+content-length: 3449
+

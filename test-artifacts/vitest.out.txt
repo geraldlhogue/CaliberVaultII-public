@@ -1,6 +1,64 @@
 
  RUN  v2.1.9 /Users/ghogue/Desktop/CaliberVaultII
 
+stdout | src/services/__tests__/sync.service.test.ts > SyncService > should process queue successfully
+[SyncService] Sync complete: { success: 0, failed: 0, conflicts: 0 }
+
+stdout | src/services/__tests__/sync.service.test.ts > SyncService > should not process queue if already processing
+[SyncService] Sync already in progress
+
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate UPC format
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate EAN format
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should detect barcode type
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should track API usage
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should reset API counter
+ ✓ src/services/__tests__/sync.service.test.ts > SyncService > should process queue successfully
+ ✓ src/services/__tests__/sync.service.test.ts > SyncService > should subscribe to sync status updates
+ ✓ src/services/__tests__/sync.service.test.ts > SyncService > should not process queue if already processing
+ ✓ src/services/__tests__/inventory.service.test.ts > InventoryService > should save firearm item
+ ✓ src/services/__tests__/inventory.service.test.ts > InventoryService > should handle lowercase category names
+ ✓ src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > saveItem > should route firearms to firearmsService
+ ✓ src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > saveItem > should route ammunition to ammunitionService
+ ✓ src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > updateItem > should update firearms correctly
+stderr | src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > saves firearm item successfully
+Save item error: TypeError: Cannot read properties of null (reading 'id')
+    at InventoryService.saveItem (/Users/ghogue/Desktop/CaliberVaultII/src/services/inventory.service.ts:46:53)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /Users/ghogue/Desktop/CaliberVaultII/src/services/__tests__/inventory.service.enhanced.test.ts:66:22
+    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1271:3)
+
+stderr | src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > saves ammunition item successfully
+Save item error: TypeError: Cannot read properties of null (reading 'id')
+    at InventoryService.saveItem (/Users/ghogue/Desktop/CaliberVaultII/src/services/inventory.service.ts:46:53)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /Users/ghogue/Desktop/CaliberVaultII/src/services/__tests__/inventory.service.enhanced.test.ts:81:22
+    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1271:3)
+
+stderr | src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > throws error for invalid category
+Save item error: TypeError: Cannot read properties of null (reading 'id')
+    at InventoryService.saveItem (/Users/ghogue/Desktop/CaliberVaultII/src/services/inventory.service.ts:46:53)
+    at processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at /Users/ghogue/Desktop/CaliberVaultII/src/services/__tests__/inventory.service.enhanced.test.ts:94:7
+    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:533:5
+    at runTest (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1056:11)
+    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
+    at runFiles (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1262:5)
+    at startTests (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1271:3)
+
  × src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkCreate > should create multiple items successfully
    → [vitest] No "ammunitionService" export is defined on the "../../category" mock. Did you forget to return it from "vi.mock"?
 If you need to partially mock a module, you can use "importOriginal" helper inside:
@@ -17,6 +75,27 @@ If you need to partially mock a module, you can use "importOriginal" helper insi
    → [vitest] No "ammunitionService" export is defined on the "../../category" mock. Did you forget to return it from "vi.mock"?
 If you need to partially mock a module, you can use "importOriginal" helper inside:
 
+ × src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > saves firearm item successfully
+   → Cannot read properties of null (reading 'id')
+ × src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > saves ammunition item successfully
+   → Cannot read properties of null (reading 'id')
+ ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > throws error for invalid category
+ × src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > getItems > retrieves all items for user
+   → expected [] to deeply equal [ …(2) ]
+ ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > getItems > returns empty array when no items found
+ ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > updateItem > updates item successfully
+ ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > valuation methods > saves valuation successfully
+ ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > valuation methods > gets valuation history
+ ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have ammunition table with correct schema
+ ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have bullets table with correct schema
+ ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have magazines table
+ ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have accessories table
+ × src/test/integration/data-migration.test.ts > Data Migration Validation > should fetch all categories from categories table
+   → expected 1 to be greater than or equal to 12
+ × src/test/integration/data-migration.test.ts > Data Migration Validation > should create ammunition item successfully
+   → expected undefined to be 'Test Ammo' // Object.is equality
+ × src/test/integration/data-migration.test.ts > Data Migration Validation > should create magazine item successfully
+   → expected undefined to be 30 // Object.is equality
  × src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Barcode Validation > validates UPC-A format (12 digits)
    → BarcodeService.getInstance is not a function
  × src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Barcode Validation > validates UPC-E format (13 digits)
@@ -41,28 +120,6 @@ If you need to partially mock a module, you can use "importOriginal" helper insi
    → BarcodeService.getInstance is not a function
  × src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Cache Management > clears cache
    → BarcodeService.getInstance is not a function
- ✓ src/services/__tests__/team.service.test.ts > TeamService > should create team
- ✓ src/services/__tests__/team.service.test.ts > TeamService > should add team member
- ✓ src/services/__tests__/team.service.test.ts > TeamService > should list team members
- ✓ src/services/__tests__/team.service.test.ts > TeamService > should remove team member
- ✓ src/services/__tests__/team.service.test.ts > TeamService > should get teams
- ✓ src/services/__tests__/team.service.test.ts > TeamService > should update team
- ✓ src/services/__tests__/team.service.test.ts > TeamService > should delete team
- ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate UPC format
- ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate EAN format
- ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should detect barcode type
- ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should track API usage
- ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should reset API counter
- ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have ammunition table with correct schema
- ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have bullets table with correct schema
- ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have magazines table
- ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have accessories table
- × src/test/integration/data-migration.test.ts > Data Migration Validation > should fetch all categories from categories table
-   → expected 1 to be greater than or equal to 12
- × src/test/integration/data-migration.test.ts > Data Migration Validation > should create ammunition item successfully
-   → expected undefined to be 'Test Ammo' // Object.is equality
- × src/test/integration/data-migration.test.ts > Data Migration Validation > should create magazine item successfully
-   → expected undefined to be 30 // Object.is equality
 stdout | src/services/__tests__/categoryServices.test.ts > FirearmsService > should create a firearm using createFirearm method
 [firearm_detailsService] Creating: {
   baseData: {
@@ -96,12 +153,6 @@ stdout | src/services/__tests__/categoryServices.test.ts > FirearmsService > sho
   }
 }
 
- × src/services/__tests__/categoryServices.test.ts > FirearmsService > should create a firearm using createFirearm method
-   → Failed to create inventory item: undefined
- × src/services/__tests__/categoryServices.test.ts > FirearmsService > should update a firearm using updateFirearm method
-   → supabase.from(...).update is not a function
- × src/services/__tests__/categoryServices.test.ts > AmmunitionService > should create ammunition using createAmmunition method
-   → Failed to create inventory item: undefined
 stdout | src/services/__tests__/categoryServices.test.ts > AmmunitionService > should create ammunition using createAmmunition method
 [ammunition_detailsService] Creating: {
   baseData: {
@@ -128,15 +179,12 @@ stdout | src/services/__tests__/categoryServices.test.ts > AmmunitionService > s
   }
 }
 
-stdout | src/services/__tests__/sync.service.test.ts > SyncService > should process queue successfully
-[SyncService] Sync complete: { success: 0, failed: 0, conflicts: 0 }
-
-stdout | src/services/__tests__/sync.service.test.ts > SyncService > should not process queue if already processing
-[SyncService] Sync already in progress
-
- ✓ src/services/__tests__/sync.service.test.ts > SyncService > should process queue successfully
- ✓ src/services/__tests__/sync.service.test.ts > SyncService > should subscribe to sync status updates
- ✓ src/services/__tests__/sync.service.test.ts > SyncService > should not process queue if already processing
+ × src/services/__tests__/categoryServices.test.ts > FirearmsService > should create a firearm using createFirearm method
+   → Failed to create inventory item: undefined
+ × src/services/__tests__/categoryServices.test.ts > FirearmsService > should update a firearm using updateFirearm method
+   → supabase.from(...).update is not a function
+ × src/services/__tests__/categoryServices.test.ts > AmmunitionService > should create ammunition using createAmmunition method
+   → Failed to create inventory item: undefined
 stdout | src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > FirearmsService > should create firearm using createFirearm
 [firearm_detailsService] Creating: {
   baseData: {
@@ -230,58 +278,6 @@ stdout | src/services/__tests__/categoryServices.comprehensive.test.ts > Categor
  ✓ src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > OpticsService > should create optic using createOptic
  ✓ src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > OpticsService > should update optic using updateOptic
  ✓ src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > OpticsService > should delete optic
-stderr | src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > saves firearm item successfully
-Save item error: TypeError: Cannot read properties of null (reading 'id')
-    at InventoryService.saveItem (/Users/ghogue/Desktop/CaliberVaultII/src/services/inventory.service.ts:46:53)
-    at processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at /Users/ghogue/Desktop/CaliberVaultII/src/services/__tests__/inventory.service.enhanced.test.ts:66:22
-    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:533:5
-    at runTest (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1056:11)
-    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
-    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
-    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
-    at runFiles (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1262:5)
-    at startTests (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1271:3)
-
-stderr | src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > saves ammunition item successfully
-Save item error: TypeError: Cannot read properties of null (reading 'id')
-    at InventoryService.saveItem (/Users/ghogue/Desktop/CaliberVaultII/src/services/inventory.service.ts:46:53)
-    at processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at /Users/ghogue/Desktop/CaliberVaultII/src/services/__tests__/inventory.service.enhanced.test.ts:81:22
-    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:533:5
-    at runTest (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1056:11)
-    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
-    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
-    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
-    at runFiles (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1262:5)
-    at startTests (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1271:3)
-
-stderr | src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > throws error for invalid category
-Save item error: TypeError: Cannot read properties of null (reading 'id')
-    at InventoryService.saveItem (/Users/ghogue/Desktop/CaliberVaultII/src/services/inventory.service.ts:46:53)
-    at processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at /Users/ghogue/Desktop/CaliberVaultII/src/services/__tests__/inventory.service.enhanced.test.ts:94:7
-    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:533:5
-    at runTest (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1056:11)
-    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
-    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
-    at runSuite (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1205:15)
-    at runFiles (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1262:5)
-    at startTests (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@vitest/runner/dist/index.js:1271:3)
-
- × src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > saves firearm item successfully
-   → Cannot read properties of null (reading 'id')
- × src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > saves ammunition item successfully
-   → Cannot read properties of null (reading 'id')
- ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > throws error for invalid category
- × src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > getItems > retrieves all items for user
-   → expected [] to deeply equal [ …(2) ]
- ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > getItems > returns empty array when no items found
- ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > updateItem > updates item successfully
- ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > valuation methods > saves valuation successfully
- ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > valuation methods > gets valuation history
- ✓ src/services/__tests__/inventory.service.test.ts > InventoryService > should save firearm item
- ✓ src/services/__tests__/inventory.service.test.ts > InventoryService > should handle lowercase category names
 stdout | src/test/integration/comprehensive-categories.test.ts > Comprehensive Category Integration Tests > Firearms Service Integration > creates firearm with all fields
 [firearm_detailsService] Creating: {
   baseData: {
@@ -301,7 +297,7 @@ stdout | src/test/integration/comprehensive-categories.test.ts > Comprehensive C
 
 stderr | src/test/integration/comprehensive-categories.test.ts > Comprehensive Category Integration Tests > Firearms Service Integration > creates firearm with all fields
 ❌ Operation Failed: {
-  timestamp: '2025-11-09T23:23:38.210Z',
+  timestamp: '2025-11-09T23:35:29.748Z',
   operation: 'Database insert on inventory',
   component: '[firearm_detailsService]',
   userId: undefined,
@@ -355,7 +351,7 @@ Error occurred: {
     message: "Cannot read properties of undefined (reading 'insert')",
     action: 'Please try again. If the problem persists, contact support.'
   },
-  timestamp: '2025-11-09T23:23:38.213Z'
+  timestamp: '2025-11-09T23:35:29.750Z'
 }
 
 stdout | src/test/integration/comprehensive-categories.test.ts > Comprehensive Category Integration Tests > Ammunition Service Integration > creates ammunition with specifications
@@ -374,7 +370,7 @@ stdout | src/test/integration/comprehensive-categories.test.ts > Comprehensive C
 
 stderr | src/test/integration/comprehensive-categories.test.ts > Comprehensive Category Integration Tests > Ammunition Service Integration > creates ammunition with specifications
 ❌ Operation Failed: {
-  timestamp: '2025-11-09T23:23:38.214Z',
+  timestamp: '2025-11-09T23:35:29.751Z',
   operation: 'Database insert on inventory',
   component: '[ammunition_detailsService]',
   userId: undefined,
@@ -425,7 +421,7 @@ Error occurred: {
     message: "Cannot read properties of undefined (reading 'insert')",
     action: 'Please try again. If the problem persists, contact support.'
   },
-  timestamp: '2025-11-09T23:23:38.214Z'
+  timestamp: '2025-11-09T23:35:29.751Z'
 }
 
  × src/test/integration/comprehensive-categories.test.ts > Comprehensive Category Integration Tests > Firearms Service Integration > creates firearm with all fields
@@ -433,15 +429,19 @@ Error occurred: {
  × src/test/integration/comprehensive-categories.test.ts > Comprehensive Category Integration Tests > Ammunition Service Integration > creates ammunition with specifications
    → Failed to create inventory item: Cannot read properties of undefined (reading 'insert')
  ✓ src/test/integration/comprehensive-categories.test.ts > Comprehensive Category Integration Tests > Cross-Category Operations > links firearm with compatible ammunition
- ✓ src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > saveItem > should route firearms to firearmsService
- ✓ src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > saveItem > should route ammunition to ammunitionService
- ✓ src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > updateItem > should update firearms correctly
+ ✓ src/services/__tests__/team.service.test.ts > TeamService > should create team
+ ✓ src/services/__tests__/team.service.test.ts > TeamService > should add team member
+ ✓ src/services/__tests__/team.service.test.ts > TeamService > should list team members
+ ✓ src/services/__tests__/team.service.test.ts > TeamService > should remove team member
+ ✓ src/services/__tests__/team.service.test.ts > TeamService > should get teams
+ ✓ src/services/__tests__/team.service.test.ts > TeamService > should update team
+ ✓ src/services/__tests__/team.service.test.ts > TeamService > should delete team
 stdout | src/test/integration/api.test.ts > API Integration Tests > REST API Endpoints > creates item via API
 [firearm_detailsService] Creating: { baseData: undefined, detailData: undefined }
 
 stderr | src/test/integration/api.test.ts > API Integration Tests > REST API Endpoints > creates item via API
 ❌ Operation Failed: {
-  timestamp: '2025-11-09T23:23:38.388Z',
+  timestamp: '2025-11-09T23:35:30.101Z',
   operation: 'Database insert on inventory',
   component: '[firearm_detailsService]',
   userId: undefined,
@@ -484,7 +484,7 @@ Error occurred: {
     message: "Cannot read properties of undefined (reading 'insert')",
     action: 'Please try again. If the problem persists, contact support.'
   },
-  timestamp: '2025-11-09T23:23:38.389Z'
+  timestamp: '2025-11-09T23:35:30.102Z'
 }
 
  × src/test/integration/api.test.ts > API Integration Tests > REST API Endpoints > fetches inventory items via API
@@ -497,49 +497,6 @@ Error occurred: {
    → Cannot read properties of undefined (reading 'mockReturnValue')
  × src/test/integration/api.test.ts > API Integration Tests > Batch Operations > performs batch insert
    → apiService.batchCreate is not a function
- × src/utils/__tests__/csvValidator.test.ts > csvValidator > validateCSVRow > validates row with all required fields
-   → Cannot convert undefined or null to object
- × src/utils/__tests__/csvValidator.test.ts > csvValidator > validateCSVRow > rejects row with missing required fields
-   → Cannot convert undefined or null to object
- × src/utils/__tests__/csvValidator.test.ts > csvValidator > validateCSVRow > validates numeric fields
-   → expected undefined to be false // Object.is equality
- × src/utils/__tests__/csvValidator.test.ts > csvValidator > validateCSVHeaders > validates correct headers
-   → validateCSVHeaders is not a function
- × src/utils/__tests__/csvValidator.test.ts > csvValidator > validateCSVHeaders > rejects missing required headers
-   → validateCSVHeaders is not a function
-stdout | src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should create firearm with correct fields
-[firearm_detailsService] Creating: {
-  baseData: { name: 'Test Rifle', manufacturer_id: 'mfg-123' },
-  detailData: { serial_number: '123456', caliber_id: 'cal-123' }
-}
-
-stdout | src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should handle serial numbers
-[firearm_detailsService] Creating: {
-  baseData: { name: 'Test Pistol' },
-  detailData: { serial_number: 'ABC123' }
-}
-
-stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should create ammunition with correct fields
-[ammunition_detailsService] Creating: {
-  baseData: { name: 'Test Ammo', manufacturer_id: 'mfg-456' },
-  detailData: { caliber_id: 'cal-456', bullet_weight: 115 }
-}
-
- × src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should create firearm with correct fields
-   → Failed to create inventory item: undefined
- × src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should handle serial numbers
-   → Failed to create inventory item: undefined
- × src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should create ammunition with correct fields
-   → Failed to create inventory item: undefined
- × src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should handle bullet weight
-   → Failed to create inventory item: undefined
-stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should handle bullet weight
-[ammunition_detailsService] Creating: { baseData: { name: 'Test Ammo' }, detailData: { bullet_weight: 115 } }
-
- ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > firearms service is defined
- ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > ammunition service is defined
- ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > optics service is defined
- ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > all services have create method
  ✓ src/hooks/__tests__/useInventoryFilters.test.ts > useInventoryFilters > returns all items when no filters applied
  ✓ src/hooks/__tests__/useInventoryFilters.test.ts > useInventoryFilters > filters by category
  ✓ src/hooks/__tests__/useInventoryFilters.test.ts > useInventoryFilters > filters by search query
@@ -550,12 +507,50 @@ stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionS
  ✓ src/hooks/__tests__/useInventoryFilters.test.ts > useInventoryFilters > handles empty inventory gracefully
  ✓ src/hooks/__tests__/useInventoryFilters.test.ts > useInventoryFilters > filters with advanced price range
  ✓ src/hooks/__tests__/useInventoryFilters.test.ts > useInventoryFilters > calculates active filter count
- ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > parses valid CSV data
- ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > handles empty CSV
- ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > handles CSV with headers only
- ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > handles quoted values
- × src/utils/__tests__/csvParser.test.ts > csvParser > generateCSVTemplate > generates template with headers
-   → generateCSVTemplate is not a function
+stdout | src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should create firearm with correct fields
+[firearm_detailsService] Creating: {
+  baseData: { name: 'Test Rifle', manufacturer_id: 'mfg-123' },
+  detailData: { serial_number: '123456', caliber_id: 'cal-123' }
+}
+
+ × src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should create firearm with correct fields
+   → Failed to create inventory item: undefined
+ × src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should handle serial numbers
+   → Failed to create inventory item: undefined
+stdout | src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should handle serial numbers
+[firearm_detailsService] Creating: {
+  baseData: { name: 'Test Pistol' },
+  detailData: { serial_number: 'ABC123' }
+}
+
+ ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > firearms service is defined
+ ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > ammunition service is defined
+ ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > optics service is defined
+ ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > all services have create method
+ × src/utils/__tests__/csvValidator.test.ts > csvValidator > validateCSVRow > validates row with all required fields
+   → Cannot convert undefined or null to object
+ × src/utils/__tests__/csvValidator.test.ts > csvValidator > validateCSVRow > rejects row with missing required fields
+   → Cannot convert undefined or null to object
+ × src/utils/__tests__/csvValidator.test.ts > csvValidator > validateCSVRow > validates numeric fields
+   → expected undefined to be false // Object.is equality
+ × src/utils/__tests__/csvValidator.test.ts > csvValidator > validateCSVHeaders > validates correct headers
+   → validateCSVHeaders is not a function
+ × src/utils/__tests__/csvValidator.test.ts > csvValidator > validateCSVHeaders > rejects missing required headers
+   → validateCSVHeaders is not a function
+stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should create ammunition with correct fields
+[ammunition_detailsService] Creating: {
+  baseData: { name: 'Test Ammo', manufacturer_id: 'mfg-456' },
+  detailData: { caliber_id: 'cal-456', bullet_weight: 115 }
+}
+
+stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should handle bullet weight
+[ammunition_detailsService] Creating: { baseData: { name: 'Test Ammo' }, detailData: { bullet_weight: 115 } }
+
+ × src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should create ammunition with correct fields
+   → Failed to create inventory item: undefined
+ × src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should handle bullet weight
+   → Failed to create inventory item: undefined
+ ✓ src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > initializes cache manager
  ✓ src/services/__tests__/reference.service.test.ts > ReferenceDataService > getManufacturers > fetches manufacturers
  ✓ src/services/__tests__/reference.service.test.ts > ReferenceDataService > getCalibers > fetches calibers
  × src/services/__tests__/reference.service.test.ts > ReferenceDataService > addManufacturer > adds new manufacturer
@@ -566,6 +561,12 @@ stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionS
    → StorageService is not a constructor
  × src/services/__tests__/storage.service.test.ts > StorageService > listFiles > lists files successfully
    → StorageService is not a constructor
+ ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > parses valid CSV data
+ ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > handles empty CSV
+ ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > handles CSV with headers only
+ ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > handles quoted values
+ × src/utils/__tests__/csvParser.test.ts > csvParser > generateCSVTemplate > generates template with headers
+   → generateCSVTemplate is not a function
  ✓ src/lib/__tests__/formatters.test.ts > formatters > formatCurrency > formats USD currency
  ✓ src/lib/__tests__/formatters.test.ts > formatters > formatCurrency > handles zero
  × src/lib/__tests__/formatters.test.ts > formatters > formatCurrency > handles negative values
@@ -575,7 +576,6 @@ stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionS
  ✓ src/lib/__tests__/formatters.test.ts > formatters > formatNumber > formats large numbers with commas
  ✓ src/lib/__tests__/formatters.test.ts > formatters > formatNumber > handles decimals
  ✓ src/lib/__tests__/formatters.test.ts > formatters > formatPercentage > formats percentage
- ✓ src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > initializes cache manager
  × src/lib/__tests__/validation.test.ts > validation utilities > validateEmail > validates correct email
    → validateEmail is not a function
  × src/lib/__tests__/validation.test.ts > validation utilities > validateEmail > rejects invalid email
@@ -592,11 +592,11 @@ stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionS
    → validateRequired is not a function
  × src/lib/__tests__/validation.test.ts > validation utilities > validateRequired > rejects empty value
    → validateRequired is not a function
- ✓ src/components/__tests__/AIValuationModal.test.tsx > AIValuationModal Tests > renders valuation modal
- ✓ src/components/__tests__/AIValuationModal.test.tsx > AIValuationModal Tests > handles modal close
  ✓ src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture > renders photo capture dialog
  ✓ src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture > calls onClose when close button clicked
  ✓ src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture > initializes camera on mount
+ ✓ src/services/security/__tests__/SecurityService.test.ts > SecurityService > logSecurityEvent > logs security event successfully
+ ✓ src/services/security/__tests__/SecurityService.test.ts > SecurityService > checkPermission > checks user permission
  ✓ src/utils/__tests__/barcodeUtils.test.ts > barcodeUtils > validateUPC > validates correct UPC-A codes
  ✓ src/utils/__tests__/barcodeUtils.test.ts > barcodeUtils > validateUPC > rejects invalid UPC codes
  ✓ src/utils/__tests__/barcodeUtils.test.ts > barcodeUtils > validateUPC > rejects UPC with wrong check digit
@@ -606,21 +606,21 @@ stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionS
  ✓ src/services/__tests__/reports.service.test.ts > ReportService > should generate inventory summary report
  ✓ src/services/__tests__/reports.service.test.ts > ReportService > should generate category breakdown report
  ✓ src/services/__tests__/reports.service.test.ts > ReportService > should generate value report
- ✓ src/services/security/__tests__/SecurityService.test.ts > SecurityService > logSecurityEvent > logs security event successfully
- ✓ src/services/security/__tests__/SecurityService.test.ts > SecurityService > checkPermission > checks user permission
+ ✓ src/hooks/__tests__/useInventoryFilters.enhanced.test.ts > useInventoryFilters Enhanced > handles complex filter combinations
+ ✓ src/hooks/__tests__/useInventoryFilters.enhanced.test.ts > useInventoryFilters Enhanced > persists filter state
  × src/services/api/__tests__/InventoryAPIService.test.ts > InventoryAPIService > fetches inventory items
    → apiService.getItems is not a function
  × src/services/api/__tests__/InventoryAPIService.test.ts > InventoryAPIService > creates new item via API
    → apiService.createItem is not a function
  ✓ src/services/api/__tests__/InventoryAPIService.test.ts > InventoryAPIService > handles API errors
- ✓ src/hooks/__tests__/useInventoryFilters.enhanced.test.ts > useInventoryFilters Enhanced > handles complex filter combinations
- ✓ src/hooks/__tests__/useInventoryFilters.enhanced.test.ts > useInventoryFilters Enhanced > persists filter state
  × src/hooks/__tests__/useSubscription.test.ts > useSubscription > returns subscription data
    → expected undefined to be 'pro' // Object.is equality
  × src/hooks/__tests__/useSubscription.test.ts > useSubscription > checks feature availability
    → expected Promise{…} to be true // Object.is equality
  × src/hooks/__tests__/useSubscription.test.ts > useSubscription > returns tier limits
    → expected undefined to be defined
+ ✓ src/components/__tests__/AIValuationModal.test.tsx > AIValuationModal Tests > renders valuation modal
+ ✓ src/components/__tests__/AIValuationModal.test.tsx > AIValuationModal Tests > handles modal close
 stderr | src/components/__tests__/ItemCard.test.tsx > ItemCard Component > renders item information
 Warning: React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
 
@@ -845,6 +845,21 @@ This ensures that you're testing the behavior the user would see in the browser.
    → ErrorHandler is not a constructor
  × src/lib/__tests__/errorHandler.test.ts > ErrorHandler > categorizes errors
    → ErrorHandler is not a constructor
+stdout | src/hooks/__tests__/useOfflineSync.test.ts > useOfflineSync > handles offline mode
+[SyncService] Sync already in progress
+
+stdout | src/hooks/__tests__/useOfflineSync.test.ts > useOfflineSync > queues offline changes
+[SyncService] Sync already in progress
+
+ ✓ src/hooks/__tests__/useOfflineSync.test.ts > useOfflineSync > initializes sync state
+ ✓ src/hooks/__tests__/useOfflineSync.test.ts > useOfflineSync > handles offline mode
+ ✓ src/hooks/__tests__/useOfflineSync.test.ts > useOfflineSync > queues offline changes
+ ✓ src/components/__tests__/SyncStatusDashboard.test.tsx > SyncStatusDashboard > renders sync dashboard
+ ✓ src/components/__tests__/SyncStatusDashboard.test.tsx > SyncStatusDashboard > displays sync status
+ ✓ src/components/__tests__/EnhancedBulkImport.test.tsx > EnhancedBulkImport > renders bulk import component
+ ✓ src/components/__tests__/EnhancedBulkImport.test.tsx > EnhancedBulkImport > handles file upload
+ ✓ src/components/__tests__/FeedbackSystem.test.tsx > FeedbackSystem > renders feedback modal
+ ✓ src/components/__tests__/FeedbackSystem.test.tsx > FeedbackSystem > handles feedback submission
 stderr | src/components/__tests__/TierEnforcement.test.tsx > TierEnforcement > renders feature guard
 Error: Uncaught [Error: useNavigate() may be used only in the context of a <Router> component.]
     at reportException (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
@@ -949,28 +964,6 @@ Visit https://reactjs.org/link/error-boundaries to learn more about error bounda
    → useNavigate() may be used only in the context of a <Router> component.
  × src/components/__tests__/TierEnforcement.test.tsx > TierEnforcement > enforces tier limits
    → useNavigate() may be used only in the context of a <Router> component.
- ✓ src/hooks/__tests__/usePullToRefresh.test.ts > usePullToRefresh > initializes pull to refresh
- ✓ src/hooks/__tests__/usePullToRefresh.test.ts > usePullToRefresh > handles refresh callback
- ✓ src/hooks/__tests__/usePullToRefresh.test.ts > usePullToRefresh > tracks pull state
-stdout | src/hooks/__tests__/useOfflineSync.test.ts > useOfflineSync > handles offline mode
-[SyncService] Sync already in progress
-
-stdout | src/hooks/__tests__/useOfflineSync.test.ts > useOfflineSync > queues offline changes
-[SyncService] Sync already in progress
-
- ✓ src/hooks/__tests__/useOfflineSync.test.ts > useOfflineSync > initializes sync state
- ✓ src/hooks/__tests__/useOfflineSync.test.ts > useOfflineSync > handles offline mode
- ✓ src/hooks/__tests__/useOfflineSync.test.ts > useOfflineSync > queues offline changes
-stdout | SyncService.processQueue (/Users/ghogue/Desktop/CaliberVaultII/src/services/sync/SyncService.ts:57:13)
-[SyncService] Sync complete: { success: 0, failed: 0, conflicts: 0 }
-
- ✓ src/components/__tests__/SyncStatusDashboard.test.tsx > SyncStatusDashboard > renders sync dashboard
- ✓ src/components/__tests__/SyncStatusDashboard.test.tsx > SyncStatusDashboard > displays sync status
- ✓ src/components/__tests__/EnhancedBulkImport.test.tsx > EnhancedBulkImport > renders bulk import component
- ✓ src/components/__tests__/EnhancedBulkImport.test.tsx > EnhancedBulkImport > handles file upload
- ✓ src/hooks/__tests__/useSwipeGesture.test.ts > useSwipeGesture > initializes swipe gesture
- ✓ src/hooks/__tests__/useSwipeGesture.test.ts > useSwipeGesture > handles swipe callback
- ✓ src/hooks/__tests__/useSwipeGesture.test.ts > useSwipeGesture > detects swipe direction
 stderr | src/components/__tests__/InventoryOperations.test.tsx > InventoryOperations > renders inventory dashboard
 Warning: React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
 
@@ -997,6 +990,10 @@ Error: Uncaught [Error: Element type is invalid: expected a string (for built-in
     at HTMLUnknownElement.callTheUserObjectsOperation (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
     at innerInvokeEventListeners (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
 
+ × src/components/__tests__/InventoryOperations.test.tsx > InventoryOperations > renders inventory dashboard
+   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+ × src/components/__tests__/InventoryOperations.test.tsx > InventoryOperations > handles inventory operations
+   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
 stderr | src/components/__tests__/InventoryOperations.test.tsx > InventoryOperations > handles inventory operations
 Warning: React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
 
@@ -1023,18 +1020,18 @@ Error: Uncaught [Error: Element type is invalid: expected a string (for built-in
     at HTMLUnknownElement.callTheUserObjectsOperation (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/generated/EventListener.js:26:30)
     at innerInvokeEventListeners (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:350:25)
 
- × src/components/__tests__/InventoryOperations.test.tsx > InventoryOperations > renders inventory dashboard
-   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
- × src/components/__tests__/InventoryOperations.test.tsx > InventoryOperations > handles inventory operations
-   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+ ✓ src/hooks/__tests__/usePullToRefresh.test.ts > usePullToRefresh > initializes pull to refresh
+ ✓ src/hooks/__tests__/usePullToRefresh.test.ts > usePullToRefresh > handles refresh callback
+ ✓ src/hooks/__tests__/usePullToRefresh.test.ts > usePullToRefresh > tracks pull state
+ ✓ src/hooks/__tests__/useSwipeGesture.test.ts > useSwipeGesture > initializes swipe gesture
+ ✓ src/hooks/__tests__/useSwipeGesture.test.ts > useSwipeGesture > handles swipe callback
+ ✓ src/hooks/__tests__/useSwipeGesture.test.ts > useSwipeGesture > detects swipe direction
+ ✓ src/__tests__/smoke.test.ts > smoke > runs
+ ✓ src/components/__tests__/MobileBarcodeScanner.test.tsx > MobileBarcodeScanner > renders barcode scanner
+ ✓ src/components/__tests__/MobileBarcodeScanner.test.tsx > MobileBarcodeScanner > handles scan callback
  ✓ src/components/__tests__/SmartInstallPrompt.test.tsx > SmartInstallPrompt > renders install prompt
  × src/components/__tests__/SmartInstallPrompt.test.tsx > SmartInstallPrompt > handles PWA install
    → expected null to be truthy
- ✓ src/components/__tests__/FeedbackSystem.test.tsx > FeedbackSystem > renders feedback modal
- ✓ src/components/__tests__/FeedbackSystem.test.tsx > FeedbackSystem > handles feedback submission
- ✓ src/components/__tests__/MobileBarcodeScanner.test.tsx > MobileBarcodeScanner > renders barcode scanner
- ✓ src/components/__tests__/MobileBarcodeScanner.test.tsx > MobileBarcodeScanner > handles scan callback
- ✓ src/__tests__/smoke.test.ts > smoke > runs
 stderr | src/components/__tests__/AddItemModal.test.tsx > AddItemModal > should render when open
 Warning: React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
 
@@ -1380,6 +1377,30 @@ The above error occurred in the <Location.Provider> component:
 Consider adding an error boundary to your tree to customize error handling behavior.
 Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
 
+ × src/components/__tests__/AddItemModal.test.tsx > AddItemModal > should render when open
+   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+
+Check the render method of `AllTheProviders`.
+ × src/components/__tests__/AddItemModal.test.tsx > AddItemModal > should not render when closed
+   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+
+Check the render method of `AllTheProviders`.
+ × src/components/__tests__/AddItemModal.test.tsx > AddItemModal > should render modal component
+   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+
+Check the render method of `AllTheProviders`.
+ × src/components/__tests__/AddItemModal.enhanced.test.tsx > AddItemModal Enhanced > renders modal with all features
+   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+
+Check the render method of `AllTheProviders`.
+ × src/components/__tests__/AddItemModal.enhanced.test.tsx > AddItemModal Enhanced > handles form validation
+   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+
+Check the render method of `AllTheProviders`.
+ × src/components/__tests__/AddItemModal.enhanced.test.tsx > AddItemModal Enhanced > supports all categories
+   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+
+Check the render method of `AllTheProviders`.
 stderr | src/components/__tests__/AddItemModal.enhanced.test.tsx > AddItemModal Enhanced > supports all categories
 Warning: React.jsx: type is invalid -- expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
 
@@ -1449,31 +1470,55 @@ The above error occurred in the <Location.Provider> component:
 Consider adding an error boundary to your tree to customize error handling behavior.
 Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
 
- × src/components/__tests__/AddItemModal.test.tsx > AddItemModal > should render when open
-   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
-
-Check the render method of `AllTheProviders`.
- × src/components/__tests__/AddItemModal.test.tsx > AddItemModal > should not render when closed
-   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
-
-Check the render method of `AllTheProviders`.
- × src/components/__tests__/AddItemModal.test.tsx > AddItemModal > should render modal component
-   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
-
-Check the render method of `AllTheProviders`.
- × src/components/__tests__/AddItemModal.enhanced.test.tsx > AddItemModal Enhanced > renders modal with all features
-   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
-
-Check the render method of `AllTheProviders`.
- × src/components/__tests__/AddItemModal.enhanced.test.tsx > AddItemModal Enhanced > handles form validation
-   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
-
-Check the render method of `AllTheProviders`.
- × src/components/__tests__/AddItemModal.enhanced.test.tsx > AddItemModal Enhanced > supports all categories
-   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
-
-Check the render method of `AllTheProviders`.
 stderr | src/components/__tests__/FilterPanel.test.tsx > FilterPanel Component > renders filter panel
+Error: Uncaught [ReferenceError: ResizeObserver is not defined]
+    at reportException (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
+    at innerInvokeEventListeners (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
+    at invokeEventListeners (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
+    at HTMLUnknownElementImpl._dispatch (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
+    at HTMLUnknownElementImpl.dispatchEvent (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
+    at HTMLUnknownElement.dispatchEvent (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
+    at Object.invokeGuardedCallbackDev (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
+    at invokeGuardedCallback (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
+    at reportUncaughtErrorInDEV (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:22877:5)
+    at captureCommitPhaseError (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:27165:5) ReferenceError: ResizeObserver is not defined
+    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-use-size/src/use-size.tsx:14:30
+    at commitHookEffectListMount (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
+    at commitLayoutEffectOnFiber (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:23312:15)
+    at commitLayoutMountEffects_complete (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:24727:9)
+    at commitLayoutEffects_begin (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:24713:7)
+    at commitLayoutEffects (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:24651:3)
+    at commitRootImpl (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:26862:5)
+    at commitRoot (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:26721:5)
+    at performSyncWorkOnRoot (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:26156:3)
+    at flushSyncCallbacks (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:12042:22)
+The above error occurred in the <ForwardRef> component:
+
+    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-slider/dist/index.mjs:400:13
+    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-slider/dist/index.mjs:388:42
+    at span
+    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-primitive/dist/index.mjs:28:13
+    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-slider/dist/index.mjs:285:7
+    at Provider (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-context/dist/index.mjs:27:15)
+    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-slider/dist/index.mjs:151:7
+    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-collection/node_modules/@radix-ui/react-slot/dist/index.mjs:33:13
+    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-collection/node_modules/@radix-ui/react-slot/dist/index.mjs:9:13
+    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-collection/dist/index.mjs:27:15
+    at Provider (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-context/dist/index.mjs:27:15)
+    at CollectionProvider (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-collection/dist/index.mjs:17:13)
+    at Provider (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-context/dist/index.mjs:27:15)
+    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-slider/dist/index.mjs:33:7
+    at /Users/ghogue/Desktop/CaliberVaultII/src/components/ui/slider.tsx:9:52
+    at div
+    at div
+    at FilterPanel (/Users/ghogue/Desktop/CaliberVaultII/src/components/inventory/FilterPanel.tsx:23:24)
+    at QueryClientProvider (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
+    at wrapper (/Users/ghogue/Desktop/CaliberVaultII/src/components/__tests__/FilterPanel.test.tsx:24:20)
+
+Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
+
+stderr | src/components/__tests__/FilterPanel.test.tsx > FilterPanel Component > accepts filter changes
 Error: Uncaught [ReferenceError: ResizeObserver is not defined]
     at reportException (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
     at innerInvokeEventListeners (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
@@ -1525,54 +1570,6 @@ Visit https://reactjs.org/link/error-boundaries to learn more about error bounda
    → ResizeObserver is not defined
  × src/components/__tests__/FilterPanel.test.tsx > FilterPanel Component > accepts filter changes
    → ResizeObserver is not defined
-stderr | src/components/__tests__/FilterPanel.test.tsx > FilterPanel Component > accepts filter changes
-Error: Uncaught [ReferenceError: ResizeObserver is not defined]
-    at reportException (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/helpers/runtime-script-errors.js:66:24)
-    at innerInvokeEventListeners (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:353:9)
-    at invokeEventListeners (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:286:3)
-    at HTMLUnknownElementImpl._dispatch (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:233:9)
-    at HTMLUnknownElementImpl.dispatchEvent (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/events/EventTarget-impl.js:104:17)
-    at HTMLUnknownElement.dispatchEvent (/Users/ghogue/Desktop/CaliberVaultII/node_modules/jsdom/lib/jsdom/living/generated/EventTarget.js:241:34)
-    at Object.invokeGuardedCallbackDev (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:4213:16)
-    at invokeGuardedCallback (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:4277:31)
-    at reportUncaughtErrorInDEV (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:22877:5)
-    at captureCommitPhaseError (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:27165:5) ReferenceError: ResizeObserver is not defined
-    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-use-size/src/use-size.tsx:14:30
-    at commitHookEffectListMount (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:23189:26)
-    at commitLayoutEffectOnFiber (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:23312:15)
-    at commitLayoutMountEffects_complete (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:24727:9)
-    at commitLayoutEffects_begin (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:24713:7)
-    at commitLayoutEffects (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:24651:3)
-    at commitRootImpl (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:26862:5)
-    at commitRoot (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:26721:5)
-    at performSyncWorkOnRoot (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:26156:3)
-    at flushSyncCallbacks (/Users/ghogue/Desktop/CaliberVaultII/node_modules/react-dom/cjs/react-dom.development.js:12042:22)
-The above error occurred in the <ForwardRef> component:
-
-    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-slider/dist/index.mjs:400:13
-    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-slider/dist/index.mjs:388:42
-    at span
-    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-primitive/dist/index.mjs:28:13
-    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-slider/dist/index.mjs:285:7
-    at Provider (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-context/dist/index.mjs:27:15)
-    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-slider/dist/index.mjs:151:7
-    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-collection/node_modules/@radix-ui/react-slot/dist/index.mjs:33:13
-    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-collection/node_modules/@radix-ui/react-slot/dist/index.mjs:9:13
-    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-collection/dist/index.mjs:27:15
-    at Provider (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-context/dist/index.mjs:27:15)
-    at CollectionProvider (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-collection/dist/index.mjs:17:13)
-    at Provider (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-context/dist/index.mjs:27:15)
-    at file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@radix-ui/react-slider/dist/index.mjs:33:7
-    at /Users/ghogue/Desktop/CaliberVaultII/src/components/ui/slider.tsx:9:52
-    at div
-    at div
-    at FilterPanel (/Users/ghogue/Desktop/CaliberVaultII/src/components/inventory/FilterPanel.tsx:23:24)
-    at QueryClientProvider (file:///Users/ghogue/Desktop/CaliberVaultII/node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js:20:3)
-    at wrapper (/Users/ghogue/Desktop/CaliberVaultII/src/components/__tests__/FilterPanel.test.tsx:24:20)
-
-Consider adding an error boundary to your tree to customize error handling behavior.
-Visit https://reactjs.org/link/error-boundaries to learn more about error boundaries.
-
  × src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > caches barcode data 10002ms
    → Hook timed out in 10000ms.
 If this is a long-running hook, pass a timeout value as the last argument or configure it globally with "hookTimeout".
@@ -2451,7 +2448,7 @@ vi.mock(import("../../category"), async (importOriginal) => {
 
  Test Files  26 failed | 23 passed (49)
       Tests  82 failed | 108 passed (190)
-   Start at  16:23:29
-   Duration  59.21s (transform 1.80s, setup 30.06s, collect 27.52s, tests 50.61s, environment 76.90s, prepare 5.82s)
+   Start at  16:35:21
+   Duration  59.21s (transform 1.49s, setup 16.56s, collect 23.80s, tests 50.74s, environment 93.65s, prepare 6.58s)
 
 Vitest failed to start; see above

@@ -1,0 +1,14 @@
+2025-11-09 16:34:45 [overlay] start SRC_DIR='/Users/ghogue/Desktop/CaliberVaultII-Update-Nov-9'
+2025-11-09 16:34:45 [overlay] directory is empty; skipping
+
+added 904 packages, and audited 905 packages in 33s
+
+133 packages are looking for funding
+  run `npm fund` for details
+
+9 vulnerabilities (8 moderate, 1 high)
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.

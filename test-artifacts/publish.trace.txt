@@ -1,0 +1,14 @@
+[main cc1812c] chore: overlay+tests+logs
+ 13 files changed, 951 insertions(+), 3042 deletions(-)
+ create mode 100644 artifacts/setup_head.txt
+ create mode 100644 artifacts/setup_pbpaste_check.txt
+ create mode 100644 src/test/vitest.setup.backup.20251109161243
+ create mode 100644 test-artifacts/overlay.trace.txt
+ create mode 100644 test-artifacts/pipeline.trace.txt
+ create mode 100644 test-artifacts/publish.trace.txt
+ create mode 100644 test-artifacts/run_all_tests.trace.txt
+Updated Git hooks.
+Git LFS initialized.
+Uploading LFS objects: 100% (606/606), 89 MB | 0 B/s, done.
+HEAD        = cc1812c45b36ee23e61c78f371a1f42456a092ce
+public/main = cc1812c45b36ee23e61c78f371a1f42456a092ce
