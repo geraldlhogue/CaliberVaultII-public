@@ -223,7 +223,9 @@ const storageMock = {
 global.localStorage = storageMock as any;
 global.sessionStorage = storageMock as any;
 
+
 // Mock window.location
+
 delete (window as any).location;
 window.location = {
   href: 'http://localhost:3000',
@@ -239,6 +241,7 @@ window.location = {
   replace: vi.fn(),
   assign: vi.fn(),
 } as any;
+
 
 // Mock service APIs
 vi.mock('@/services/api/InventoryAPIService', () => ({
@@ -283,17 +286,24 @@ vi.mock('@/services/security/SecurityService', () => ({
 }));
 
 vi.mock('@/services/barcode/BarcodeService', () => ({
+  BarcodeService: class {
+    isValidUPC(code: string) { return code.length === 12; }
+    isValidEAN(code: string) { return code.length === 13; }
+    detectBarcodeType(code: string) { 
+      if (code.length === 12) return 'UPC';
+      if (code.length === 13) return 'EAN';
+      return 'UNKNOWN';
+    }
+    async lookup() { return { success: true, data: {} }; }
+    static getInstance() { return new this(); }
+  },
   barcodeService: {
-    isValidUPC: vi.fn(() => true),
-    isValidEAN: vi.fn(() => true),
-    detectBarcodeType: vi.fn(() => 'UPC'),
-  },
-  service: {
-    isValidUPC: vi.fn(() => true),
-    isValidEAN: vi.fn(() => true),
-    detectBarcodeType: vi.fn(() => 'UPC'),
-  },
+    isValidUPC: vi.fn((code: string) => code.length === 12),
+    isValidEAN: vi.fn((code: string) => code.length === 13),
+    detectBarcodeType: vi.fn((code: string) => code.length === 12 ? 'UPC' : 'EAN'),
+  }
 }));
+
 vi.mock('@/lib/errorHandler', () => {
   const handleError = vi.fn((error: any) => ({ 
     success: false,
@@ -345,74 +355,3 @@ vi.mock('@/lib/errorHandler', () => {
 
 // Mock IndexedDB for barcode cache
 import 'fake-indexeddb/auto';
-
-// --- test env patch START ---
-import '@testing-library/jest-dom/vitest';
-import { vi } from 'vitest';
-
-// matchMedia
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  value: vi.fn().mockImplementation((q) => ({
-    matches: false,
-    media: q,
-    onchange: null,
-    addListener: vi.fn(),
-    removeListener: vi.fn(),
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
-  })),
-});
-
-// hard mock for @/lib/supabase to unblock tests
-vi.mock('@/lib/supabase', () => ({
-  supabase: {
-    from: () => ({
-      select: vi.fn(async () => ({ data: [], error: null })),
-      insert: vi.fn(async () => ({ data: { id: '1' }, error: null })),
-      update: vi.fn(async () => ({ data: { id: '1' }, error: null })),
-      delete: vi.fn(async () => ({ data: null, error: null })),
-    }),
-  },
-}));
-
-// barcode service & utils stubs to match tests
-vi.mock('@/services/barcode/BarcodeService', () => ({
-  barcodeService: {
-    isValidUPC: vi.fn(() => true),
-    isValidEAN: vi.fn(() => true),
-    detectBarcodeType: vi.fn(() => 'UPC'),
-  },
-}));
-
-vi.mock('@/lib/barcodeUtils', () => ({
-  validateUPC: vi.fn(() => true),
-  validateEAN: vi.fn(() => true),
-  calculateCheckDigit: vi.fn(() => 5),
-  formatUPC: vi.fn(() => '0 12345 67890 5'),
-  formatEAN: vi.fn(() => '590-1234-12345-7'),
-}));
-
-// csv validator facade
-vi.mock('@/utils/csvValidator', () => ({
-  validateCSVRow: vi.fn(() => ({ valid: true })),
-  validateCSVHeaders: vi.fn(() => true),
-}));
-
-// StorageService shape expected by tests
-vi.mock('@/services/storage.service', () => ({
-  default: class StorageService {
-    async uploadFile() { return true; }
-    async deleteFile() { return true; }
-    async listFiles() { return []; }
-  }
-}));
-
-// Cache API + fake timers for barcodeCache
-(globalThis as any).caches = {
-  open: async () => ({ match: async () => undefined, put: async () => undefined }),
-} as any;
-try { vi.useFakeTimers(); } catch (_) {}
-
-// --- test env patch END ---

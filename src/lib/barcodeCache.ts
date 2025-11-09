@@ -1,124 +1,217 @@
-// src/lib/barcodeCache.ts
-import { awaitTxDone } from './idbTxDone';
+// Barcode cache management with IndexedDB
+
+export interface BarcodeData {
+  barcode: string;
+  title: string;
+  description?: string;
+  brand?: string;
+  model?: string;
+  category?: string;
+  images?: string[];
+  msrp?: number;
+  cachedAt: string;
+  hitCount: number;
+  lastAccessed: string;
+}
 
 const DB_NAME = 'BarcodeCacheDB';
+const DB_VERSION = 1;
 const STORE_NAME = 'barcodes';
-const VERSION = 1;
+const MAX_CACHE_SIZE = 1000;
+const CACHE_EXPIRY_DAYS = 30;
 
 export class BarcodeCacheManager {
+  private db: IDBDatabase | null = null;
+
   async init(): Promise<void> {
-    const db = await this.openOnce();
-    try {} finally { try { db.close(); } catch {} }
-  }
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-  private async openOnce(): Promise<IDBDatabase> {
-    const db = await new Promise<IDBDatabase>((resolve, reject) => {
-      const req = indexedDB.open(DB_NAME, VERSION);
-
-      req.onupgradeneeded = () => {
-        const udb = req.result;
-        if (!udb.objectStoreNames.contains(STORE_NAME)) {
-          udb.createObjectStore(STORE_NAME);
-        }
+      request.onerror = () => reject(request.error);
+      request.onsuccess = () => {
+        this.db = request.result;
+        resolve();
       };
 
-      req.onsuccess = () => resolve(req.result);
-      req.onerror = () => reject(req.error ?? new Error('Failed to open IndexedDB'));
+      request.onupgradeneeded = (event) => {
+        const db = (event.target as IDBOpenDBRequest).result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) {
+          const store = db.createObjectStore(STORE_NAME, { keyPath: 'barcode' });
+          store.createIndex('cachedAt', 'cachedAt', { unique: false });
+          store.createIndex('hitCount', 'hitCount', { unique: false });
+          store.createIndex('lastAccessed', 'lastAccessed', { unique: false });
+        }
+      };
     });
-
-    db.onversionchange = () => { try { db.close(); } catch {} };
-    return db;
   }
 
-  // Accepts either (barcode, data) or (dataObject)
-  async set(barcodeOrData: any, maybeData?: any): Promise<void> {
-    const db = await this.openOnce();
-    try {
-      const tx = db.transaction([STORE_NAME], 'readwrite');
-      const store = tx.objectStore(STORE_NAME);
-
-      let record: any;
-      let key: string;
-
-      if (maybeData === undefined && typeof barcodeOrData === 'object') {
-        // called as set(dataObject)
-        record = { ...barcodeOrData };
-        key = (record.barcode ?? '').toString();
-      } else {
-        // called as set(barcode, data)
-        key = (barcodeOrData ?? '').toString();
-        record =
-          maybeData && typeof maybeData === 'object'
-            ? { barcode: key, ...maybeData }
-            : { barcode: key, title: String(maybeData) };
-      }
-
-      if (!key) throw new Error('Missing barcode key for cache record');
-
-      const req = store.put(record, key);
-      await new Promise<void>((res, rej) => {
-        req.onsuccess = () => res();
-        req.onerror = () => rej(req.error ?? new Error('put failed'));
-      });
-
-      await awaitTxDone(tx);
-    } finally {
-      try { db.close(); } catch {}
+  async dispose(): Promise<void> {
+    if (this.db) {
+      try {
+        this.db.close();
+      } catch {}
+      this.db = null;
     }
   }
 
-  async get(barcode: string): Promise<any | null> {
-    const key = (barcode ?? '').toString();
-    const db = await this.openOnce();
-    try {
-      const tx = db.transaction([STORE_NAME], 'readonly');
-      const store = tx.objectStore(STORE_NAME);
+  async get(barcode: string): Promise<BarcodeData | null> {
+    if (!this.db) await this.init();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction([STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.get(barcode);
 
-      const req = store.get(key);
-      const result = await new Promise<any | undefined>((res, rej) => {
-        req.onsuccess = () => res(req.result);
-        req.onerror = () => rej(req.error ?? new Error('get failed'));
-      });
+      request.onsuccess = async () => {
+        const data = request.result;
+        if (!data) {
+          resolve(null);
+          return;
+        }
 
-      await awaitTxDone(tx);
-      return result ?? null;
-    } finally {
-      try { db.close(); } catch {}
-    }
+        const cachedDate = new Date(data.cachedAt);
+        const now = new Date();
+        const daysDiff = (now.getTime() - cachedDate.getTime()) / (1000 * 60 * 60 * 24);
+        
+        if (daysDiff > CACHE_EXPIRY_DAYS) {
+          await this.delete(barcode);
+          resolve(null);
+          return;
+        }
+
+        data.hitCount++;
+        data.lastAccessed = new Date().toISOString();
+        store.put(data);
+
+        resolve(data);
+      };
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async set(data: BarcodeData): Promise<void> {
+    if (!this.db) await this.init();
+    await this.enforceMaxSize();
+
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction([STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      
+      data.cachedAt = data.cachedAt || new Date().toISOString();
+      data.hitCount = data.hitCount || 0;
+      data.lastAccessed = new Date().toISOString();
+      
+      const request = store.put(data);
+
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
   }
 
   async delete(barcode: string): Promise<void> {
-    const key = (barcode ?? '').toString();
-    const db = await this.openOnce();
-    try {
-      const tx = db.transaction([STORE_NAME], 'readwrite');
-      const store = tx.objectStore(STORE_NAME);
-      const req = store.delete(key);
-      await new Promise<void>((res, rej) => {
-        req.onsuccess = () => res();
-        req.onerror = () => rej(req.error ?? new Error('delete failed'));
-      });
-      await awaitTxDone(tx);
-    } finally {
-      try { db.close(); } catch {}
-    }
+    if (!this.db) await this.init();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction([STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.delete(barcode);
+
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async getAll(): Promise<BarcodeData[]> {
+    if (!this.db) await this.init();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction([STORE_NAME], 'readonly');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.getAll();
+
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  async getStats(): Promise<{
+    totalCached: number;
+    totalHits: number;
+    mostUsed: BarcodeData[];
+    recentlyUsed: BarcodeData[];
+  }> {
+    const allData = await this.getAll();
+    
+    const totalHits = allData.reduce((sum, item) => sum + item.hitCount, 0);
+    const mostUsed = [...allData]
+      .sort((a, b) => b.hitCount - a.hitCount)
+      .slice(0, 10);
+    const recentlyUsed = [...allData]
+      .sort((a, b) => new Date(b.lastAccessed).getTime() - new Date(a.lastAccessed).getTime())
+      .slice(0, 10);
+
+    return {
+      totalCached: allData.length,
+      totalHits,
+      mostUsed,
+      recentlyUsed
+    };
   }
 
   async clear(): Promise<void> {
-    const db = await this.openOnce();
-    try {
-      const tx = db.transaction([STORE_NAME], 'readwrite');
-      const store = tx.objectStore(STORE_NAME);
-      const req = store.clear();
-      await new Promise<void>((res, rej) => {
-        req.onsuccess = () => res();
-        req.onerror = () => rej(req.error ?? new Error('clear failed'));
-      });
-      await awaitTxDone(tx);
-    } finally {
-      try { db.close(); } catch {}
+    if (!this.db) await this.init();
+    
+    return new Promise((resolve, reject) => {
+      const transaction = this.db!.transaction([STORE_NAME], 'readwrite');
+      const store = transaction.objectStore(STORE_NAME);
+      const request = store.clear();
+
+      request.onsuccess = () => resolve();
+      request.onerror = () => reject(request.error);
+    });
+  }
+
+  private async enforceMaxSize(): Promise<void> {
+    const allData = await this.getAll();
+    
+    if (allData.length >= MAX_CACHE_SIZE) {
+      const sorted = allData.sort((a, b) => 
+        new Date(a.lastAccessed).getTime() - new Date(b.lastAccessed).getTime()
+      );
+      
+      const toRemove = sorted.slice(0, Math.floor(MAX_CACHE_SIZE * 0.1));
+      
+      for (const item of toRemove) {
+        await this.delete(item.barcode);
+      }
+    }
+  }
+
+  async exportCache(): Promise<string> {
+    const data = await this.getAll();
+    return JSON.stringify(data, null, 2);
+  }
+
+  async importCache(jsonData: string): Promise<void> {
+    const data = JSON.parse(jsonData) as BarcodeData[];
+    for (const item of data) {
+      await this.set(item);
     }
   }
 }
 
 export const barcodeCache = new BarcodeCacheManager();
+
+export async function nukeBarcodeDb(): Promise<void> {
+  await barcodeCache.dispose();
+  return new Promise<void>((resolve) => {
+    try {
+      const req = indexedDB.deleteDatabase(DB_NAME);
+      req.onsuccess = () => resolve();
+      req.onerror = () => resolve();
+      req.onblocked = () => setTimeout(() => resolve(), 50);
+    } catch {
+      setTimeout(() => resolve(), 0);
+    }
+  });
+}

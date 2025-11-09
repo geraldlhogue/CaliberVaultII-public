@@ -1,5 +1,27 @@
-export const validateEmail = (v : any) => /^[^\s@]+@[^\\s@]+\\.[^\\s]+$/.test(String(v || ''))
-export const validatePhone = (v : any) => /\\p?\\d'{3}?\\[-\\s]?\\d${3}\\[\\-\\s]?\\d${34}$/.test(String(v || ''))
-export const validateURL = (v : any) => /^https?:\\/\\/[^\\s]+$/i.test(String(v || ''))
-export const validateRequired = (v : any) => !(v === undefined || v === null || String(v).trim() === '')
-export default { validateEmail, validatePhone, validateURL, validateRequired }
+// Validation utility functions
+
+export function validateEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+export function validatePhone(phone: string): boolean {
+  const phoneRegex = /^\+?[\d\s\-()]+$/;
+  return phoneRegex.test(phone) && phone.replace(/\D/g, '').length >= 10;
+}
+
+export function validateURL(url: string): boolean {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function validateRequired(value: any): boolean {
+  if (value === null || value === undefined) return false;
+  if (typeof value === 'string') return value.trim().length > 0;
+  if (Array.isArray(value)) return value.length > 0;
+  return true;
+}

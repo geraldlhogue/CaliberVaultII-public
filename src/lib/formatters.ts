@@ -1,18 +1,60 @@
-import { safeNumber as sn } from './utils'
-export function formatCurrency(n: number, currency='USD', locale='en-US') {
-  const v = Number.isFinite(n) ? n : 0
-  return new Intl.NumberFormat(locale, { style:'currency', currency, maximumFractionDigits:2 }).format(v)
+/**
+ * Safe formatting utilities to prevent toLocaleString errors
+ */
+
+export function safeNumber(value: any): number {
+  if (value === null || value === undefined || value === '') return 0;
+  const num = typeof value === 'string' ? parseFloat(value) : Number(value);
+  return isNaN(num) ? 0 : num;
 }
-export function formatNumber(n:number, digits=0, locale='en-US'){
-  const v = Number.isFinite(n) ? n : 0
-  return new Intl.NumberFormat(locale, { minimumFractionDigits:digits, maximumFractionDigits:digits }).format(v)
+
+export function formatCurrency(value: any): string {
+  const num = safeNumber(value);
+  return `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
-export function formatPercentage(v:number, digits=2, locale='en-US'){
-  const pct = (Number.isFinite(v) ? v : 0) * 100
-  return `${formatNumber(pct, digits, locale)}%`
+
+export function formatNumber(value: any, decimals?: number): string {
+  const num = safeNumber(value);
+  if (decimals !== undefined) {
+    return num.toLocaleString('en-US', { 
+      minimumFractionDigits: decimals, 
+      maximumFractionDigits: decimals 
+    });
+  }
+  return num.toLocaleString('en-US');
 }
-export function formatDate(val: string|number|Date, locale='en-US'){
-  const d = new Date(val); return Number.isNaN(d.getTime()) ? 'Invalid Date' : d.toLocaleString(locale)
+
+export function formatPercent(value: any): string {
+  const num = safeNumber(value);
+  return `${num.toFixed(1)}%`;
 }
-export { sn as safeNumber }
-export default { formatCurrency, formatNumber, formatPercentage, formatDate, safeNumber: sn }
+
+export function formatPercentage(value: any): string {
+  const num = safeNumber(value);
+  return `${(num * 100).toFixed(2)}%`;
+}
+
+export function formatDate(value: any): string {
+  if (!value) return '-';
+  try {
+    const date = new Date(value);
+    if (isNaN(date.getTime())) return 'Invalid Date';
+    return date.toLocaleDateString('en-US');
+  } catch {
+    return 'Invalid Date';
+  }
+}
+
+export function formatDateTime(value: any): string {
+  if (!value) return '-';
+  try {
+    return new Date(value).toLocaleString('en-US');
+  } catch {
+    return String(value);
+  }
+}
+
+export function safeToLocaleString(value: any): string {
+  const num = safeNumber(value);
+  return num.toLocaleString('en-US');
+}

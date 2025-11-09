@@ -1,0 +1,20 @@
+import './__local_fix__photo_setup' // your local stub for rAF/getUserMedia
+import { render, cleanup, act, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { PhotoCapture } from '../PhotoCapture'
+
+afterEach(async () => {
+  await cleanup()
+})
+
+describe('PhotoCapture', () => {
+  it('mounts and tears down camera cleanly', async () => {
+    // deterministic mocked stream
+    const stop = vi.fn()
+    const mockStream: MediaStream = {
+      getTracks: () => [{ stop, kind: 'video', enabled: true, id: 't1', label: 'mock' } as any],
+    } as any
+
+    const getMedia = vi.fn().mockResolvedValue(mockStream)
+
+    const { unmount } = render(<PhotoCapture disableLoop getMedia={getMedia} />)

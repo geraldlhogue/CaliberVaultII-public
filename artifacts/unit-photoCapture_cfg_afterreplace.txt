@@ -1,0 +1,207 @@
+
+ RUN  v2.1.9 /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVaultII
+
+ × src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture > renders photo capture dialog
+   → Invalid Chai property: toBeInTheDocument
+ × src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture > calls onClose when close button clicked
+   → Unable to find an accessible element with the role "button" and name `/close/i`
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "📸 Capture Photo [v2.0 UPDATED]":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-white text-lg font-bold"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "×":
+  [36m<button[39m
+    [33mclass[39m=[32m"text-white text-2xl font-bold hover:text-red-500"[39m
+  [36m/>[39m
+
+  Name "📷 Capture":
+  [36m<button[39m
+    [33mclass[39m=[32m"flex-1 bg-yellow-600 disabled:bg-slate-700 text-white py-2 rounded font-semibold"[39m
+    [33mdisabled[39m=[32m""[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xl mb-2"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 bg-black z-50 flex flex-col"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex justify-between items-center p-3 bg-slate-900 border-b-2 border-green-500"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"text-white text-lg font-bold"[39m
+        [36m>[39m
+          [0m📸 Capture Photo [v2.0 UPDATED][0m
+        [36m</h2>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"text-white text-2xl font-bold hover:text-red-500"[39m
+        [36m>[39m
+          [0m×[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex-1 relative flex items-center justify-center bg-black"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-white text-center p-4"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-xl mb-2"[39m
+          [36m>[39m
+            [0m⚠️[0m
+          [36m</p>[39m
+          [36m<p>[39m
+            [0mCamera unavailable[0m
+          [36m</p>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"p-3 bg-slate-900 flex gap-2"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"flex-1 bg-yellow-600 disabled:bg-slate-700 text-white py-2 rounded font-semibold"[39m
+          [33mdisabled[39m=[32m""[39m
+        [36m>[39m
+          [0m📷 Capture[0m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ✓ src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture > initializes camera on mount
+ × firearms-inventory-tracking-1 (4)/src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture > renders photo capture component 1005ms
+   → Unable to find role="dialog"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"fixed inset-0 bg-black z-50 flex flex-col"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex justify-between items-center p-3 bg-slate-900 border-b-2 border-green-500"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"text-white text-lg font-bold"[39m
+        [36m>[39m
+          [0m📸 Capture Photo [v2.0 UPDATED][0m
+        [36m</h2>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"text-white text-2xl font-bold hover:text-red-500"[39m
+        [36m>[39m
+          [0m×[0m
+        [36m</button>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex-1 relative flex items-center justify-center bg-black"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"text-white text-center p-4"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-xl mb-2"[39m
+          [36m>[39m
+            [0m⚠️[0m
+          [36m</p>[39m
+          [36m<p>[39m
+            [0mCamera unavailable[0m
+          [36m</p>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"p-3 bg-slate-900 flex gap-2"[39m
+      [36m>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"flex-1 bg-yellow-600 disabled:bg-slate-700 text-white py-2 rounded font-semibold"[39m
+          [33mdisabled[39m=[32m""[39m
+        [36m>[39m
+          [0m📷 Capture[0m
+        [36m</button>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<html>[39m
+  [36m<head />[39m
+  [36m<body>[39m
+    [36m<div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"fixed inset-0 bg-black z-50 flex flex-col"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex justify-between items-center p-3 bg-slate-900 border-b-2 border-green-500"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-white text-lg font-bold"[39m
+          [36m>[39m
+            [0m📸 Capture Photo [v2.0 UPDATED][0m
+          [36m</h2>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"text-white text-2xl font-bold hover:text-red-500"[39m
+          [36m>[39m
+            [0m×[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 relative flex items-center justify-center bg-black"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"text-white text-center p-4"[39m
+          [36m>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-xl mb-2"[39m
+            [36m>[39m
+              [0m⚠️[0m
+            [36m</p>[39m
+            [36m<p>[39m
+              [0mCamera unavailable[0m
+            [36m</p>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"p-3 bg-slate-900 flex gap-2"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"flex-1 bg-yellow-600 disabled:bg-slate-700 text-white py-2 rounded font-semibold"[39m
+            [33mdisabled[39m=[32m""[39m
+          [36m>[39m
+            [0m📷 Capture[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</body>[39m
+[36m</html>[39m
+ ✓ firearms-inventory-tracking-1 (4)/src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture > handles close callback
+ ✓ firearms-inventory-tracking-1 (4)/src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture > shows camera error message
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 3 passed (6)
+   Start at  13:39:34
+   Duration  1.93s (transform 47ms, setup 0ms, collect 267ms, tests 1.08s, environment 366ms, prepare 79ms)
+

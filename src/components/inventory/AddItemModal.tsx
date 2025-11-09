@@ -145,7 +145,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({ onClose, onAdd, init
   }
 
   return (
-    <div role="dialog" className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-2 overflow-y-auto">
+    <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-2 overflow-y-auto">
       <div className="bg-slate-800 rounded-xl max-w-4xl w-full p-4 my-4 max-h-[95vh] overflow-y-auto shadow-2xl">
         <div className="flex justify-between items-center mb-3 pb-2 border-b border-slate-700">
           <h2 className="text-2xl font-bold text-white">

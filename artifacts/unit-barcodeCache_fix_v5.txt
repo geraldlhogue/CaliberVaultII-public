@@ -1,0 +1,17 @@
+
+ RUN  v2.1.9 /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVaultII
+
+ ✓ src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > initializes cache manager
+ × src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > caches barcode data
+   → Data provided to an operation does not meet requirements.
+ × src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > retrieves cached data
+   → Data provided to an operation does not meet requirements.
+ ✓ src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > returns null for non-existent barcode
+ × src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > clears all cache
+   → Data provided to an operation does not meet requirements.
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 2 passed (5)
+   Start at  15:11:31
+   Duration  921ms (transform 35ms, setup 0ms, collect 53ms, tests 13ms, environment 398ms, prepare 51ms)
+

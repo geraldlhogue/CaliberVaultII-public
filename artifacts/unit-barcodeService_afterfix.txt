@@ -1,0 +1,14 @@
+
+ RUN  v2.1.9 /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVaultII
+
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate UPC format
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate EAN format
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should detect barcode type
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should track API usage
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should reset API counter
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  10:27:08
+   Duration  8.90s (transform 61ms, setup 1.36s, collect 28ms, tests 2ms, environment 3.41s, prepare 269ms)
+

@@ -1,5 +1,23 @@
-export const firearmsService = { create: async (a:any)=>{ return { success: true, data: { id: 'f1', ...a } } }, update: async()=>({ success: true }), delete: async()=>({ success: true })}
-export const ammunitionService = { create: async (a:any)=>{ return { success: true, data: { id: 'a1', ...a } } }, update: async()=>({ success: true }), delete: async()=>({ success: true })}
-export const opticsService = { create: async (a:any)=>{ return { success: true, data: { id: 'o1', ...a } } }, update: async()=>({ success: true }), delete: async()=>({ success: true })}
-export const magazinesService = { create: async (a:any)=>{ return { success: true, data: { id: 'm1', ...a } } }, update: async()=>({ success: true }), delete: async()=>({ success: true })}
-export default { firearmsService, ammunitionService, opticsService, magazinesService }
+// Category Services - Export all category-specific services
+export { FirearmsService, firearmsService } from './FirearmsService';
+export { AmmunitionService, ammunitionService } from './AmmunitionService';
+export { OpticsService, opticsService } from './OpticsService';
+export { MagazinesService, magazinesService } from './MagazinesService';
+export { AccessoriesService, accessoriesService } from './AccessoriesService';
+export { SuppressorsService, suppressorsService } from './SuppressorsService';
+export { ReloadingService, reloadingService } from './ReloadingService';
+export { CasesService, casesService } from './CasesService';
+export { PrimersService, primersService } from './PrimersService';
+export { PowderService, powderService } from './PowderService';
+
+// Type exports
+export type { Firearm } from './FirearmsService';
+export type { Ammunition } from './AmmunitionService';
+export type { Optic } from './OpticsService';
+export type { Magazine } from './MagazinesService';
+export type { Accessory } from './AccessoriesService';
+export type { Suppressor } from './SuppressorsService';
+export type { ReloadingEquipment } from './ReloadingService';
+export type { Case } from './CasesService';
+export type { Primer } from './PrimersService';
+export type { Powder } from './PowderService';

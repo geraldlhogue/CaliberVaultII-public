@@ -1,0 +1,143 @@
+## main...origin/main [ahead 7]
+ M .gitignore
+ M .hash_head
+ M .hash_pub
+ M TEST_FIXES_NOV4_2024_HANGING_RESOLUTION.md
+ M package-lock.json
+ M package.json
+ M src/components/__tests__/AddItemModal.test.tsx
+ M src/components/__tests__/InventoryOperations.test.tsx
+ M src/components/__tests__/MobileBarcodeScanner.test.tsx
+ M src/components/__tests__/PhotoCapture.test.tsx
+ M src/components/__tests__/TierEnforcement.test.tsx
+ M src/components/admin/RealtimeErrorMonitor.tsx
+ M src/components/admin/ReticleTypeManager.tsx
+ M src/components/ai/DuplicateDetector.tsx
+ M src/components/analytics/AdvancedAnalytics.tsx
+ M src/components/analytics/TemplateAnalyticsDashboard.tsx
+ M src/components/auth/AuthProvider.tsx
+ M src/components/backup/EnhancedBackupSystem.tsx
+ M src/components/collaboration/ActivityFeed.tsx
+ M src/components/collaboration/TeamWorkspace.tsx
+ M src/components/database/DatabaseTestSave.tsx
+ M src/components/database/ERDGenerator.tsx
+ M src/components/database/SimpleDatabaseViewer.tsx
+ M src/components/deployment/VersionManagementSystem.tsx
+ M src/components/errors/EnhancedErrorBoundary.tsx
+ M src/components/examples/ValidatedFormExample.tsx
+ M src/components/help/AIHelpAssistant.tsx
+ M src/components/import/EnhancedBulkImport.tsx
+ M src/components/insurance/InsuranceDocuments.tsx
+ M src/components/integrations/BarcodeLookupAPI.tsx
+ M src/components/integrations/IntegrationsDashboard.tsx
+ M src/components/inventory/AddItemModal.tsx
+ M src/components/inventory/AttributeFields.tsx
+ M src/components/inventory/AttributeFieldsAmmo.tsx
+ M src/components/inventory/BarcodeBatchScanner.tsx
+ M src/components/inventory/EnhancedPhotoCapture.tsx
+ M src/components/inventory/FilterPanel.tsx
+ M src/components/inventory/InventoryDashboard.tsx
+ M src/components/inventory/InventoryOperations.tsx
+ M src/components/inventory/ItemDetailModal.tsx
+ M src/components/inventory/ModelManager.tsx
+ M src/components/inventory/PhotoCapture.tsx
+ M src/components/inventory/QRCodeLabels.tsx
+ M src/components/inventory/forms/AccessoriesForm.tsx
+ M src/components/inventory/forms/CasesForm.tsx
+ M src/components/inventory/forms/PowderForm.tsx
+ M src/components/inventory/forms/SuppressorsForm.tsx
+ M src/components/locations/QRCodeGenerator.tsx
+ M src/components/mobile/EnhancedPullToRefresh.tsx
+ M src/components/mobile/MobileOptimizationDashboard.tsx
+ M src/components/mobile/OfflineIndicator.tsx
+ M src/components/mobile/TouchOptimizedButton.tsx
+ M src/components/onboarding/AdvancedFeedbackSearch.tsx
+ M src/components/permissions/UserPermissions.tsx
+ M src/components/pwa/SmartInstallPrompt.tsx
+ M src/components/subscription/PricingPlans.tsx
+ M src/components/subscription/SubscriptionGuard.tsx
+ M src/components/subscription/UsageStatsCard.tsx
+ M src/components/sync/ConflictResolutionModal.tsx
+ M src/components/sync/RealtimeSync.tsx
+ M src/components/testing/AITestGenerator.tsx
+ M src/components/testing/AdminTestingPanel.tsx
+ M src/components/testing/CoverageFileTree.tsx
+ M src/components/testing/SchemaValidationTool.tsx
+ M src/components/testing/TestCoverageDashboard.tsx
+ M src/components/ui/alert.tsx
+ M src/components/ui/badge.tsx
+ M src/components/ui/button.tsx
+ M src/components/ui/card.tsx
+ M src/components/ui/dialog.tsx
+ M src/components/ui/input.tsx
+ M src/components/ui/progress.tsx
+ M src/components/ui/textarea.tsx
+ M src/components/ui/use-toast.ts
+ M src/hooks/__tests__/useInventoryFilters.enhanced.test.ts
+ M src/hooks/useInventoryFilters.ts
+ M src/hooks/useOfflineSync.ts
+ M src/hooks/useSubscription.ts
+ M src/lib/__tests__/barcodeCache.test.ts
+ M src/lib/barcodeCache.ts
+ M src/lib/databaseErrorHandler.ts
+ M src/lib/errorHandler.ts
+ M src/lib/formatters.ts
+ M src/lib/supabase.ts
+ M src/lib/utils.ts
+ M src/lib/validation.ts
+ M src/services/api/InventoryAPIService.ts
+ M src/services/barcode/BarcodeService.ts
+ M src/services/category/index.ts
+ M src/services/inventory.service.ts
+ M src/services/reference/ReferenceDataService.ts
+ M src/services/storage.service.ts
+ M src/test/fixtures/inventory.fixtures.ts
+ M src/test/setup.ts
+ M src/test/testUtils.tsx
+ M src/test/vitest.setup.ts
+ M src/utils/csvParser.ts
+ M src/utils/csvValidator.ts
+ M tsconfig.json
+ M vite.config.ts
+ M vitest.config.ts
+ M vitest.override.ts
+?? VITEST_FIX_PATCH.md
+?? artifacts/__mock_header__barcode_service.ts
+?? artifacts/discovered-tests.txt
+?? artifacts/git_status_after_overlay.txt
+?? artifacts/overlay.applied.txt
+?? artifacts/overlay.dryrun.txt
+?? artifacts/package.for-famous.json
+?? artifacts/package.from-famous.json
+?? artifacts/photo_test_head.txt
+?? artifacts/unit-barcodeCache_after_teardownfix.txt
+?? artifacts/unit-barcodeCache_fix_canonical.txt
+?? artifacts/unit-barcodeCache_fix_final.txt
+?? artifacts/unit-barcodeCache_fix_normalized.txt
+?? artifacts/unit-barcodeCache_fix_normalized2.txt
+?? artifacts/unit-barcodeCache_fix_normalized3.txt
+?? artifacts/unit-barcodeCache_fix_signature.txt
+?? artifacts/unit-barcodeCache_fix_v4.txt
+?? artifacts/unit-barcodeCache_fix_v5.txt
+?? artifacts/unit-barcodeCache_fix_v6.txt
+?? artifacts/unit-barcodeCache_fix_v7.txt
+?? artifacts/unit-barcodeCache_fix_v8.txt
+?? artifacts/unit-barcodeCache_fix_v9.txt
+?? artifacts/unit-barcodeCache_isolated.txt
+?? artifacts/unit-barcodeCache_txdone_fix_threads.txt
+?? artifacts/unit-barcodeCache_txdone_fix_threads_v2.txt
+?? artifacts/unit-barcodeCache_txdone_fix_threads_v3.txt
+?? artifacts/unit-barcodeCache_verbose.txt
+?? artifacts/unit-barcodeService.txt~
+?? artifacts/unit-barcodeService_afterfix.txt
+?? artifacts/unit-photoCapture_after_aria_dialog.txt
+?? artifacts/unit-photoCapture_after_bulkpatch.txt
+?? artifacts/unit-photoCapture_after_cleanup.txt
+?? artifacts/unit-photoCapture_after_fullreplace.txt
+?? artifacts/unit-photoCapture_after_props_patch.txt
+?? artifacts/unit-photoCapture_cfg_afterreplace.txt
+?? artifacts/unit-photoCapture_forks.txt
+?? artifacts/unit-photoCapture_verbose.txt
+?? playwright-report/data/
+?? scripts/overlay_with_logging.sh
+?? vitest.out.txt

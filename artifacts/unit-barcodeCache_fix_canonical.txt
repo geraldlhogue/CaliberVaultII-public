@@ -1,0 +1,16 @@
+
+ RUN  v2.1.9 /Users/ghogue/Library/CloudStorage/OneDrive-InsightfulOutcomes,LLC/IS-LTD/APPS/CaliberVaultII
+
+ ✓ src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > initializes cache manager
+ × src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > caches barcode data
+   → expected undefined to be 'Test Product' // Object.is equality
+ × src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > retrieves cached data
+   → expected undefined to be '789012' // Object.is equality
+ ✓ src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > returns null for non-existent barcode
+ ✓ src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > clears all cache
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 passed (5)
+   Start at  15:46:29
+   Duration  1.66s (transform 33ms, setup 0ms, collect 55ms, tests 18ms, environment 922ms, prepare 87ms)
+

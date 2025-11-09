@@ -94,3 +94,5 @@ export function SmartInstallPrompt() {
     </div>
   );
 }
+
+export default SmartInstallPrompt;

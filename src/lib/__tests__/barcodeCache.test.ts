@@ -1,32 +1,19 @@
-import './__local_fix__idb_setup'
-import './__local_fix__async_flush'
-import './__local_fix__idb_setup'
-import './__local_fix__async_flush'
-import './__local_fix__idb_setup'
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll } from 'vitest';
 import 'fake-indexeddb/auto';
-import { BarcodeCacheManager } from '../barcodeCache';
-
-function deleteDb(name: string) {
-  return new Promise<void>((resolve) => {
-    try {
-      const req = indexedDB.deleteDatabase(name);
-      req.onsuccess = () => resolve();
-      req.onerror = () => resolve();
-      req.onblocked = () => setTimeout(() => resolve(), 50);
-    } catch {
-      setTimeout(() => resolve(), 0);
-    }
-  });
-}
+import { BarcodeCacheManager, nukeBarcodeDb } from '../barcodeCache';
 
 describe('BarcodeCacheManager', () => {
   let cacheManager: BarcodeCacheManager;
 
   beforeEach(async () => {
-    await deleteDb('BarcodeCacheDB');
+    await nukeBarcodeDb();
     cacheManager = new BarcodeCacheManager();
     await cacheManager.init();
+  });
+
+  afterAll(async () => {
+    await cacheManager.dispose();
+    await nukeBarcodeDb();
   });
 
   it('initializes cache manager', () => {

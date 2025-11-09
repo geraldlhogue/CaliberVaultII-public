@@ -1,50 +1,89 @@
-export type CSVRow = Record<string,string>
+import { InventoryItem, ItemCategory, FirearmSubcategory } from '../types/inventory';
 
-export function parseCSV(text:string): CSVRow[] {
-  const raw = String(text || '').trim()
-  if (!raw) return []
-  const lines = raw.split(/\r?\n/)
-  if (lines.length === 0) return []
-  const headers = splitCSVLine(lines[0])
-  const out: CSVRow[] = []
+export interface CSVRow {
+  [key: string]: string;
+}
+
+export const parseCSV = (csvText: string): CSVRow[] => {
+  const lines = csvText.trim().split('\n');
+  if (lines.length < 2) return [];
+  
+  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+  const rows: CSVRow[] = [];
+  
   for (let i = 1; i < lines.length; i++) {
-    const cells = splitCSVLine(lines[i])
-    const row: CSVRow = {}
-    headers.forEach((h, idx) => { row[h] = cells[idx] ?? '' })
-    out.push(row)
+    const values = parseCSVLine(lines[i]);
+    const row: CSVRow = {};
+    headers.forEach((header, index) => {
+      row[header] = values[index] || '';
+    });
+    rows.push(row);
   }
-  return out
-}
+  
+  return rows;
+};
 
-function splitCSVLine(line:string): string[] {
-  const res: string[] = []
-  let cur = ''
-  let inQuotes = false
+const parseCSVLine = (line: string): string[] => {
+  const result: string[] = [];
+  let current = '';
+  let inQuotes = false;
+  
   for (let i = 0; i < line.length; i++) {
-    const ch = line[i]
-    if (ch === '"') {
-      if (inQuotes && line[i+1] === '"') { cur += '"'; i++ } else { inQuotes = !inQuotes }
-      continue
+    const char = line[i];
+    if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += char;
     }
-    if (ch === ',' && !inQuotes) { res.push(cur); cur = ''; continue }
-    cur += ch
   }
-  res.push(cur)
-  return res.map(s => s.trim())
-}
+  result.push(current.trim());
+  return result;
+};
 
-export function generateCSVTemplate(headers: string[]): string {
-  return headers.join(',') + '\n'
-}
+export const mapCSVToInventoryItem = (
+  row: CSVRow,
+  fieldMapping: { [csvField: string]: string }
+): Partial<InventoryItem> => {
+  const item: any = {
+    id: Date.now().toString() + Math.random(),
+    images: [],
+    appraisals: [],
+    purchaseDate: new Date().toISOString().split('T')[0]
+  };
+  
+  Object.entries(fieldMapping).forEach(([csvField, itemField]) => {
+    if (!itemField) return; // Skip if field is not mapped
+    const value = row[csvField];
+    if (!value || value.trim() === '') return;
+    
+    switch (itemField) {
+      case 'purchasePrice':
+        const price = parseFloat(value.replace(/[$,]/g, ''));
+        item[itemField] = isNaN(price) ? 0 : price;
+        break;
+      case 'quantity':
+      case 'capacity':
+      case 'roundCount':
+        const num = parseInt(value);
+        item[itemField] = isNaN(num) ? undefined : num;
+        break;
+      case 'category':
+        item[itemField] = value.toLowerCase() as ItemCategory;
+        break;
+      case 'firearmSubcategory':
+        item[itemField] = value as FirearmSubcategory;
+        break;
+      case 'purchaseDate':
+        item[itemField] = value;
+        break;
+      default:
+        item[itemField] = value.trim();
+    }
+  });
+  
+  return item;
+};
 
-export function mapCSVToInventoryItem(row: CSVRow){
-  return {
-    name: row.name || row.Name || 'Unnamed',
-    category: (row.category || row.Category || '').toLowerCase(),
-    manufacturer: row.manufacturer || row.Manufacturer || '',
-    model: row.model || row.Model || '',
-    price: Number(row.price || row.Price || 0)
-  }
-}
-
-export default { parseCSV, mapCSVToInventoryItem, generateCSVTemplate }

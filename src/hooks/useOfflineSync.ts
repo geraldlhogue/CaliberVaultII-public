@@ -10,6 +10,7 @@ export function useOfflineSync() {
   const { toast } = useToast();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [queuedChanges, setQueuedChanges] = useState<any[]>([]);
 
   useEffect(() => {
     const handleOnline = async () => {
@@ -67,6 +68,7 @@ export function useOfflineSync() {
     data: any
   ) => {
     const opId = await offlineQueue.enqueue({ type, table, data });
+    setQueuedChanges(prev => [...prev, { type, table, data, opId }]);
     
     if (isOnline && user) {
       // Try to sync immediately if online
@@ -76,9 +78,23 @@ export function useOfflineSync() {
     return opId;
   };
 
+  const syncNow = async () => {
+    if (!user) return;
+    setIsSyncing(true);
+    const result = await syncService.processQueue(user.id);
+    setIsSyncing(false);
+    setQueuedChanges([]);
+    return result;
+  };
+
   return {
     isOnline,
     isSyncing,
+    queuedChanges,
     queueOperation,
+    syncNow,
   };
 }
+
+export default useOfflineSync;
+

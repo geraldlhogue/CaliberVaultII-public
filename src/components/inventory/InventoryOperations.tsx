@@ -1,3 +1,15 @@
-import React from 'react'
-export function InventoryOperations(){ return <div data-testid="inventory-ops" /> }
-export default InventoryOperations
+import React from 'react';
+
+/**
+ * InventoryOperations Component
+ * Simple wrapper for inventory operations
+ */
+export const InventoryOperations: React.FC = () => {
+  return (
+    <div data-testid="inventory-operations">
+      <h2>Inventory Operations</h2>
+    </div>
+  );
+};
+
+export default InventoryOperations;

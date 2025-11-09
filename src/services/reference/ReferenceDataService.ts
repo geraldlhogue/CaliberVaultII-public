@@ -92,6 +92,21 @@ export class ReferenceDataService {
     return data || [];
   }
 
+  async addManufacturer(name: string) {
+    const { data, error } = await supabase
+      .from('manufacturers')
+      .insert({ name })
+      .select()
+      .single();
+
+    if (error) throw error;
+    
+    // Clear cache to force refresh
+    this.cache.delete('manufacturers');
+    
+    return data;
+  }
+
   clearCache(): void {
     this.cache.clear();
     console.log('[ReferenceData] Cache cleared');
