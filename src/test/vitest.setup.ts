@@ -1,81 +1,115 @@
-import '@testing-library/jest-dom/vitest'
 import 'fake-indexeddb/auto'
-import { vi, afterEach } from 'vitest'
-import { TextEncoder, TextDecoder } from 'node:util'
+import '@testing-library/jest-dom/vitest'
+import { vi } from 'vitest'
 
-// globals
-;(globalThis as any).TextEncoder = TextEncoder
-;(globalThis as any).TextDecoder = TextDecoder as any
-if (!(globalThis as any).window) (globalThis as any).window = globalThis as any
+/**
+ * Minimal browser/env shims used by the app/tests
+ */
 
-// simple storage shims
-const __store = new Map<string, string>()
-const mkStorage = () => ({
-  getItem: (k: string) => (__store.has(k) ? (__store.get(k) as string) : null),
-  setItem: (k: string, v: string) => { __store.set(k, String(v)) },
-  removeItem: (k: string) => { __store.delete(k) },
-  clear: () => { __store.clear() },
+/* 1) PWA install prompt */
+class MockBeforeInstallPromptEvent extends Event {
+  preventDefault: () => void
+  prompt: () => void
+  constructor() {
+    super('beforeinstallprompt')
+    this.preventDefault = vi.fn()
+    this.prompt = vi.fn()
+  }
+}
+vi.stubGlobal('BeforeInstallPromptEvent', MockBeforeInstallPromptEvent)
+
+/* 2) matchMedia */
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
 })
-;(globalThis as any).localStorage = mkStorage()
-;(globalThis as any).sessionStorage = mkStorage()
 
-// observers
-;(globalThis as any).ResizeObserver = class { observe(){} unobserve(){} disconnect(){} }
-;(globalThis as any).IntersectionObserver = class { constructor(){} observe(){} unobserve(){} disconnect(){} }
-
-// router
-vi.mock('react-router-dom', async (importOriginal) => {
-  const mod: any = await importOriginal()
-  return { ...mod, useNavigate: () => () => {} }
+/* 3) localStorage */
+vi.stubGlobal('localStorage', {
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
 })
 
-// icons
-const Icon = () => null
-const iconProxy: any = new Proxy({}, { get: () => Icon })
-vi.mock('lucide-react', () => ({ __esModule: true, ...iconProxy }))
+/**
+ * Supabase: robust, fully-chainable mock
+ * - Covers typical PostgREST chain, filters, and terminators.
+ * - Provides auth + storage shapes commonly used in apps.
+ */
+const createMockSupabaseClient = () => {
+  const mockData = [{ id: 'mock-id', created_at: new Date().toISOString() }]
+  const mockError = null
 
-// supabase: augment existing mock if present; otherwise provide minimal
-vi.mock('@/lib/supabase', async (importOriginal) => {
-  const ok = (data: any) => ({ data, error: null })
-  const addChain = (q: any) => {
-    if (!q) return q
-    if (!q.select) q.select = vi.fn(() => q)
-    if (!q.order)  q.order  = vi.fn(() => q)
-    if (!q.limit)  q.limit  = vi.fn(() => q)
-    if (!q.eq)     q.eq     = vi.fn(() => q)
-    if (!q.single) q.single = vi.fn(async () => ok(null))
-    return q
+  // Chainable query builder
+  const qb: any = {
+    // Data operations
+    select: vi.fn(() => qb),
+    insert: vi.fn(() => qb),
+    update: vi.fn(() => qb),
+    delete: vi.fn(() => qb),
+    from:   vi.fn(() => qb),
+    rpc:    vi.fn(() => qb),
+
+    // Filters
+    eq: vi.fn(() => qb),
+    neq: vi.fn(() => qb),
+    gt: vi.fn(() => qb),
+    gte: vi.fn(() => qb),
+    lt: vi.fn(() => qb),
+    lte: vi.fn(() => qb),
+    like: vi.fn(() => qb),
+    ilike: vi.fn(() => qb),
+    in: vi.fn(() => qb),
+    is: vi.fn(() => qb),
+    filter: vi.fn(() => qb),
+    or: vi.fn(() => qb),
+    not: vi.fn(() => qb),
+
+    // Ordering / pagination
+    order: vi.fn(() => qb),
+    limit: vi.fn(() => qb),
+    range: vi.fn(() => qb),
+
+    // Terminators
+    single: vi.fn(() => Promise.resolve({ data: mockData[0], error: mockError })),
+    maybeSingle: vi.fn(() => Promise.resolve({ data: mockData[0], error: mockError })),
+
+    // Promise-like behavior for bare .select() calls without terminators
+    then: (onFulfilled: any, onRejected: any) =>
+      Promise.resolve({ data: mockData, error: mockError }).then(onFulfilled, onRejected),
   }
 
-  const mod: any  = await importOriginal().catch(() => ({}))
-  const base      = { ...(mod?.supabase ?? {}) }
-
-  const fromImpl  = base.from ? base.from.bind(base) : ((_: string) => ({}))
-  const from      = (table: string) => addChain(fromImpl(table))
-
-  const channel   = base.channel ?? vi.fn(() => ({ on: () => ({ subscribe: () => ({ unsubscribe(){} }) }) }))
-  const auth      = base.auth    ?? { getSession: async () => ok({ session: { user: { id: 'test-user' } } }),
-                                      getUser:    async () => ok({ user: { id: 'test-user' } }) }
-  const storage   = base.storage ?? { from: vi.fn(() => ({ upload: vi.fn(async () => ok(null)),
-                                                          download: vi.fn(async () => ok(null)) })) }
-
-  return { __esModule: true, supabase: { ...base, from, channel, auth, storage } }
-})
-
-// BarcodeService.getInstance: only add if missing
-vi.mock('@/services/barcode/BarcodeService', async (importOriginal) => {
-  const mod: any = await importOriginal().catch(() => ({}))
-  if (mod?.BarcodeService?.getInstance) return mod
-  const instance = {
-    getTypeFromValue: vi.fn(() => 'UPC'),
-    validate:         vi.fn(() => ({ valid: true })),
-    getStats:         vi.fn(() => ({ calls: 0 })),
-    reset:            vi.fn(),
+  return {
+    from: vi.fn(() => qb),
+    auth: {
+      signInWithPassword: vi.fn(() => Promise.resolve({ data: { user: { id: 'user-1' } }, error: null })),
+      signOut: vi.fn(() => Promise.resolve({ error: null })),
+      onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
+      getUser: vi.fn(() => Promise.resolve({ data: { user: { id: 'user-1' } }, error: null })),
+    },
+    storage: {
+      from: vi.fn(() => ({
+        upload: vi.fn(() => Promise.resolve({ data: { path: 'mock/path.jpg' }, error: null })),
+        download: vi.fn(() => Promise.resolve({ data: new Blob(), error: null })),
+        getPublicUrl: vi.fn(() => ({ data: { publicUrl: 'http://mock.url/path.jpg' } })),
+        remove: vi.fn(() => Promise.resolve({ data: null, error: null })),
+        list: vi.fn(() => Promise.resolve({ data: [], error: null })),
+      })),
+    },
   }
-  return { __esModule: true, BarcodeService: { ...(mod?.BarcodeService ?? {}), getInstance: () => instance } }
-})
+}
 
-// keep test isolation
-afterEach(() => { vi.clearAllMocks() })
-
-export {}
+// Intercept supabase client creation
+vi.mock('@supabase/supabase-js', () => ({
+  createClient: vi.fn(createMockSupabaseClient),
+}))

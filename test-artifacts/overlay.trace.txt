@@ -1,0 +1,2 @@
+2025-11-09 16:22:50 [overlay] start SRC_DIR='/Users/ghogue/Desktop/CaliberVaultII-Update-Nov-9'
+2025-11-09 16:22:50 [overlay] directory is empty; skipping
