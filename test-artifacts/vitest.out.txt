@@ -19,12 +19,6 @@
  FAIL  src/components/__tests__/SmartInstallPrompt.test.tsx [ src/components/__tests__/SmartInstallPrompt.test.tsx ]
  FAIL  src/components/__tests__/SyncStatusDashboard.test.tsx [ src/components/__tests__/SyncStatusDashboard.test.tsx ]
  FAIL  src/components/__tests__/TierEnforcement.test.tsx [ src/components/__tests__/TierEnforcement.test.tsx ]
- FAIL  src/hooks/__tests__/useInventoryFilters.enhanced.test.ts [ src/hooks/__tests__/useInventoryFilters.enhanced.test.ts ]
- FAIL  src/hooks/__tests__/useInventoryFilters.test.ts [ src/hooks/__tests__/useInventoryFilters.test.ts ]
- FAIL  src/hooks/__tests__/useOfflineSync.test.ts [ src/hooks/__tests__/useOfflineSync.test.ts ]
- FAIL  src/hooks/__tests__/usePullToRefresh.test.ts [ src/hooks/__tests__/usePullToRefresh.test.ts ]
- FAIL  src/hooks/__tests__/useSubscription.test.ts [ src/hooks/__tests__/useSubscription.test.ts ]
- FAIL  src/hooks/__tests__/useSwipeGesture.test.ts [ src/hooks/__tests__/useSwipeGesture.test.ts ]
  FAIL  src/lib/__tests__/barcodeCache.test.ts [ src/lib/__tests__/barcodeCache.test.ts ]
  FAIL  src/lib/__tests__/errorHandler.test.ts [ src/lib/__tests__/errorHandler.test.ts ]
  FAIL  src/lib/__tests__/formatters.test.ts [ src/lib/__tests__/formatters.test.ts ]
@@ -40,19 +34,25 @@
  FAIL  src/services/__tests__/storage.service.test.ts [ src/services/__tests__/storage.service.test.ts ]
  FAIL  src/services/__tests__/sync.service.test.ts [ src/services/__tests__/sync.service.test.ts ]
  FAIL  src/services/__tests__/team.service.test.ts [ src/services/__tests__/team.service.test.ts ]
- FAIL  src/utils/__tests__/barcodeUtils.test.ts [ src/utils/__tests__/barcodeUtils.test.ts ]
- FAIL  src/utils/__tests__/csvParser.test.ts [ src/utils/__tests__/csvParser.test.ts ]
- FAIL  src/utils/__tests__/csvValidator.test.ts [ src/utils/__tests__/csvValidator.test.ts ]
+ FAIL  src/hooks/__tests__/useInventoryFilters.enhanced.test.ts [ src/hooks/__tests__/useInventoryFilters.enhanced.test.ts ]
+ FAIL  src/hooks/__tests__/useInventoryFilters.test.ts [ src/hooks/__tests__/useInventoryFilters.test.ts ]
+ FAIL  src/hooks/__tests__/useOfflineSync.test.ts [ src/hooks/__tests__/useOfflineSync.test.ts ]
+ FAIL  src/hooks/__tests__/usePullToRefresh.test.ts [ src/hooks/__tests__/usePullToRefresh.test.ts ]
+ FAIL  src/hooks/__tests__/useSubscription.test.ts [ src/hooks/__tests__/useSubscription.test.ts ]
+ FAIL  src/hooks/__tests__/useSwipeGesture.test.ts [ src/hooks/__tests__/useSwipeGesture.test.ts ]
  FAIL  src/test/integration/api.test.ts [ src/test/integration/api.test.ts ]
  FAIL  src/test/integration/comprehensive-categories.test.ts [ src/test/integration/comprehensive-categories.test.ts ]
  FAIL  src/test/integration/data-migration.test.ts [ src/test/integration/data-migration.test.ts ]
  FAIL  src/services/api/__tests__/InventoryAPIService.test.ts [ src/services/api/__tests__/InventoryAPIService.test.ts ]
+ FAIL  src/utils/__tests__/barcodeUtils.test.ts [ src/utils/__tests__/barcodeUtils.test.ts ]
+ FAIL  src/utils/__tests__/csvParser.test.ts [ src/utils/__tests__/csvParser.test.ts ]
+ FAIL  src/utils/__tests__/csvValidator.test.ts [ src/utils/__tests__/csvValidator.test.ts ]
  FAIL  src/services/category/__tests__/AllCategories.test.ts [ src/services/category/__tests__/AllCategories.test.ts ]
  FAIL  src/services/category/__tests__/AmmunitionService.test.ts [ src/services/category/__tests__/AmmunitionService.test.ts ]
  FAIL  src/services/category/__tests__/FirearmsService.test.ts [ src/services/category/__tests__/FirearmsService.test.ts ]
- FAIL  src/services/security/__tests__/SecurityService.test.ts [ src/services/security/__tests__/SecurityService.test.ts ]
  FAIL  src/services/inventory/__tests__/BatchOperationsService.test.ts [ src/services/inventory/__tests__/BatchOperationsService.test.ts ]
  FAIL  src/services/inventory/__tests__/ModalIntegrationService.test.ts [ src/services/inventory/__tests__/ModalIntegrationService.test.ts ]
+ FAIL  src/services/security/__tests__/SecurityService.test.ts [ src/services/security/__tests__/SecurityService.test.ts ]
 Error: Transform failed with 1 error:
 /Users/ghogue/Desktop/CaliberVaultII/src/test/vitest.setup.ts:1:18: ERROR: Syntax error "h"
   Plugin: vite:esbuild
@@ -75,7 +75,7 @@ Serialized Error: { __vitest_rollup_error__: { plugin: 'vite:esbuild', id: '/Use
 
  Test Files  49 failed (49)
       Tests  no tests
-   Start at  13:06:09
-   Duration  10.77s (transform 11ms, setup 0ms, collect 0ms, tests 0ms, environment 89.36s, prepare 9.17s)
+   Start at  13:28:01
+   Duration  8.43s (transform 11ms, setup 0ms, collect 0ms, tests 0ms, environment 72.64s, prepare 8.35s)
 
 Vitest failed to start; see above
