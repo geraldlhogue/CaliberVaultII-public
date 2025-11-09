@@ -40,12 +40,12 @@
  FAIL  src/services/__tests__/storage.service.test.ts [ src/services/__tests__/storage.service.test.ts ]
  FAIL  src/services/__tests__/sync.service.test.ts [ src/services/__tests__/sync.service.test.ts ]
  FAIL  src/services/__tests__/team.service.test.ts [ src/services/__tests__/team.service.test.ts ]
- FAIL  src/test/integration/api.test.ts [ src/test/integration/api.test.ts ]
- FAIL  src/test/integration/comprehensive-categories.test.ts [ src/test/integration/comprehensive-categories.test.ts ]
- FAIL  src/test/integration/data-migration.test.ts [ src/test/integration/data-migration.test.ts ]
  FAIL  src/utils/__tests__/barcodeUtils.test.ts [ src/utils/__tests__/barcodeUtils.test.ts ]
  FAIL  src/utils/__tests__/csvParser.test.ts [ src/utils/__tests__/csvParser.test.ts ]
  FAIL  src/utils/__tests__/csvValidator.test.ts [ src/utils/__tests__/csvValidator.test.ts ]
+ FAIL  src/test/integration/api.test.ts [ src/test/integration/api.test.ts ]
+ FAIL  src/test/integration/comprehensive-categories.test.ts [ src/test/integration/comprehensive-categories.test.ts ]
+ FAIL  src/test/integration/data-migration.test.ts [ src/test/integration/data-migration.test.ts ]
  FAIL  src/services/api/__tests__/InventoryAPIService.test.ts [ src/services/api/__tests__/InventoryAPIService.test.ts ]
  FAIL  src/services/category/__tests__/AllCategories.test.ts [ src/services/category/__tests__/AllCategories.test.ts ]
  FAIL  src/services/category/__tests__/AmmunitionService.test.ts [ src/services/category/__tests__/AmmunitionService.test.ts ]
@@ -53,20 +53,32 @@
  FAIL  src/services/inventory/__tests__/BatchOperationsService.test.ts [ src/services/inventory/__tests__/BatchOperationsService.test.ts ]
  FAIL  src/services/inventory/__tests__/ModalIntegrationService.test.ts [ src/services/inventory/__tests__/ModalIntegrationService.test.ts ]
  FAIL  src/services/security/__tests__/SecurityService.test.ts [ src/services/security/__tests__/SecurityService.test.ts ]
-TypeError: Class constructor TextEncoder cannot be invoked without 'new'
- ❯ src/test/vitest.setup.ts:6:35
-      4| import { TextEncoder, TextDecoder } from 'node:util'
-      5| 
-      6| (globalThis as any).TextEncoder = TextEncoder
-       |                                   ^
-      7| (globalThis as any).TextDecoder = TextDecoder as any
-      8| if (!(globalThis as any).window) (globalThis as any).window = globalTh…
+Error: Transform failed with 1 error:
+/Users/ghogue/Desktop/CaliberVaultII/src/test/vitest.setup.ts:7:0: ERROR: Unexpected ")"
+  Plugin: vite:esbuild
+  File: /Users/ghogue/Desktop/CaliberVaultII/src/test/vitest.setup.ts:7:0
+  
+  Unexpected ")"
+  5  |  
+  6  |  ;(globalThis as any).TextEncoder = TextEncoder
+  7  |  )
+     |  ^
+  8  |  ;(globalThis as any).TextDecoder = TextDecoder as any
+  9  |  if (!(globalThis as any).window) (globalThis as any).window = globalThis as any
+  
+ ❯ failureErrorWithLog node_modules/vite/node_modules/esbuild/lib/main.js:1472:15
+ ❯ node_modules/vite/node_modules/esbuild/lib/main.js:755:50
+ ❯ responseCallbacks.<computed> node_modules/vite/node_modules/esbuild/lib/main.js:622:9
+ ❯ handleIncomingPacket node_modules/vite/node_modules/esbuild/lib/main.js:677:12
+ ❯ Socket.readFromStdout node_modules/vite/node_modules/esbuild/lib/main.js:600:7
 
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+Serialized Error: { __vitest_rollup_error__: { plugin: 'vite:esbuild', id: '/Users/ghogue/Desktop/CaliberVaultII/src/test/vitest.setup.ts', loc: { column: +0, file: '/Users/ghogue/Desktop/CaliberVaultII/src/test/vitest.setup.ts', length: 1, line: 7, lineText: ')', namespace: '', suggestion: '' }, frame: '\nUnexpected ")"\n5  |  \n6  |  ;(globalThis as any).TextEncoder = TextEncoder\n7  |  )\n   |  ^\n8  |  ;(globalThis as any).TextDecoder = TextDecoder as any\n9  |  if (!(globalThis as any).window) (globalThis as any).window = globalThis as any\n' } }
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/49]⎯
 
  Test Files  49 failed (49)
       Tests  no tests
-   Start at  15:16:47
-   Duration  15.60s (transform 65ms, setup 0ms, collect 0ms, tests 0ms, environment 119.65s, prepare 7.83s)
+   Start at  15:39:29
+   Duration  8.13s (transform 12ms, setup 0ms, collect 0ms, tests 0ms, environment 67.49s, prepare 7.43s)
 
 Vitest failed to start; see above
