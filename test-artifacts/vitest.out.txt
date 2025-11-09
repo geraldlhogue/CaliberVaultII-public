@@ -46,10 +46,10 @@
  FAIL  src/utils/__tests__/barcodeUtils.test.ts [ src/utils/__tests__/barcodeUtils.test.ts ]
  FAIL  src/utils/__tests__/csvParser.test.ts [ src/utils/__tests__/csvParser.test.ts ]
  FAIL  src/utils/__tests__/csvValidator.test.ts [ src/utils/__tests__/csvValidator.test.ts ]
- FAIL  src/services/api/__tests__/InventoryAPIService.test.ts [ src/services/api/__tests__/InventoryAPIService.test.ts ]
  FAIL  src/services/category/__tests__/AllCategories.test.ts [ src/services/category/__tests__/AllCategories.test.ts ]
  FAIL  src/services/category/__tests__/AmmunitionService.test.ts [ src/services/category/__tests__/AmmunitionService.test.ts ]
  FAIL  src/services/category/__tests__/FirearmsService.test.ts [ src/services/category/__tests__/FirearmsService.test.ts ]
+ FAIL  src/services/api/__tests__/InventoryAPIService.test.ts [ src/services/api/__tests__/InventoryAPIService.test.ts ]
  FAIL  src/services/inventory/__tests__/BatchOperationsService.test.ts [ src/services/inventory/__tests__/BatchOperationsService.test.ts ]
  FAIL  src/services/inventory/__tests__/ModalIntegrationService.test.ts [ src/services/inventory/__tests__/ModalIntegrationService.test.ts ]
  FAIL  src/services/security/__tests__/SecurityService.test.ts [ src/services/security/__tests__/SecurityService.test.ts ]
@@ -75,7 +75,7 @@ Serialized Error: { __vitest_rollup_error__: { plugin: 'vite:esbuild', id: '/Use
 
  Test Files  49 failed (49)
       Tests  no tests
-   Start at  08:57:16
-   Duration  3.58s (transform 9ms, setup 0ms, collect 0ms, tests 0ms, environment 30.44s, prepare 4.71s)
+   Start at  09:47:40
+   Duration  8.47s (transform 11ms, setup 0ms, collect 0ms, tests 0ms, environment 68.46s, prepare 8.61s)
 
 Vitest failed to start; see above
