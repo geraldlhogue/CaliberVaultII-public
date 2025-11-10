@@ -3,18 +3,6 @@
  * Handles bulk create, update, and delete operations
  */
 
-import { 
-  firearmsService, 
-  ammunitionService,
-  opticsService,
-  magazinesService,
-  accessoriesService,
-  suppressorsService,
-  reloadingService,
-  casesService,
-  primersService,
-  powderService
-} from '../category';
 import { ItemCategory } from '@/types/inventory';
 
 interface BatchResult {
@@ -38,7 +26,7 @@ export class BatchOperationsService {
       items: []
     };
 
-    const service = this.getService(category);
+    const service = await this.getService(category);
 
     for (let i = 0; i < items.length; i++) {
       try {
@@ -75,7 +63,7 @@ export class BatchOperationsService {
       items: []
     };
 
-    const service = this.getService(category);
+    const service = await this.getService(category);
 
     for (let i = 0; i < updates.length; i++) {
       try {
@@ -107,7 +95,7 @@ export class BatchOperationsService {
       errors: []
     };
 
-    const service = this.getService(category);
+    const service = await this.getService(category);
 
     for (let i = 0; i < ids.length; i++) {
       try {
@@ -173,7 +161,7 @@ export class BatchOperationsService {
       items: []
     };
 
-    const service = this.getService(category);
+    const service = await this.getService(category);
 
     for (let i = 0; i < ids.length; i++) {
       try {
@@ -202,22 +190,24 @@ export class BatchOperationsService {
   }
 
   // Helper methods
-  private getService(category: ItemCategory) {
+  private async getService(category: ItemCategory) {
+    const categoryModule = await import('../category');
+    
     const services: Record<ItemCategory, any> = {
-      firearms: firearmsService,
-      ammunition: ammunitionService,
-      optics: opticsService,
-      magazines: magazinesService,
-      accessories: accessoriesService,
-      suppressors: suppressorsService,
-      reloading: reloadingService,
-      cases: casesService,
-      primers: primersService,
-      powder: powderService,
-      other: firearmsService
+      firearms: categoryModule.firearmsService,
+      ammunition: categoryModule.ammunitionService,
+      optics: categoryModule.opticsService,
+      magazines: categoryModule.magazinesService,
+      accessories: categoryModule.accessoriesService,
+      suppressors: categoryModule.suppressorsService,
+      reloading: categoryModule.reloadingService,
+      cases: categoryModule.casesService,
+      primers: categoryModule.primersService,
+      powder: categoryModule.powderService,
+      other: categoryModule.firearmsService
     };
     
-    return services[category] || firearmsService;
+    return services[category] || categoryModule.firearmsService;
   }
 }
 

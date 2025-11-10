@@ -3,18 +3,6 @@
  * REST API layer for inventory operations
  */
 
-import { 
-  firearmsService, 
-  ammunitionService,
-  opticsService,
-  magazinesService,
-  accessoriesService,
-  suppressorsService,
-  reloadingService,
-  casesService,
-  primersService,
-  powderService
-} from '../category';
 import { ItemCategory } from '@/types/inventory';
 
 interface APIResponse<T = any> {
@@ -38,7 +26,7 @@ export class InventoryAPIService {
    */
   async list(category: ItemCategory, userId: string, params?: ListParams): Promise<APIResponse> {
     try {
-      const service = this.getService(category);
+      const service = await this.getService(category);
       const items = await service.list(userId);
       
       // Apply pagination and sorting
@@ -74,7 +62,7 @@ export class InventoryAPIService {
    */
   async getById(category: ItemCategory, id: string, userId: string): Promise<APIResponse> {
     try {
-      const service = this.getService(category);
+      const service = await this.getService(category);
       const item = await service.getById(id, userId);
       
       return {
@@ -94,7 +82,7 @@ export class InventoryAPIService {
    */
   async create(category: ItemCategory, data: any, userId: string): Promise<APIResponse> {
     try {
-      const service = this.getService(category);
+      const service = await this.getService(category);
       const item = await service.create(data, userId);
       
       return {
@@ -115,7 +103,7 @@ export class InventoryAPIService {
    */
   async update(category: ItemCategory, id: string, data: any, userId: string): Promise<APIResponse> {
     try {
-      const service = this.getService(category);
+      const service = await this.getService(category);
       const item = await service.update(id, data, userId);
       
       return {
@@ -136,7 +124,7 @@ export class InventoryAPIService {
    */
   async delete(category: ItemCategory, id: string, userId: string): Promise<APIResponse> {
     try {
-      const service = this.getService(category);
+      const service = await this.getService(category);
       await service.delete(id, userId);
       
       return {
@@ -152,22 +140,24 @@ export class InventoryAPIService {
   }
 
   // Helper methods
-  private getService(category: ItemCategory) {
+  private async getService(category: ItemCategory) {
+    const categoryModule = await import('../category');
+    
     const services: Record<ItemCategory, any> = {
-      firearms: firearmsService,
-      ammunition: ammunitionService,
-      optics: opticsService,
-      magazines: magazinesService,
-      accessories: accessoriesService,
-      suppressors: suppressorsService,
-      reloading: reloadingService,
-      cases: casesService,
-      primers: primersService,
-      powder: powderService,
-      other: firearmsService // fallback
+      firearms: categoryModule.firearmsService,
+      ammunition: categoryModule.ammunitionService,
+      optics: categoryModule.opticsService,
+      magazines: categoryModule.magazinesService,
+      accessories: categoryModule.accessoriesService,
+      suppressors: categoryModule.suppressorsService,
+      reloading: categoryModule.reloadingService,
+      cases: categoryModule.casesService,
+      primers: categoryModule.primersService,
+      powder: categoryModule.powderService,
+      other: categoryModule.firearmsService
     };
     
-    return services[category] || firearmsService;
+    return services[category] || categoryModule.firearmsService;
   }
 
   private filterBySearch(items: any[], search: string): any[] {

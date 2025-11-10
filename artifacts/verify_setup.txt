@@ -12,17 +12,17 @@ x-frame-options: deny
 x-xss-protection: 1; mode=block
 x-github-request-id: 15A2:104571:251C4EA:2BEF80F:691122CD
 accept-ranges: bytes
-date: Sun, 09 Nov 2025 23:25:01 GMT
+date: Sun, 09 Nov 2025 23:36:31 GMT
 via: 1.1 varnish
-x-served-by: cache-den-kden1300066-DEN
-x-cache: MISS
+x-served-by: cache-den-kden1300023-DEN
+x-cache: HIT
 x-cache-hits: 0
-x-timer: S1762730702.641496,VS0,VE97
+x-timer: S1762731392.799177,VS0,VE99
 vary: Authorization,Accept-Encoding
 access-control-allow-origin: *
 cross-origin-resource-policy: cross-origin
-x-fastly-request-id: 97b0f6d0e94aaf4f74873ce20386cf70729c1cdb
-expires: Sun, 09 Nov 2025 23:30:01 GMT
+x-fastly-request-id: 80d1803c8aafa92967a00fc0955835a24853d915
+expires: Sun, 09 Nov 2025 23:41:31 GMT
 source-age: 0
 content-length: 3449
 

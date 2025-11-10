@@ -3,18 +3,6 @@
  * Bridges modal components with category services
  */
 
-import { 
-  firearmsService, 
-  ammunitionService,
-  opticsService,
-  magazinesService,
-  accessoriesService,
-  suppressorsService,
-  reloadingService,
-  casesService,
-  primersService,
-  powderService
-} from '../category';
 import { ItemCategory } from '@/types/inventory';
 
 export class ModalIntegrationService {
@@ -22,40 +10,31 @@ export class ModalIntegrationService {
    * Save item from modal form data
    */
   async saveItem(formData: any, userId: string): Promise<any> {
+    const categoryModule = await import('../category');
     const category = formData.category as ItemCategory;
     
     // Route to appropriate service
     switch (category) {
       case 'firearms':
-        return firearmsService.create(this.mapFormToFirearm(formData), userId);
-      
+        return categoryModule.firearmsService.create(this.mapFormToFirearm(formData), userId);
       case 'ammunition':
-        return ammunitionService.create(this.mapFormToAmmunition(formData), userId);
-      
+        return categoryModule.ammunitionService.create(this.mapFormToAmmunition(formData), userId);
       case 'optics':
-        return opticsService.create(this.mapFormToOptics(formData), userId);
-      
+        return categoryModule.opticsService.create(this.mapFormToOptics(formData), userId);
       case 'magazines':
-        return magazinesService.create(this.mapFormToMagazine(formData), userId);
-      
+        return categoryModule.magazinesService.create(this.mapFormToMagazine(formData), userId);
       case 'accessories':
-        return accessoriesService.create(this.mapFormToAccessory(formData), userId);
-      
+        return categoryModule.accessoriesService.create(this.mapFormToAccessory(formData), userId);
       case 'suppressors':
-        return suppressorsService.create(this.mapFormToSuppressor(formData), userId);
-      
+        return categoryModule.suppressorsService.create(this.mapFormToSuppressor(formData), userId);
       case 'reloading':
-        return reloadingService.create(this.mapFormToReloading(formData), userId);
-      
+        return categoryModule.reloadingService.create(this.mapFormToReloading(formData), userId);
       case 'cases':
-        return casesService.create(this.mapFormToCase(formData), userId);
-      
+        return categoryModule.casesService.create(this.mapFormToCase(formData), userId);
       case 'primers':
-        return primersService.create(this.mapFormToPrimer(formData), userId);
-      
+        return categoryModule.primersService.create(this.mapFormToPrimer(formData), userId);
       case 'powder':
-        return powderService.create(this.mapFormToPowder(formData), userId);
-      
+        return categoryModule.powderService.create(this.mapFormToPowder(formData), userId);
       default:
         throw new Error(`Unsupported category: ${category}`);
     }
@@ -65,29 +44,30 @@ export class ModalIntegrationService {
    * Update item from modal form data
    */
   async updateItem(id: string, formData: any, userId: string): Promise<any> {
+    const categoryModule = await import('../category');
     const category = formData.category as ItemCategory;
     
     switch (category) {
       case 'firearms':
-        return firearmsService.update(id, this.mapFormToFirearm(formData), userId);
+        return categoryModule.firearmsService.update(id, this.mapFormToFirearm(formData), userId);
       case 'ammunition':
-        return ammunitionService.update(id, this.mapFormToAmmunition(formData), userId);
+        return categoryModule.ammunitionService.update(id, this.mapFormToAmmunition(formData), userId);
       case 'optics':
-        return opticsService.update(id, this.mapFormToOptics(formData), userId);
+        return categoryModule.opticsService.update(id, this.mapFormToOptics(formData), userId);
       case 'magazines':
-        return magazinesService.update(id, this.mapFormToMagazine(formData), userId);
+        return categoryModule.magazinesService.update(id, this.mapFormToMagazine(formData), userId);
       case 'accessories':
-        return accessoriesService.update(id, this.mapFormToAccessory(formData), userId);
+        return categoryModule.accessoriesService.update(id, this.mapFormToAccessory(formData), userId);
       case 'suppressors':
-        return suppressorsService.update(id, this.mapFormToSuppressor(formData), userId);
+        return categoryModule.suppressorsService.update(id, this.mapFormToSuppressor(formData), userId);
       case 'reloading':
-        return reloadingService.update(id, this.mapFormToReloading(formData), userId);
+        return categoryModule.reloadingService.update(id, this.mapFormToReloading(formData), userId);
       case 'cases':
-        return casesService.update(id, this.mapFormToCase(formData), userId);
+        return categoryModule.casesService.update(id, this.mapFormToCase(formData), userId);
       case 'primers':
-        return primersService.update(id, this.mapFormToPrimer(formData), userId);
+        return categoryModule.primersService.update(id, this.mapFormToPrimer(formData), userId);
       case 'powder':
-        return powderService.update(id, this.mapFormToPowder(formData), userId);
+        return categoryModule.powderService.update(id, this.mapFormToPowder(formData), userId);
       default:
         throw new Error(`Unsupported category: ${category}`);
     }
@@ -112,110 +92,50 @@ export class ModalIntegrationService {
   }
 
   private mapFormToAmmunition(data: any) {
-    return {
-      name: data.name,
-      manufacturer_id: data.manufacturer,
-      caliber_id: data.caliber,
-      bullet_type_id: data.bulletType,
-      grain_weight: data.grainWeight,
-      round_count: data.roundCount,
-      purchase_price: data.purchasePrice,
-      storage_location_id: data.storageLocation,
-      images: data.images
-    };
+    return { name: data.name, manufacturer_id: data.manufacturer, caliber_id: data.caliber, 
+      bullet_type_id: data.bulletType, grain_weight: data.grainWeight, round_count: data.roundCount,
+      purchase_price: data.purchasePrice, storage_location_id: data.storageLocation, images: data.images };
   }
 
   private mapFormToOptics(data: any) {
-    return {
-      name: data.name,
-      manufacturer_id: data.manufacturer,
-      model: data.model,
-      magnification: data.magnification,
-      objective_lens: data.objectiveLens,
-      reticle_type_id: data.reticleType,
-      purchase_price: data.purchasePrice,
-      images: data.images
-    };
+    return { name: data.name, manufacturer_id: data.manufacturer, model: data.model,
+      magnification: data.magnification, objective_lens: data.objectiveLens, reticle_type_id: data.reticleType,
+      purchase_price: data.purchasePrice, images: data.images };
   }
 
   private mapFormToMagazine(data: any) {
-    return {
-      name: data.name,
-      manufacturer_id: data.manufacturer,
-      caliber_id: data.caliber,
-      capacity: data.capacity,
-      material: data.material,
-      quantity: data.quantity,
-      images: data.images
-    };
+    return { name: data.name, manufacturer_id: data.manufacturer, caliber_id: data.caliber,
+      capacity: data.capacity, material: data.material, quantity: data.quantity, images: data.images };
   }
 
   private mapFormToAccessory(data: any) {
-    return {
-      name: data.name,
-      manufacturer_id: data.manufacturer,
-      accessory_type: data.accessoryType,
-      compatibility: data.compatibility,
-      purchase_price: data.purchasePrice,
-      images: data.images
-    };
+    return { name: data.name, manufacturer_id: data.manufacturer, accessory_type: data.accessoryType,
+      compatibility: data.compatibility, purchase_price: data.purchasePrice, images: data.images };
   }
 
   private mapFormToSuppressor(data: any) {
-    return {
-      name: data.name,
-      manufacturer_id: data.manufacturer,
-      caliber_id: data.caliber,
-      material_id: data.material,
-      length: data.length,
-      diameter: data.diameter,
-      images: data.images
-    };
+    return { name: data.name, manufacturer_id: data.manufacturer, caliber_id: data.caliber,
+      material_id: data.material, length: data.length, diameter: data.diameter, images: data.images };
   }
 
   private mapFormToReloading(data: any) {
-    return {
-      name: data.name,
-      manufacturer_id: data.manufacturer,
-      equipment_type: data.equipmentType,
-      caliber_id: data.caliber,
-      purchase_price: data.purchasePrice,
-      images: data.images
-    };
+    return { name: data.name, manufacturer_id: data.manufacturer, equipment_type: data.equipmentType,
+      caliber_id: data.caliber, purchase_price: data.purchasePrice, images: data.images };
   }
 
   private mapFormToCase(data: any) {
-    return {
-      name: data.name,
-      manufacturer_id: data.manufacturer,
-      caliber_id: data.caliber,
-      quantity: data.quantity,
-      times_reloaded: data.timesReloaded,
-      is_primed: data.isPrimed,
-      images: data.images
-    };
+    return { name: data.name, manufacturer_id: data.manufacturer, caliber_id: data.caliber,
+      quantity: data.quantity, times_reloaded: data.timesReloaded, is_primed: data.isPrimed, images: data.images };
   }
 
   private mapFormToPrimer(data: any) {
-    return {
-      name: data.name,
-      manufacturer_id: data.manufacturer,
-      primer_type_id: data.primerType,
-      quantity: data.quantity,
-      lot_number: data.lotNumber,
-      images: data.images
-    };
+    return { name: data.name, manufacturer_id: data.manufacturer, primer_type_id: data.primerType,
+      quantity: data.quantity, lot_number: data.lotNumber, images: data.images };
   }
 
   private mapFormToPowder(data: any) {
-    return {
-      name: data.name,
-      manufacturer_id: data.manufacturer,
-      powder_type_id: data.powderType,
-      weight: data.weight,
-      lot_number: data.lotNumber,
-      images: data.images
-    };
+    return { name: data.name, manufacturer_id: data.manufacturer, powder_type_id: data.powderType,
+      weight: data.weight, lot_number: data.lotNumber, images: data.images };
   }
 }
 

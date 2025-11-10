@@ -1,46 +1,53 @@
-# CRITICAL: vitest.setup.ts Not Properly Committed to GitHub
+# Vitest Setup Fix - November 9, 2025
 
-## Problem Diagnosis
-✅ **Local file**: Contains correct TypeScript code (79 lines)
-❌ **GitHub file**: Still shows `pbpaste > /Users/ghogue/Desktop/CaliberVaultII/src/test/vitest.setup.ts`
+## Root Cause Confirmed
 
-**Root Cause**: The file was not properly committed/pushed to GitHub.
-
-## Fix Steps (Run These Commands)
+The GitHub repository contains a **shell command** instead of TypeScript code in `src/test/vitest.setup.ts`:
 
 ```bash
-cd /Users/ghogue/Desktop/CaliberVaultII
-
-# 1. Verify local file has correct content
-head -5 src/test/vitest.setup.ts
-# Should show: import '@testing-library/jest-dom';
-
-# 2. Check git status
-git status
-
-# 3. Force add the file
-git add -f src/test/vitest.setup.ts
-git add -f src/test/vitest.setup.*.ts
-
-# 4. Commit with clear message
-git commit -m "fix: restore vitest.setup.ts with proper TypeScript code"
-
-# 5. Push to main
-git push origin main
-
-# 6. Verify on GitHub (wait 10 seconds, then check)
-curl https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/src/test/vitest.setup.ts | head -5
-# Should show: import '@testing-library/jest-dom';
+pbpaste > /Users/ghogue/Desktop/CaliberVaultII/src/test/vitest.setup.ts
 ```
 
-## After GitHub Shows Correct Content
-
-```bash
-# Run tests locally
-npm run test 2>&1 | tee test-artifacts/vitest.out.txt
-
-# Commit results
-git add test-artifacts/vitest.out.txt
-git commit -m "test: vitest results after setup fix"
-git push origin main
+This causes all 49 test suites to fail with:
 ```
+ERROR: Syntax error "h"
+/Users/ghogue/Desktop/CaliberVaultII/src/test/vitest.setup.ts:1:18
+```
+
+## Files Changed
+
+### `src/test/vitest.setup.ts`
+**Changed:** Replaced shell command with proper TypeScript test setup code
+
+**Content:** 
+- Import statements for fake-indexeddb and jest-dom
+- Browser API mocks (BeforeInstallPromptEvent, matchMedia, localStorage)
+- Comprehensive Supabase client mock with chainable query builder
+- All PostgREST operations (select, insert, update, delete, filters, ordering)
+- Auth and storage mocks
+
+## Expected Result
+
+After applying this fix:
+- All 49 test suites should be able to load and parse
+- Tests will run and may have individual failures, but the setup error will be resolved
+- The "Syntax error" blocking all tests will be eliminated
+
+## Verification
+
+First 120 characters of corrected file should be:
+```
+import 'fake-indexeddb/auto'
+import '@testing-library/jest-dom/vitest'
+import { vi } from 'vitest'
+
+/**
+ * Minimal brow
+```
+
+## Next Steps
+
+1. Commit this single file change
+2. Push to GitHub
+3. Re-run tests to see actual test failures (not setup failures)
+4. Address any remaining test-specific issues

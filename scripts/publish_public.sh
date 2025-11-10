@@ -1,21 +1,29 @@
-#!/usr/bin/env zsh
-set -e
-REPO="/Users/ghogue/Desktop/CaliberVaultII"
-cd "$REPO"
-git remote set-url public https://github.com/geraldlhogue/CaliberVaultII-public.git
-git config remote.pushDefault public
-git config credential.helper osxkeychain
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+LOG_DIR="$REPO_ROOT/test-artifacts"
+mkdir -p "$LOG_DIR"
+
+ts() { date +"%Y-%m-%d %H:%M:%S"; }
+
+echo "$(ts) [publish] start" | tee -a "$LOG_DIR/publish.log"
+
+cd "$REPO_ROOT"
+
+git remote add public git@github.com:geraldlhogue/CaliberVaultII-public.git 2>/dev/null || true
+git remote set-url public git@github.com:geraldlhogue/CaliberVaultII-public.git
+
+export GIT_TERMINAL_PROMPT=0
+export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/CaliberVaultII -o IdentitiesOnly=yes"
+ssh -T git@github.com || true
+
 git add -A
-git commit -m "chore: overlay+tests+logs" || true
-git push public main
-git lfs install
-git lfs push public --all
-RAW_MAIN=https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main
-curl -I -fSL "$RAW_MAIN/src/test/vitest.setup.ts"      > artifacts/verify_setup.txt 2>&1 || true
-curl -I -fSL "$RAW_MAIN/vitest.override.ts"            > artifacts/verify_override.txt 2>&1 || true
-curl -I -fSL "$RAW_MAIN/test-artifacts/tsc.out.txt"    > artifacts/verify_tsc.txt 2>&1 || true
-curl -I -fSL "$RAW_MAIN/test-artifacts/vitest.out.txt" > artifacts/verify_vitest.txt 2>&1 || true
-git rev-parse HEAD        > .hash_head 2>/dev/null || echo N_A > .hash_head
-git rev-parse public/main > .hash_pub  2>/dev/null || echo N_A > .hash_pub
-printf "HEAD        = " ; cat .hash_head ; printf "\n" > artifacts/hash_compare.txt
-printf "public/main = " ; cat .hash_pub  ; printf "\n" >> artifacts/hash_compare.txt
+CHANGES="$(git status --porcelain | wc -l | tr -d ' ')"
+if [ "$CHANGES" != "0" ]; then
+  git commit -m "Automated overlay+test publish ($(date -u +'%Y-%m-%dT%H:%M:%SZ'))"
+fi
+
+git push public HEAD:main
+echo "$(ts) [publish] pushed to public: main" | tee -a "$LOG_DIR/publish.log"
+echo "$(ts) [publish] done" | tee -a "$LOG_DIR/publish.log"
