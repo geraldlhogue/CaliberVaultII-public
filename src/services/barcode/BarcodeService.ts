@@ -29,8 +29,17 @@ export interface BarcodeApi {
 }
 
 export class BarcodeService implements BarcodeApi {
+  private static instance: BarcodeService;
   private apiCallCount = 0;
   private readonly MAX_API_CALLS_PER_DAY = 90;
+
+  // Singleton pattern
+  static getInstance(): BarcodeService {
+    if (!BarcodeService.instance) {
+      BarcodeService.instance = new BarcodeService();
+    }
+    return BarcodeService.instance;
+  }
 
   isValidUPC(barcode: string): boolean {
     if (!barcode) return false;
@@ -125,5 +134,12 @@ export class BarcodeService implements BarcodeApi {
 }
 
 // Export singleton instance
-export const barcodeService = new BarcodeService();
-export default barcodeService;
+export const BarcodeServiceSingleton = BarcodeService.getInstance();
+export const BarcodeServiceFactory = { getInstance: () => BarcodeServiceSingleton };
+
+// For compatibility with tests
+export default { getInstance: () => BarcodeServiceSingleton };
+export const getInstance = () => BarcodeServiceSingleton;
+
+// Also export the instance directly as barcodeService
+export const barcodeService = BarcodeServiceSingleton;

@@ -12,7 +12,17 @@ export interface UploadOptions {
   upsert?: boolean;
 }
 
-class StorageService {
+export class StorageService {
+  private static instance: StorageService;
+
+  // Singleton pattern
+  static getInstance(): StorageService {
+    if (!StorageService.instance) {
+      StorageService.instance = new StorageService();
+    }
+    return StorageService.instance;
+  }
+
   async uploadFile(
     file: File,
     options: UploadOptions
@@ -108,6 +118,7 @@ class StorageService {
   }
 }
 
-export const storageService = new StorageService();
-export default storageService;
-
+// Export singleton instance
+export const storageService = StorageService.getInstance();
+export default { getInstance: () => storageService };
+export const getInstance = () => storageService;

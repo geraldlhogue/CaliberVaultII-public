@@ -1,5 +1,5 @@
-2025-11-09 19:22:07 [overlay] start SRC_DIR='/Users/ghogue/Desktop/CaliberVaultII-From-Famous-Nov-9'
-2025-11-09 19:22:07 [overlay] files to overlay: 974
+2025-11-09 19:34:56 [overlay] start SRC_DIR='/Users/ghogue/Desktop/CaliberVaultII-From-Famous-Nov-9'
+2025-11-09 19:34:56 [overlay] files to overlay: 974
   [overlay] /Users/ghogue/Desktop/CaliberVaultII-From-Famous-Nov-9/ALL_12_CATEGORIES_COMPLETE.md
   [overlay] /Users/ghogue/Desktop/CaliberVaultII-From-Famous-Nov-9/TEST_STABILIZATION_IMPLEMENTATION.md
   [overlay] /Users/ghogue/Desktop/CaliberVaultII-From-Famous-Nov-9/REACT_QUERY_ERROR_VALIDATION_GUIDE.md
@@ -50,5 +50,5 @@
   [overlay] /Users/ghogue/Desktop/CaliberVaultII-From-Famous-Nov-9/FIX_SUMMARY.md
   [overlay] /Users/ghogue/Desktop/CaliberVaultII-From-Famous-Nov-9/AMMUNITION_AND_PROFILE_FIXES_OCT25_2024.md
   [overlay] /Users/ghogue/Desktop/CaliberVaultII-From-Famous-Nov-9/index.html
-2025-11-09 19:22:08 [overlay] wrote /Users/ghogue/Desktop/CaliberVaultII/test-artifacts/overlay.diff.txt
-2025-11-09 19:22:08 [overlay] done
+2025-11-09 19:35:00 [overlay] wrote /Users/ghogue/Desktop/CaliberVaultII/test-artifacts/overlay.diff.txt
+2025-11-09 19:35:00 [overlay] done

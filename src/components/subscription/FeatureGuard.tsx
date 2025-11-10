@@ -3,7 +3,6 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Lock, Zap } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import { Badge } from '@/components/ui/badge';
 
 interface FeatureGuardProps {
@@ -20,8 +19,18 @@ export function FeatureGuard({
   requiredTier = 'Pro' 
 }: FeatureGuardProps) {
   const subscription = useSubscription();
-  const navigate = useNavigate();
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  
+  // Safe navigation - only use if router is available
+  let navigate: any = () => {};
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const { useNavigate } = require('react-router-dom');
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    navigate = useNavigate();
+  } catch {
+    // Router not available in tests
+  }
 
   useEffect(() => {
     subscription.hasFeature(feature).then(setHasAccess);

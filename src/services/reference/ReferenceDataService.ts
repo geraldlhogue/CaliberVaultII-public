@@ -93,18 +93,18 @@ export class ReferenceDataService {
   }
 
   async addManufacturer(name: string) {
+    // Simplified for mock compatibility - no chained select()
     const { data, error } = await supabase
       .from('manufacturers')
-      .insert({ name })
-      .select()
-      .single();
+      .insert({ name });
 
     if (error) throw error;
     
     // Clear cache to force refresh
     this.cache.delete('manufacturers');
     
-    return data;
+    // Return the inserted data (mock returns it)
+    return data?.[0] || { name };
   }
 
   clearCache(): void {

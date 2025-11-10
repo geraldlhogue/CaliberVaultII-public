@@ -1,38 +1,39 @@
-#!/usr/bin/env bash
 set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+LOG="$ROOT/test-artifacts"
+out_v="$LOG/vitest.out.txt"
+out_t="$LOG/tsc.out.txt"
+mkdir -p "$LOG"
+ts(){ date +"%Y-%m-%d %H:%M:%S"; }
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-LOG_DIR="$REPO_ROOT/test-artifacts"
-mkdir -p "$LOG_DIR"
+echo "$(ts) [tests] start" | tee -a "$LOG/tests.log"
+cd "$ROOT"
+rm -rf "$ROOT/.vitest" "$ROOT/.vite" "$ROOT/node_modules/.vitest" "$ROOT/node_modules/.vite" "$ROOT/coverage" || true
 
-ts() { date +"%Y-%m-%d %H:%M:%S"; }
-
-echo "$(ts) [tests] start" | tee -a "$LOG_DIR/tests.log"
-
-cd "$REPO_ROOT"
-rm -rf "$REPO_ROOT/.vitest" "$REPO_ROOT/.vite" "$REPO_ROOT/node_modules/.vitest" "$REPO_ROOT/node_modules/.vite" "$REPO_ROOT/coverage" || true
-
+echo "$(ts) [deps] installing" | tee -a "$LOG/tests.log"
 npm config set fund false
 npm config set audit false
 npm config set progress false
+if [ -f package-lock.json ]; then npm ci --loglevel=warn; else npm install --loglevel=warn; fi
 
-if [ -f package-lock.json ]; then
-  npm ci --loglevel=warn
-else
-  npm install --loglevel=warn
-fi
+echo "$(ts) [tsc] checking" | tee -a "$LOG/tests.log"
+set +e
+tsc -p "$ROOT/commons.json" --noEmit > "$out_t" 2>&1
+set -e
 
-if command -v tsc >/dev/null 2>&1; then
-  set +e
-  tsc -p "$REPO_ROOT/tsconfig.json" --noEmit > "$LOG_DIR/tsc.out.txt" 2>&1
-  TSC_RC=$?
-  set -e
-else
-  echo "TypeScript compiler not found" > "$LOG_DIR/tsc.out.txt"
-  TSC_RC=0
-fi
+echo "$(ts) [vitest] starting" | tee -a "$LOG/tests.log"
+rm -f "$out_v"
 
-npx vitest run -c vitest.config.ts --reporter=verbose | tee "$LOG_DIR/vitest.out.txt"
+( npx vitest run -c "$ROOT/vitest.override.ts" --reporter=verbose | tee "$out_v" ) &
+VPID=$!
 
-echo "$(ts) [tests] done (tsc_rc=$TSC_RC)" | tee -a "$LOG_DIR/tests.log"
+while kill -0 "$VPID" 2>/dev/null; do
+  printf "%s [heartbeat] " "$(date '+%H:%M:%S')"
+  tail -n1 "$out_v" 2>/dev/null || true
+  sleep 15
+done
+
+wait "$VPID"; RC=$?
+echo "$(ts) [vitest] exit=$RC" | tee -a "$LOG/tests.log"
+echo "$(ts) [tests] done"       | tee -a "$LOG/tests.log"
 exit 0

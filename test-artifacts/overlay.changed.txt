@@ -1,0 +1,15 @@
+A  scripts/extract_progress.sh
+M  scripts/famous_full_pipeline.sh
+M  scripts/overlay_with_logging.sh
+M  scripts/publish_public.sh
+M  scripts/run_all_tests.sh
+M  scripts/verify_public.sh
+M  src/test/vitest.setup.ts
+M  test-artifacts/overlay.diff.txt
+A  test-artifacts/overlay.ingest.1762742448.txt
+A  test-artifacts/overlay.ingest.txt
+M  test-artifacts/overlay.trace.txt
+A  test-artifacts/pipeline.after-interrupt.txt
+M  test-artifacts/run_all_tests.trace.txt
+M  test-artifacts/vitest.out.txt
+?? test-artifacts/overlay.changed.txt
