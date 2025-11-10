@@ -251,6 +251,8 @@ function guessFirearmSubcategory(caliber: string): string {
 
 /**
  * Validate if a string is a valid UPC/EAN barcode
+/**
+ * Validate if a string is a valid UPC/EAN barcode
  */
 export function isValidBarcode(code: string): boolean {
   // Remove any spaces or dashes
@@ -259,12 +261,16 @@ export function isValidBarcode(code: string): boolean {
   // UPC-A: 12 digits
   // EAN-13: 13 digits
   // EAN-8: 8 digits
+  // ITF-14: 14 digits
   const upcPattern = /^\d{12}$/;
   const ean13Pattern = /^\d{13}$/;
   const ean8Pattern = /^\d{8}$/;
+  const itf14Pattern = /^\d{14}$/;
   
-  return upcPattern.test(cleanCode) || ean13Pattern.test(cleanCode) || ean8Pattern.test(cleanCode);
+  return upcPattern.test(cleanCode) || ean13Pattern.test(cleanCode) || 
+         ean8Pattern.test(cleanCode) || itf14Pattern.test(cleanCode);
 }
+
 
 /**
  * Format barcode for display (add dashes for readability)

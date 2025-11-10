@@ -22,8 +22,19 @@ const CACHE_EXPIRY_DAYS = 30;
 
 export class BarcodeCacheManager {
   private db: IDBDatabase | null = null;
+  private initPromise: Promise<void> | null = null;
+
+  // Expose ready promise for tests
+  get ready(): Promise<void> {
+    if (!this.initPromise) {
+      this.initPromise = this.init();
+    }
+    return this.initPromise;
+  }
 
   async init(): Promise<void> {
+    if (this.db) return; // Already initialized
+    
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(DB_NAME, DB_VERSION);
 
@@ -44,6 +55,7 @@ export class BarcodeCacheManager {
       };
     });
   }
+
 
   async dispose(): Promise<void> {
     if (this.db) {

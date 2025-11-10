@@ -1,1 +1,1 @@
-/Users/ghogue/Desktop/CaliberVaultII/scripts/run_all_tests.sh: line 18: tsc: command not found
+zsh: command not found: tsc

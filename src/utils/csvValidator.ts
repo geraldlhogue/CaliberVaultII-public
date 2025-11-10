@@ -7,6 +7,15 @@ export interface ValidationWarning {
   severity: 'error' | 'warning';
 }
 
+// Export validateCSVHeaders
+export const validateCSVHeaders = (headers: string[]): boolean => {
+  const requiredHeaders = ['name', 'category'];
+  return requiredHeaders.every(req => 
+    headers.some(h => h.toLowerCase() === req.toLowerCase())
+  );
+};
+
+// Export validateCSVRow
 export const validateCSVRow = (
   row: CSVRow,
   rowIndex: number,

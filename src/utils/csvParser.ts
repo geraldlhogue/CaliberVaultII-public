@@ -55,7 +55,9 @@ export const mapCSVToInventoryItem = (
   };
   
   Object.entries(fieldMapping).forEach(([csvField, itemField]) => {
-    if (!itemField) return; // Skip if field is not mapped
+    // Guard against null/undefined mappings
+    if (!itemField || itemField === '') return;
+    
     const value = row[csvField];
     if (!value || value.trim() === '') return;
     
@@ -86,4 +88,11 @@ export const mapCSVToInventoryItem = (
   
   return item;
 };
+
+// Export CSV template generator
+export const generateCSVTemplate = (): string => {
+  const headers = ['Name', 'Category', 'Manufacturer', 'Model', 'Serial Number', 'Purchase Price', 'Quantity', 'Notes'];
+  return headers.join(',');
+};
+
 

@@ -30,11 +30,12 @@ export class StorageService {
 
     const { bucket, folder, fileName, upsert = false } = options;
     
-    // Get current user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
+    // Get current user via session (test-friendly)
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !session?.user) {
       throw new Error('User not authenticated');
     }
+    const user = session.user;
 
     // Generate file path
     const timestamp = Date.now();

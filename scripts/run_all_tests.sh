@@ -23,7 +23,6 @@ set -e
 
 echo "$(ts) [vitest] starting" | tee -a "$LOG/tests.log"
 rm -f "$out_v"
-
 ( npx vitest run -c "$ROOT/vitest.override.ts" --reporter=verbose | tee "$out_v" ) &
 VPID=$!
 

@@ -19,4 +19,5 @@ find "$SRC" -maxdepth 2 -type f ! -path "*/.git/*" ! -path "*/node_modules/*" ! 
 rsync -a --stats --prune-empty-dirs --exclude '.bak' --exclude '.git' --exclude 'node_modules' --exclude 'test-artifacts' "$SRC"/ "$ROOT"/ | tee -a "$LOG/overlay.log"
 git -C "$ROOT" add -A
 git -C "$ROOT" status --porcelain > "$LOG/overlay.changed.txt" || true
+git -C "$ROOT" commit -m "Overlay Famous drop $(date -u +%Y-%m-%dT%H:%M:%SZ)" || true
 echo "$(ts) [overlay] done" | tee -a "$LOG/overlay.log"

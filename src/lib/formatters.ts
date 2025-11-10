@@ -10,8 +10,12 @@ export function safeNumber(value: any): number {
 
 export function formatCurrency(value: any): string {
   const num = safeNumber(value);
+  if (num < 0) {
+    return `-$${Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  }
   return `$${num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
+
 
 export function formatNumber(value: any, decimals?: number): string {
   const num = safeNumber(value);

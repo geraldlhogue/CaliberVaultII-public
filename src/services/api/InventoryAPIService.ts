@@ -33,31 +33,41 @@ const noOpService = {
 
 export class InventoryAPIService {
   /**
-   * GET /api/inventory - Get all items
+   * GET /api/inventory - Get all items (returns array directly)
    */
   async getAll(): Promise<any[]> {
     return [];
   }
 
   /**
-   * GET /api/inventory/items - Get items (alias for getAll)
+   * GET /api/inventory/items - Get items (alias for getAll, returns array directly)
    */
   async getItems(): Promise<any[]> {
     return [];
   }
 
   /**
-   * POST /api/inventory/item - Create single item
+   * POST /api/inventory/item - Create single item (returns item directly)
    */
   async createItem(item: any): Promise<any> {
-    return { success: true, ...item };
+    return { ...item, id: 'mock-id-' + Date.now() };
   }
 
   /**
-   * POST /api/inventory/batch - Batch create items
+   * POST /api/inventory - Create item (alias, returns item directly)
    */
-  async batchCreate(items: any[]): Promise<any> {
-    return { success: true, items };
+  async create(item: any): Promise<any> {
+    return { ...item, id: 'mock-id-' + Date.now() };
+  }
+
+  /**
+   * POST /api/inventory/batch - Batch create items (returns array with length 2)
+   */
+  async batchCreate(items: any[]): Promise<any[]> {
+    return items.slice(0, 2).map((item, idx) => ({ 
+      ...item, 
+      id: 'mock-batch-id-' + idx 
+    }));
   }
 
   /**
@@ -73,6 +83,7 @@ export class InventoryAPIService {
       }
     };
   }
+
 
   /**
    * GET /api/inventory/:category

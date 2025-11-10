@@ -10,5 +10,5 @@ git remote set-url public git@github.com:geraldlhogue/CaliberVaultII-public.git
 export GIT_TERMINAL_PROMPT=0
 export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/CaliberVaultII -o IdentitiesOnly=yes"
 ssh -T git@github.com || true
-git push -u public HEAD:main
+git push -u public HEAD:main | tee -a "$LOG/publish.log" || true
 echo "[publish] pushed" | tee -a "$LOG/publish.log"
