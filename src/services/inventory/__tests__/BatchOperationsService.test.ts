@@ -8,6 +8,12 @@ vi.mock('../../category', () => ({
     update: vi.fn(),
     delete: vi.fn(),
     getById: vi.fn()
+  },
+  ammunitionService: {
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    getById: vi.fn()
   }
 }));
 

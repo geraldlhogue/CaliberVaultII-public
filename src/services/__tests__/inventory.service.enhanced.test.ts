@@ -19,22 +19,26 @@ const createMockChain = (data: any = null, error: any = null) => {
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     from: vi.fn((table: string) => {
-      if (table === 'categories') {
-        return createMockChain({ id: 'cat123', name: 'firearms' });
-      }
-      if (table === 'manufacturers') {
-        return createMockChain({ id: 'mfg123', name: 'Test Mfg' });
-      }
-      if (table === 'inventory_base') {
-        return createMockChain({ id: 'inv123' });
-      }
-      if (table === 'valuation_history') {
-        return createMockChain([
+      const mockData: any = {
+        categories: { id: 'cat123', name: 'firearms' },
+        manufacturers: { id: 'mfg123', name: 'Test Mfg' },
+        inventory_base: { id: 'inv123', name: 'Test Item', category: 'firearms' },
+        valuation_history: [
           { id: 'val1', estimated_value: 1500, created_at: '2024-01-01' },
           { id: 'val2', estimated_value: 1600, created_at: '2024-02-01' }
-        ]);
-      }
-      return createMockChain();
+        ]
+      };
+      
+      const chain: any = {
+        select: vi.fn(() => chain),
+        eq: vi.fn(() => chain),
+        ilike: vi.fn(() => chain),
+        single: vi.fn(() => Promise.resolve({ data: mockData[table] || { id: 'inv123' }, error: null })),
+        insert: vi.fn(() => chain),
+        update: vi.fn(() => chain),
+        order: vi.fn(() => Promise.resolve({ data: mockData[table] || [], error: null }))
+      };
+      return chain;
     })
   }
 }));

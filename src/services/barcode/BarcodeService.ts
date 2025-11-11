@@ -18,7 +18,7 @@ export interface BatchLookupResult {
 export interface BarcodeApi {
   isValidUPC(s: string): boolean;
   isValidEAN(s: string): boolean;
-  detectBarcodeType(s: string): 'UPC' | 'EAN' | 'EAN-8' | 'UNKNOWN';
+  detectBarcodeType(s: string): 'UPC' | 'EAN' | 'EAN-8' | 'ITF-14' | 'UNKNOWN';
   resetApiCounter(): void;
   getApiCounter(): number;
   lookup(barcode: string, forceRefresh?: boolean): Promise<BarcodeLookupResult>;
@@ -53,12 +53,13 @@ export class BarcodeService implements BarcodeApi {
     return cleaned.length === 13;
   }
 
-  detectBarcodeType(barcode: string): 'UPC' | 'EAN' | 'EAN-8' | 'UNKNOWN' {
+  detectBarcodeType(barcode: string): 'UPC' | 'EAN' | 'EAN-8' | 'ITF-14' | 'UNKNOWN' {
     if (!barcode) return 'UNKNOWN';
     const cleaned = barcode.replace(/\D/g, '');
     if (cleaned.length === 12) return 'UPC';
     if (cleaned.length === 13) return 'EAN';
     if (cleaned.length === 8) return 'EAN-8';
+    if (cleaned.length === 14) return 'ITF-14';
     return 'UNKNOWN';
   }
 
