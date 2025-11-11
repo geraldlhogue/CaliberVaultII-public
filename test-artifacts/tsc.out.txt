@@ -1,1 +1,1 @@
-zsh: command not found: tsc
+scripts/famous_full_pipeline_strict.sh: line 24: tsc: command not found
