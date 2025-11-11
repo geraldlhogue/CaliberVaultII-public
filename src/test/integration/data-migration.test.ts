@@ -66,12 +66,13 @@ describe('Data Migration Validation', () => {
   });
 
   it('should fetch all categories from categories table', async () => {
-    // Mock the from() call to return categories
-    vi.mocked(supabase.from).mockReturnValueOnce({
-      select: vi.fn().mockReturnValue({
-        order: vi.fn().mockResolvedValue({ data: mockCategories, error: null })
-      })
-    } as any);
+    // Create a proper chainable mock
+    const orderMock = vi.fn().mockResolvedValue({ data: mockCategories, error: null });
+    const selectMock = vi.fn().mockReturnValue({ order: orderMock });
+    const fromMock = vi.fn().mockReturnValue({ select: selectMock });
+    
+    // Override the global mock for this test
+    (supabase as any).from = fromMock;
 
     const { data, error } = await supabase
       .from('categories')
@@ -92,6 +93,7 @@ describe('Data Migration Validation', () => {
     }
   });
 
+
   it('should create ammunition item successfully', async () => {
     const testItem = {
       user_id: testUserId,
@@ -101,17 +103,16 @@ describe('Data Migration Validation', () => {
       caliber: '9mm'
     };
 
-    // Mock insert to echo back the data
-    vi.mocked(supabase.from).mockReturnValueOnce({
-      insert: vi.fn().mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          single: vi.fn().mockResolvedValue({ 
-            data: { id: 'ammo-123', ...testItem }, 
-            error: null 
-          })
-        })
-      })
-    } as any);
+    // Create proper chainable mock
+    const singleMock = vi.fn().mockResolvedValue({ 
+      data: { id: 'ammo-123', ...testItem }, 
+      error: null 
+    });
+    const selectMock = vi.fn().mockReturnValue({ single: singleMock });
+    const insertMock = vi.fn().mockReturnValue({ select: selectMock });
+    const fromMock = vi.fn().mockReturnValue({ insert: insertMock });
+    
+    (supabase as any).from = fromMock;
 
     const { data, error } = await supabase
       .from('ammunition')
@@ -122,12 +123,8 @@ describe('Data Migration Validation', () => {
     expect(error).toBeNull();
     expect(data).toBeDefined();
     expect(data?.name).toBe('Test Ammo');
-
-    // Cleanup
-    if (data?.id) {
-      await supabase.from('ammunition').delete().eq('id', data.id);
-    }
   });
+
 
   it('should create magazine item successfully', async () => {
     const testItem = {
@@ -138,17 +135,16 @@ describe('Data Migration Validation', () => {
       capacity: 30
     };
 
-    // Mock insert to echo back the data
-    vi.mocked(supabase.from).mockReturnValueOnce({
-      insert: vi.fn().mockReturnValue({
-        select: vi.fn().mockReturnValue({
-          single: vi.fn().mockResolvedValue({ 
-            data: { id: 'mag-123', ...testItem }, 
-            error: null 
-          })
-        })
-      })
-    } as any);
+    // Create proper chainable mock
+    const singleMock = vi.fn().mockResolvedValue({ 
+      data: { id: 'mag-123', ...testItem }, 
+      error: null 
+    });
+    const selectMock = vi.fn().mockReturnValue({ single: singleMock });
+    const insertMock = vi.fn().mockReturnValue({ select: selectMock });
+    const fromMock = vi.fn().mockReturnValue({ insert: insertMock });
+    
+    (supabase as any).from = fromMock;
 
     const { data, error } = await supabase
       .from('magazines')
@@ -159,10 +155,6 @@ describe('Data Migration Validation', () => {
     expect(error).toBeNull();
     expect(data).toBeDefined();
     expect(data?.capacity).toBe(30);
-
-    // Cleanup
-    if (data?.id) {
-      await supabase.from('magazines').delete().eq('id', data.id);
-    }
   });
 });
+

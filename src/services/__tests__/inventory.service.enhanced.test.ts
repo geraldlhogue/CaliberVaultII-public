@@ -13,36 +13,54 @@ const mockValuationHistory = [
 ];
 
 // Mock Supabase with complete chain
-vi.mock('@/lib/supabase', () => ({
-  supabase: {
+vi.mock('@/lib/supabase', () => {
+  let currentTable = '';
+  
+  const supabase = {
     from: vi.fn((table: string) => {
+      currentTable = table;
       const chain: any = {
         select: vi.fn(() => chain),
         eq: vi.fn(() => chain),
         ilike: vi.fn(() => chain),
         order: vi.fn(() => chain),
-        insert: vi.fn(() => chain),
+        insert: vi.fn(() => {
+          // For insert operations, return a chain that resolves with the inserted data
+          return {
+            select: vi.fn(() => ({
+              single: vi.fn(() => {
+                if (currentTable === 'inventory_base') {
+                  return Promise.resolve({ 
+                    data: { id: 'inv123', name: 'Test Item', category: 'firearms' }, 
+                    error: null 
+                  });
+                }
+                return Promise.resolve({ data: { id: 'inv123' }, error: null });
+              })
+            }))
+          };
+        }),
         update: vi.fn(() => chain),
         single: vi.fn(() => {
-          if (table === 'inventory_base') {
+          if (currentTable === 'inventory_base') {
             return Promise.resolve({ 
               data: { id: 'inv123', name: 'Test Item', category: 'firearms' }, 
               error: null 
             });
           }
-          if (table === 'valuation_history') {
+          if (currentTable === 'valuation_history') {
             return Promise.resolve({ 
               data: { id: 'val123', estimated_value: 1500 }, 
               error: null 
             });
           }
-          return Promise.resolve({ data: { id: 'mock-id' }, error: null });
+          return Promise.resolve({ data: { id: 'inv123' }, error: null });
         }),
         then: (resolve: any) => {
-          if (table === 'inventory_base') {
+          if (currentTable === 'inventory_base') {
             return Promise.resolve({ data: mockInventoryItems, error: null }).then(resolve);
           }
-          if (table === 'valuation_history') {
+          if (currentTable === 'valuation_history') {
             return Promise.resolve({ data: mockValuationHistory, error: null }).then(resolve);
           }
           return Promise.resolve({ data: [], error: null }).then(resolve);
@@ -50,8 +68,11 @@ vi.mock('@/lib/supabase', () => ({
       };
       return chain;
     })
-  }
-}));
+  };
+  
+  return { supabase };
+});
+
 
 vi.mock('sonner', () => ({
   toast: {

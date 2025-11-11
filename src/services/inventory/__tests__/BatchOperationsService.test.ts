@@ -1,69 +1,32 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { batchOperationsService } from '../BatchOperationsService';
 
-// Mock all category services
-vi.mock('../../category', () => ({
-  firearmsService: {
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    getById: vi.fn()
-  },
-  ammunitionService: {
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    getById: vi.fn()
-  },
-  opticsService: {
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    getById: vi.fn()
-  },
-  magazinesService: {
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    getById: vi.fn()
-  },
-  accessoriesService: {
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    getById: vi.fn()
-  },
-  suppressorsService: {
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    getById: vi.fn()
-  },
-  reloadingService: {
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    getById: vi.fn()
-  },
-  casesService: {
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    getById: vi.fn()
-  },
-  primersService: {
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    getById: vi.fn()
-  },
-  powderService: {
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-    getById: vi.fn()
-  }
-}));
+// Create mock service instances
+const createMockService = () => ({
+  create: vi.fn(),
+  update: vi.fn(),
+  delete: vi.fn(),
+  getById: vi.fn()
+});
+
+// Mock all category services with proper exports
+vi.mock('../../category', () => {
+  const mockServices = {
+    firearmsService: createMockService(),
+    ammunitionService: createMockService(),
+    opticsService: createMockService(),
+    magazinesService: createMockService(),
+    accessoriesService: createMockService(),
+    suppressorsService: createMockService(),
+    reloadingService: createMockService(),
+    casesService: createMockService(),
+    primersService: createMockService(),
+    powderService: createMockService()
+  };
+  
+  return mockServices;
+});
+
 
 describe('BatchOperationsService', () => {
   const userId = 'test-user-123';

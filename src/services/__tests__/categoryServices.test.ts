@@ -3,38 +3,26 @@ import { firearmsService } from '../category/FirearmsService';
 import { ammunitionService } from '../category/AmmunitionService';
 
 // Mock Supabase with full query builder chain
-vi.mock('@/lib/supabase', () => ({
-  supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({ 
-            data: { id: '123', name: 'Test Item' }, 
-            error: null 
-          }))
-        }))
-      })),
-      insert: vi.fn(() => ({
-        select: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({ 
-            data: { id: '123', name: 'Test Item' }, 
-            error: null 
-          }))
-        }))
-      })),
-      update: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          select: vi.fn(() => ({
-            single: vi.fn(() => Promise.resolve({ 
-              data: { id: '123', name: 'Updated Item' }, 
-              error: null 
-            }))
-          }))
-        }))
-      }))
-    }))
-  }
-}));
+vi.mock('@/lib/supabase', () => {
+  const createQueryChain = () => ({
+    select: vi.fn(() => createQueryChain()),
+    eq: vi.fn(() => createQueryChain()),
+    single: vi.fn(() => Promise.resolve({ 
+      data: { id: '123', name: 'Test Item' }, 
+      error: null 
+    })),
+    insert: vi.fn(() => createQueryChain()),
+    update: vi.fn(() => createQueryChain()),
+    delete: vi.fn(() => createQueryChain())
+  });
+
+  return {
+    supabase: {
+      from: vi.fn(() => createQueryChain())
+    }
+  };
+});
+
 
 vi.mock('@/lib/databaseErrorHandler', () => ({
   withDatabaseErrorHandling: vi.fn((fn) => fn())
