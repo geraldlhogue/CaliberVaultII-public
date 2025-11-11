@@ -6,15 +6,15 @@ import { ammunitionService } from '../category/AmmunitionService';
 vi.mock('@/lib/supabase', () => {
   const createQueryChain = (): any => {
     const chain: any = {
-      select: vi.fn(() => chain),
-      eq: vi.fn(() => chain),
+      select: vi.fn(function(this: any) { return this }),
+      eq: vi.fn(function(this: any) { return this }),
       single: vi.fn(() => Promise.resolve({ 
         data: { id: '123', name: 'Test Item' }, 
         error: null 
       })),
-      insert: vi.fn(() => chain),
-      update: vi.fn(() => chain),
-      delete: vi.fn(() => chain)
+      insert: vi.fn(function(this: any) { return this }),
+      update: vi.fn(function(this: any) { return this }),
+      delete: vi.fn(function(this: any) { return this })
     };
     return chain;
   };
@@ -25,6 +25,7 @@ vi.mock('@/lib/supabase', () => {
     }
   };
 });
+
 
 
 vi.mock('@/lib/databaseErrorHandler', () => ({

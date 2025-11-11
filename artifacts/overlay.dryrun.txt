@@ -1,4 +1,0 @@
-Transfer starting: 0 files
-
-sent 29 bytes  received 20 bytes  490000 bytes/sec
-total size is 0  speedup is 0.00

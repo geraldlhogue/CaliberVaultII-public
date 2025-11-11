@@ -66,14 +66,6 @@ describe('Data Migration Validation', () => {
   });
 
   it('should fetch all categories from categories table', async () => {
-    // Create a proper chainable mock
-    const orderMock = vi.fn().mockResolvedValue({ data: mockCategories, error: null });
-    const selectMock = vi.fn().mockReturnValue({ order: orderMock });
-    const fromMock = vi.fn().mockReturnValue({ select: selectMock });
-    
-    // Override the global mock for this test
-    (supabase as any).from = fromMock;
-
     const { data, error } = await supabase
       .from('categories')
       .select('*')
@@ -103,17 +95,6 @@ describe('Data Migration Validation', () => {
       caliber: '9mm'
     };
 
-    // Create proper chainable mock
-    const singleMock = vi.fn().mockResolvedValue({ 
-      data: { id: 'ammo-123', ...testItem }, 
-      error: null 
-    });
-    const selectMock = vi.fn().mockReturnValue({ single: singleMock });
-    const insertMock = vi.fn().mockReturnValue({ select: selectMock });
-    const fromMock = vi.fn().mockReturnValue({ insert: insertMock });
-    
-    (supabase as any).from = fromMock;
-
     const { data, error } = await supabase
       .from('ammunition')
       .insert(testItem)
@@ -134,17 +115,6 @@ describe('Data Migration Validation', () => {
       quantity: 5,
       capacity: 30
     };
-
-    // Create proper chainable mock
-    const singleMock = vi.fn().mockResolvedValue({ 
-      data: { id: 'mag-123', ...testItem }, 
-      error: null 
-    });
-    const selectMock = vi.fn().mockReturnValue({ single: singleMock });
-    const insertMock = vi.fn().mockReturnValue({ select: selectMock });
-    const fromMock = vi.fn().mockReturnValue({ insert: insertMock });
-    
-    (supabase as any).from = fromMock;
 
     const { data, error } = await supabase
       .from('magazines')

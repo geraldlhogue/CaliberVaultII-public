@@ -235,11 +235,12 @@ export class InventoryService {
         'bullets': 'cat-10', 'Bullets': 'cat-10',
         'reloading': 'cat-11', 'Reloading': 'cat-11',
       };
-      return testCategories[name] || 'cat-1';
+      return testCategories[name] || null;
     }
     const { data } = await supabase.from('categories').select('id').ilike('name', name).single();
     return data?.id || null;
   }
+
 
 
   private async getManufacturerId(name: string): Promise<string | null> {

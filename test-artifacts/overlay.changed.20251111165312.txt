@@ -1434,7 +1434,6 @@ D  scripts/overlay_with_logging.sh
 D  scripts/patch-package-json.mjs
 D  scripts/patch-tsconfig.mjs
 D  scripts/pipeline_famous.sh
-D  scripts/pipeline_force_publish.sh
 D  scripts/pipeline_publish_always.sh
 D  scripts/publish_public.sh
 D  scripts/publish_strict.sh
@@ -1443,7 +1442,6 @@ D  scripts/run-ci-local.sh
 D  scripts/run_all_tests.sh
 D  scripts/run_full_with_gates.sh
 D  scripts/run_tests_and_logs.sh
-D  scripts/sync_check.sh
 D  scripts/tail_live.sh
 D  scripts/verify_public.sh
 D  scripts/write_all.mjs
@@ -1535,7 +1533,7 @@ D  src/test/vitest.setup.bak
 D  src/test/vitest.setup.corrupt.backup.20251106160658
 D  src/test/vitest.setup.ts
 D  src/vitest.d.ts
- M test-artifacts/overlay.changed.txt
+M  test-artifacts/overlay.changed.txt
 D  "test-output copy 2.txt"
 D  "test-output copy.txt"
 D  test-output.txt
@@ -2528,3 +2526,4 @@ D  vitest.override.config.ts
 D  vitest.setup.ts
 D  vitest.vitest.out.txt
 D  yarn.lock
+?? test-artifacts/overlay.changed.20251111165312.txt

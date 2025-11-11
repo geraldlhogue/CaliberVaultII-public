@@ -11,36 +11,32 @@ const mockValuationHistory = [
   { id: 'val1', estimated_value: 1500, created_at: '2024-01-01' },
   { id: 'val2', estimated_value: 1600, created_at: '2024-02-01' }
 ];
-
 // Mock Supabase with complete chain
 vi.mock('@/lib/supabase', () => {
-  let currentTable = '';
   let insertedData: any = null;
+  let currentTable = '';
   
   const createChain = (): any => {
     const chain: any = {
-      select: vi.fn(() => chain),
-      eq: vi.fn(() => chain),
-      ilike: vi.fn(() => chain),
-      order: vi.fn(() => chain),
-      update: vi.fn(() => chain),
-      insert: vi.fn((data: any) => {
+      select: vi.fn(function(this: any) { return this }),
+      eq: vi.fn(function(this: any) { return this }),
+      ilike: vi.fn(function(this: any) { return this }),
+      order: vi.fn(function(this: any) { return this }),
+      update: vi.fn(function(this: any) { return this }),
+      insert: vi.fn(function(this: any, data: any) {
         insertedData = data;
-        return {
-          select: vi.fn(() => ({
-            single: vi.fn(() => 
-              Promise.resolve({ 
-                data: { id: 'inv123', ...insertedData }, 
-                error: null 
-              })
-            )
-          }))
-        };
+        return this;
       }),
       single: vi.fn(() => {
         if (currentTable === 'valuation_history') {
           return Promise.resolve({ 
             data: { id: 'val123', estimated_value: 1500 }, 
+            error: null 
+          });
+        }
+        if (currentTable === 'inventory' || currentTable === 'inventory_base') {
+          return Promise.resolve({ 
+            data: { id: 'inv123', ...insertedData }, 
             error: null 
           });
         }
@@ -50,7 +46,7 @@ vi.mock('@/lib/supabase', () => {
         });
       }),
       then: (resolve: any) => {
-        if (currentTable === 'inventory_base') {
+        if (currentTable === 'inventory' || currentTable === 'inventory_base') {
           return Promise.resolve({ data: mockInventoryItems, error: null }).then(resolve);
         }
         if (currentTable === 'valuation_history') {
@@ -72,6 +68,7 @@ vi.mock('@/lib/supabase', () => {
   
   return { supabase };
 });
+
 
 vi.mock('sonner', () => ({
   toast: {
