@@ -1,1 +1,1 @@
-scripts/run_full_with_gates.sh: line 29: tsc: command not found
+scripts/run_full_with_gates.sh: line 25: tsc: command not found
