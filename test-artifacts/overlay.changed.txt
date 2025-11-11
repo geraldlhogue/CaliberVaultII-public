@@ -1,14 +1,7 @@
-A  CONFIRMATION_REPORT.md
-A  TEST_FIXES_NOV11_2024_FINAL.md
-M  scripts/famous_full_pipeline.sh
-A  scripts/overlay_with_logging.sh
-A  scripts/pipeline_force_publish.sh
+M  "Consolidated Development Standards-Rork.pdf"
+A  "Consolidated Development Standards-Rork.pdf.zip"
+D  "Word-Form-Documentation/Standards Document for designing 3rd Normal PWA Apps.pdf"
+A  scripts/pipeline_publish_always.sh
 M  scripts/publish_public.sh
 M  scripts/run_all_tests.sh
-A  scripts/sync_check.sh
-M  scripts/verify_public.sh
-M  src/services/__tests__/categoryServices.test.ts
-M  src/services/__tests__/inventory.service.enhanced.test.ts
-MM test-artifacts/overlay.changed.txt
-M  test-artifacts/tsc.out.txt
-M  test-artifacts/vitest.out.txt
+ M test-artifacts/overlay.changed.txt
