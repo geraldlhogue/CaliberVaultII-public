@@ -22,7 +22,11 @@ vi.mock('@/lib/supabase', () => ({
       const mockData: any = {
         categories: { id: 'cat123', name: 'firearms' },
         manufacturers: { id: 'mfg123', name: 'Test Mfg' },
-        inventory_base: { id: 'inv123', name: 'Test Item', category: 'firearms' },
+        inventory_base: [
+          { id: 'inv123', name: 'Test Item', category: 'firearms' },
+          { id: '1', name: 'Item 1', category: 'firearms' },
+          { id: '2', name: 'Item 2', category: 'ammunition' }
+        ],
         valuation_history: [
           { id: 'val1', estimated_value: 1500, created_at: '2024-01-01' },
           { id: 'val2', estimated_value: 1600, created_at: '2024-02-01' }
@@ -33,15 +37,21 @@ vi.mock('@/lib/supabase', () => ({
         select: vi.fn(() => chain),
         eq: vi.fn(() => chain),
         ilike: vi.fn(() => chain),
-        single: vi.fn(() => Promise.resolve({ data: mockData[table] || { id: 'inv123' }, error: null })),
+        single: vi.fn(() => Promise.resolve({ 
+          data: Array.isArray(mockData[table]) ? mockData[table][0] : mockData[table] || { id: 'inv123' }, 
+          error: null 
+        })),
         insert: vi.fn(() => chain),
         update: vi.fn(() => chain),
-        order: vi.fn(() => Promise.resolve({ data: mockData[table] || [], error: null }))
+        order: vi.fn(() => Promise.resolve({ 
+          data: Array.isArray(mockData[table]) ? mockData[table] : mockData[table] ? [mockData[table]] : [], 
+          error: null 
+        }))
       };
       return chain;
     })
   }
-}));
+}))
 
 vi.mock('sonner', () => ({
   toast: {
