@@ -191,3 +191,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     </AuthContext.Provider>
   );
 }
+
+// Export both default and named for test compatibility
+export default AuthProvider;
