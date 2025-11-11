@@ -1518,10 +1518,10 @@
   resolved "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.0.0-beta.27.tgz"
   integrity sha512-+d0F4MKMCbeVUJwG96uQ4SgAznZNSq93I3V+9NHA4OpvqG8mRCpGdKmK8l/dl02h2CCDHwW2FqilnTyDcAnqjA==
 
-"@rollup/rollup-darwin-arm64@4.53.1":
-  version "4.53.1"
-  resolved "https://registry.npmjs.org/@rollup/rollup-darwin-arm64/-/rollup-darwin-arm64-4.53.1.tgz"
-  integrity sha512-usmzIgD0rf1syoOZ2WZvy8YpXK5G1V3btm3QZddoGSa6mOgfXWkkv+642bfUUldomgrbiLQGrPryb7DXLovPWQ==
+"@rollup/rollup-darwin-arm64@4.53.2":
+  version "4.53.2"
+  resolved "https://registry.npmjs.org/@rollup/rollup-darwin-arm64/-/rollup-darwin-arm64-4.53.2.tgz"
+  integrity sha512-A6s4gJpomNBtJ2yioj8bflM2oogDwzUiMl2yNJ2v9E7++sHrSrsQ29fOfn5DM/iCzpWcebNYEdXpaK4tr2RhfQ==
 
 "@sentry-internal/feedback@7.120.4":
   version "7.120.4"
@@ -5427,34 +5427,34 @@ robots-parser@^3.0.1:
   integrity sha512-s+pyvQeIKIZ0dx5iJiQk1tPLJAWln39+MI5jtM8wnyws+G5azk+dMnMX0qfbqNetKKNgcWWOdi0sfm+FbQbgdQ==
 
 rollup@^4.20.0:
-  version "4.53.1"
-  resolved "https://registry.npmjs.org/rollup/-/rollup-4.53.1.tgz"
-  integrity sha512-n2I0V0lN3E9cxxMqBCT3opWOiQBzRN7UG60z/WDKqdX2zHUS/39lezBcsckZFsV6fUTSnfqI7kHf60jDAPGKug==
+  version "4.53.2"
+  resolved "https://registry.npmjs.org/rollup/-/rollup-4.53.2.tgz"
+  integrity sha512-MHngMYwGJVi6Fmnk6ISmnk7JAHRNF0UkuucA0CUW3N3a4KnONPEZz+vUanQP/ZC/iY1Qkf3bwPWzyY84wEks1g==
   dependencies:
     "@types/estree" "1.0.8"
   optionalDependencies:
-    "@rollup/rollup-android-arm-eabi" "4.53.1"
-    "@rollup/rollup-android-arm64" "4.53.1"
-    "@rollup/rollup-darwin-arm64" "4.53.1"
-    "@rollup/rollup-darwin-x64" "4.53.1"
-    "@rollup/rollup-freebsd-arm64" "4.53.1"
-    "@rollup/rollup-freebsd-x64" "4.53.1"
-    "@rollup/rollup-linux-arm-gnueabihf" "4.53.1"
-    "@rollup/rollup-linux-arm-musleabihf" "4.53.1"
-    "@rollup/rollup-linux-arm64-gnu" "4.53.1"
-    "@rollup/rollup-linux-arm64-musl" "4.53.1"
-    "@rollup/rollup-linux-loong64-gnu" "4.53.1"
-    "@rollup/rollup-linux-ppc64-gnu" "4.53.1"
-    "@rollup/rollup-linux-riscv64-gnu" "4.53.1"
-    "@rollup/rollup-linux-riscv64-musl" "4.53.1"
-    "@rollup/rollup-linux-s390x-gnu" "4.53.1"
-    "@rollup/rollup-linux-x64-gnu" "4.53.1"
-    "@rollup/rollup-linux-x64-musl" "4.53.1"
-    "@rollup/rollup-openharmony-arm64" "4.53.1"
-    "@rollup/rollup-win32-arm64-msvc" "4.53.1"
-    "@rollup/rollup-win32-ia32-msvc" "4.53.1"
-    "@rollup/rollup-win32-x64-gnu" "4.53.1"
-    "@rollup/rollup-win32-x64-msvc" "4.53.1"
+    "@rollup/rollup-android-arm-eabi" "4.53.2"
+    "@rollup/rollup-android-arm64" "4.53.2"
+    "@rollup/rollup-darwin-arm64" "4.53.2"
+    "@rollup/rollup-darwin-x64" "4.53.2"
+    "@rollup/rollup-freebsd-arm64" "4.53.2"
+    "@rollup/rollup-freebsd-x64" "4.53.2"
+    "@rollup/rollup-linux-arm-gnueabihf" "4.53.2"
+    "@rollup/rollup-linux-arm-musleabihf" "4.53.2"
+    "@rollup/rollup-linux-arm64-gnu" "4.53.2"
+    "@rollup/rollup-linux-arm64-musl" "4.53.2"
+    "@rollup/rollup-linux-loong64-gnu" "4.53.2"
+    "@rollup/rollup-linux-ppc64-gnu" "4.53.2"
+    "@rollup/rollup-linux-riscv64-gnu" "4.53.2"
+    "@rollup/rollup-linux-riscv64-musl" "4.53.2"
+    "@rollup/rollup-linux-s390x-gnu" "4.53.2"
+    "@rollup/rollup-linux-x64-gnu" "4.53.2"
+    "@rollup/rollup-linux-x64-musl" "4.53.2"
+    "@rollup/rollup-openharmony-arm64" "4.53.2"
+    "@rollup/rollup-win32-arm64-msvc" "4.53.2"
+    "@rollup/rollup-win32-ia32-msvc" "4.53.2"
+    "@rollup/rollup-win32-x64-gnu" "4.53.2"
+    "@rollup/rollup-win32-x64-msvc" "4.53.2"
     fsevents "~2.3.2"
 
 rrweb-cssom@^0.7.1:
