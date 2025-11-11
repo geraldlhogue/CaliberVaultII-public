@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { batchOperationsService } from '../BatchOperationsService';
-import * as categoryServices from '../../category';
 
+// Mock all category services
 vi.mock('../../category', () => ({
   firearmsService: {
     create: vi.fn(),
@@ -14,24 +14,73 @@ vi.mock('../../category', () => ({
     update: vi.fn(),
     delete: vi.fn(),
     getById: vi.fn()
+  },
+  opticsService: {
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    getById: vi.fn()
+  },
+  magazinesService: {
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    getById: vi.fn()
+  },
+  accessoriesService: {
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    getById: vi.fn()
+  },
+  suppressorsService: {
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    getById: vi.fn()
+  },
+  reloadingService: {
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    getById: vi.fn()
+  },
+  casesService: {
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    getById: vi.fn()
+  },
+  primersService: {
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    getById: vi.fn()
+  },
+  powderService: {
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    getById: vi.fn()
   }
 }));
 
 describe('BatchOperationsService', () => {
   const userId = 'test-user-123';
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.clearAllMocks();
   });
 
   describe('bulkCreate', () => {
     it('should create multiple items successfully', async () => {
+      const { firearmsService } = await import('../../category');
       const items = [
         { name: 'Item 1' },
         { name: 'Item 2' }
       ];
 
-      vi.mocked(categoryServices.firearmsService.create)
+      vi.mocked(firearmsService.create)
         .mockResolvedValueOnce({ id: '1', ...items[0] })
         .mockResolvedValueOnce({ id: '2', ...items[1] });
 
@@ -44,12 +93,13 @@ describe('BatchOperationsService', () => {
     });
 
     it('should handle partial failures', async () => {
+      const { firearmsService } = await import('../../category');
       const items = [
         { name: 'Item 1' },
         { name: 'Item 2' }
       ];
 
-      vi.mocked(categoryServices.firearmsService.create)
+      vi.mocked(firearmsService.create)
         .mockResolvedValueOnce({ id: '1', ...items[0] })
         .mockRejectedValueOnce(new Error('Creation failed'));
 
@@ -64,22 +114,24 @@ describe('BatchOperationsService', () => {
 
   describe('bulkDelete', () => {
     it('should delete multiple items', async () => {
-      vi.mocked(categoryServices.firearmsService.delete).mockResolvedValue(undefined);
+      const { firearmsService } = await import('../../category');
+      vi.mocked(firearmsService.delete).mockResolvedValue(undefined);
 
       const result = await batchOperationsService.bulkDelete('firearms', ['1', '2'], userId);
 
       expect(result.success).toBe(true);
       expect(result.successCount).toBe(2);
-      expect(categoryServices.firearmsService.delete).toHaveBeenCalledTimes(2);
+      expect(firearmsService.delete).toHaveBeenCalledTimes(2);
     });
   });
 
   describe('bulkDuplicate', () => {
     it('should duplicate items', async () => {
+      const { firearmsService } = await import('../../category');
       const original = { id: '1', name: 'Original', created_at: '2024-01-01', updated_at: '2024-01-01' };
       
-      vi.mocked(categoryServices.firearmsService.getById).mockResolvedValue(original);
-      vi.mocked(categoryServices.firearmsService.create).mockResolvedValue({ 
+      vi.mocked(firearmsService.getById).mockResolvedValue(original);
+      vi.mocked(firearmsService.create).mockResolvedValue({ 
         id: '2', 
         name: 'Original (Copy)' 
       });
@@ -88,7 +140,7 @@ describe('BatchOperationsService', () => {
 
       expect(result.success).toBe(true);
       expect(result.successCount).toBe(1);
-      expect(categoryServices.firearmsService.create).toHaveBeenCalledWith(
+      expect(firearmsService.create).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'Original (Copy)' }),
         userId
       );

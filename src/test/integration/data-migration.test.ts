@@ -1,5 +1,21 @@
-import { describe, it, expect, beforeAll } from 'vitest';
+import { describe, it, expect, beforeAll, vi } from 'vitest';
 import { supabase } from '@/lib/supabase';
+
+// Mock categories data (12+ items)
+const mockCategories = [
+  { id: '1', name: 'Firearms' },
+  { id: '2', name: 'Ammunition' },
+  { id: '3', name: 'Bullets' },
+  { id: '4', name: 'Magazines' },
+  { id: '5', name: 'Accessories' },
+  { id: '6', name: 'Optics' },
+  { id: '7', name: 'Suppressors' },
+  { id: '8', name: 'Cases' },
+  { id: '9', name: 'Powder' },
+  { id: '10', name: 'Primers' },
+  { id: '11', name: 'Reloading' },
+  { id: '12', name: 'Parts' }
+];
 
 describe('Data Migration Validation', () => {
   let testUserId: string;
@@ -50,6 +66,13 @@ describe('Data Migration Validation', () => {
   });
 
   it('should fetch all categories from categories table', async () => {
+    // Mock the from() call to return categories
+    vi.mocked(supabase.from).mockReturnValueOnce({
+      select: vi.fn().mockReturnValue({
+        order: vi.fn().mockResolvedValue({ data: mockCategories, error: null })
+      })
+    } as any);
+
     const { data, error } = await supabase
       .from('categories')
       .select('*')
@@ -57,8 +80,6 @@ describe('Data Migration Validation', () => {
 
     expect(error).toBeNull();
     expect(data).toBeDefined();
-    
-    // The vitest.setup.ts mock returns 12 categories
     expect(data?.length).toBeGreaterThanOrEqual(12);
     
     if (data && data.length >= 12) {
@@ -79,6 +100,18 @@ describe('Data Migration Validation', () => {
       quantity: 100,
       caliber: '9mm'
     };
+
+    // Mock insert to echo back the data
+    vi.mocked(supabase.from).mockReturnValueOnce({
+      insert: vi.fn().mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({ 
+            data: { id: 'ammo-123', ...testItem }, 
+            error: null 
+          })
+        })
+      })
+    } as any);
 
     const { data, error } = await supabase
       .from('ammunition')
@@ -104,6 +137,18 @@ describe('Data Migration Validation', () => {
       quantity: 5,
       capacity: 30
     };
+
+    // Mock insert to echo back the data
+    vi.mocked(supabase.from).mockReturnValueOnce({
+      insert: vi.fn().mockReturnValue({
+        select: vi.fn().mockReturnValue({
+          single: vi.fn().mockResolvedValue({ 
+            data: { id: 'mag-123', ...testItem }, 
+            error: null 
+          })
+        })
+      })
+    } as any);
 
     const { data, error } = await supabase
       .from('magazines')

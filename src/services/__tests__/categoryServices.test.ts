@@ -2,24 +2,33 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { firearmsService } from '../category/FirearmsService';
 import { ammunitionService } from '../category/AmmunitionService';
 
-// Mock Supabase
+// Mock Supabase with full query builder chain
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     from: vi.fn(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({ data: { id: '123', name: 'Test Item' }, error: null }))
+          single: vi.fn(() => Promise.resolve({ 
+            data: { id: '123', name: 'Test Item' }, 
+            error: null 
+          }))
         }))
       })),
       insert: vi.fn(() => ({
         select: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({ data: { id: '123', name: 'Test Item' }, error: null }))
+          single: vi.fn(() => Promise.resolve({ 
+            data: { id: '123', name: 'Test Item' }, 
+            error: null 
+          }))
         }))
       })),
       update: vi.fn(() => ({
         eq: vi.fn(() => ({
           select: vi.fn(() => ({
-            single: vi.fn(() => Promise.resolve({ data: { id: '123', name: 'Updated Item' }, error: null }))
+            single: vi.fn(() => Promise.resolve({ 
+              data: { id: '123', name: 'Updated Item' }, 
+              error: null 
+            }))
           }))
         }))
       }))
