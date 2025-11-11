@@ -1,35 +1,26 @@
+#!/usr/bin/env bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 LOG="$ROOT/test-artifacts"
 OUT_V="$LOG/vitest.out.txt"
 OUT_T="$LOG/tsc.out.txt"
 mkdir -p "$LOG"
-date +"%Y-%m-%d %H:%M:%S" | sed 's/.*/[tests] start &/' | tee -a "$LOG/tests.log"
+echo "$(date '+%F %T') [tests] start" | tee -a "$LOG/tests.log"
 cd "$ROOT"
-rm -rf "$ROOT/.vitest" "$ROOT/.vite" "$ROOT/node_modules/.vitest" "$ROOT/node_modules/.vite" "$ROOT/coverage" || true
-echo "[deps] installing" | tee -a "$LOG/tests.log"
+rm -rf .vitest .vite node_modules/.vitest node_modules/.vite coverage || true
+echo "$(date '+%F %T') [deps] installing" | tee -a "$LOG/tests.log"
 npm config set fund false
 npm config set audit false
 npm config set progress false
 if [ -f package-lock.json ]; then npm ci --loglevel=warn; else npm install --loglevel=warn; fi
-echo "[tsc] checking" | tee -a "$LOG/tests.log"
+echo "$(date '+%F %T') [tsc] checking" | tee -a "$LOG/tests.log"
 set +e
-tsc -b || tsc -p "$ROOT/commons.json"
+tsc -b >"$OUT_T" 2>&1 || tsc -p "$ROOT/commons.json" >"$OUT_T" 2>&1
 set -e
-echo "[vitest] starting" | tee -a "$LOG/tests.log"
-rm -f "$OUT_V"
-(
-  while true; do
-    if pgrep -f "node .*vitest" >/dev/null 2>&1; then
-      printf "%s [heartbeat] " "$(date '+%H:%M:%S')" >> "$LOG/tests.log"
-      tail -n1 "$OUT_V" >> "$LOG/tests.log" 2>/dev/null || true
-    fi
-    sleep 15
-  done
-) &
-HB=$!
-npx vitest run -c "$ROOT/vitest.override.ts" --reporter=verbose | tee "$OUT_V"; RC=${PIPELINES+0}
-kill "$HB" >/dev/null 2>&1 || true
-echo "$(date '+%Y-%m-%d %H:%M:%S') [vitest] exit=$RC" | tee -a "$LOG/tests.log"
-echo "$(date '+%Y-%m-%d %H:%M:%S') [tests] done" | tee -a "$LOG/tests.log"
-exit 0
+echo "$(date '+%F %T') [vitest] running" | tee -a "$LOG/tests.log"
+set +e
+npx vitest run -c "$ROOT/vitest.override.ts" --reporter=verbose | tee "$OUT_V"
+RC=${PIPESTATUS[0]}
+set -e
+echo "$(date '+%F %T') [vitest] exit=$RC" | tee -a "$LOG/tests.log"
+exit "$RC"

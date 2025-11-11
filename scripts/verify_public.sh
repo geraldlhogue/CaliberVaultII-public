@@ -1,17 +1,13 @@
+#!/usr/bin/env bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 LOG="$ROOT/test-artifacts"
+STAMP="$(date +%s)"
 RAW="https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main"
-OUT="$LOG/verify.$(date +%s).log"
+OUT="$LOG/verify.$STAMP.log"
 mkdir -p "$LOG"
 echo "[verify] start" | tee -a "$OUT"
-urls=(
-  "$RAW/src/test/vitest.setup.ts"
-  "$RAW/vitest.override.ts"
-  "$RAW/test-artifacts/tsc.out.txt"
-  "$RAW/test-artifacts/vitest.out.txt"
-)
-for u in "${urls[@]}"; do
+for u in "$RAW/src/test/vitest.setup.ts" "$RAW/vitest.override.ts" "$RAW/test-artifacts/vitest.out.txt"; do
   c=$(curl -s -o /dev/null -w "%{http_code}" "$u")
   echo "[verify] $c $u" | tee -a "$OUT"
 done

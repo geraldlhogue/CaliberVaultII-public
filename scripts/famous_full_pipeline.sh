@@ -1,12 +1,16 @@
+#!/usr/bin/env bash
 set -euo pipefail
-OV="${1:-}"
+OV="${1:?Usage: $0 /path/to/OV}"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 LOG="$ROOT/test-artifacts"
 mkdir -p "$LOG"
-echo "[pipeline] start OV=$OV" | tee -a "$LOG/pipeline.log"
-node "$ROOT/scripts/ornaments.js" >/dev/null 2>&1 || true
-node "$ROOT/scripts/overlay_with_logging.mjs" "$OV" | tee "$LOG/overlay.$(date +%s).log"
-bash -e "$ROOT/scripts/run_all_tests.js"       | tee "$LOG/run.$(date +%s).log"
-bash -e "$ROOT/scripts/publish_public.sh"      | tee "$LOG/publish.$(date +%s).log"
-bash -e "$ROOT/scripts/verify_public.js"       | tee "$LOG/verify.$(date +%s).log"
-echo "[pipeline] done" | tee -a "$LOG/pipeline.log"
+echo "$(date '+%F %T') [pipeline] start OV=$OV" | tee -a "$LOG/pipeline.log"
+bash "$ROOT/scripts/overlay_with_logging.sh" "$OV" | tee "$LOG/overlay.$(date +%s).log"
+if bash "$ROOT/scripts/run_all_tests.sh" | tee "$LOG/run.$(date +%s).log"; then
+  bash "$ROOT/scripts/publish_public.sh" | tee "$LOG/publish.$(date +%s).log"
+  bash "$ROOT/scripts/verify_public.sh"  | tee "$LOG/verify.$(date +%s).log"
+  echo "$(date '+%F %T') [pipeline] done (published)" | tee -a "$LOG/pipeline.log"
+else
+  echo "$(date '+000') [pipeline] tests failed — not publishing. See $LOG/vitest.out.txt" | tee -a "$LOG/pipeline.log"
+  exit 1
+fi

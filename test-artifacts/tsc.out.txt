@@ -1,1 +1,1 @@
-scripts/run_full_with_gates.sh: line 25: tsc: command not found
+/Users/ghogue/Desktop/CaliberVaultII/scripts/run_all_tests.sh: line 18: tsc: command not found

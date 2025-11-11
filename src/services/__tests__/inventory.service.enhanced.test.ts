@@ -15,64 +15,63 @@ const mockValuationHistory = [
 // Mock Supabase with complete chain
 vi.mock('@/lib/supabase', () => {
   let currentTable = '';
+  let insertedData: any = null;
+  
+  const createChain = (): any => {
+    const chain: any = {
+      select: vi.fn(() => chain),
+      eq: vi.fn(() => chain),
+      ilike: vi.fn(() => chain),
+      order: vi.fn(() => chain),
+      update: vi.fn(() => chain),
+      insert: vi.fn((data: any) => {
+        insertedData = data;
+        return {
+          select: vi.fn(() => ({
+            single: vi.fn(() => 
+              Promise.resolve({ 
+                data: { id: 'inv123', ...insertedData }, 
+                error: null 
+              })
+            )
+          }))
+        };
+      }),
+      single: vi.fn(() => {
+        if (currentTable === 'valuation_history') {
+          return Promise.resolve({ 
+            data: { id: 'val123', estimated_value: 1500 }, 
+            error: null 
+          });
+        }
+        return Promise.resolve({ 
+          data: { id: 'inv123', ...insertedData }, 
+          error: null 
+        });
+      }),
+      then: (resolve: any) => {
+        if (currentTable === 'inventory_base') {
+          return Promise.resolve({ data: mockInventoryItems, error: null }).then(resolve);
+        }
+        if (currentTable === 'valuation_history') {
+          return Promise.resolve({ data: mockValuationHistory, error: null }).then(resolve);
+        }
+        return Promise.resolve({ data: [], error: null }).then(resolve);
+      }
+    };
+    return chain;
+  };
   
   const supabase = {
     from: vi.fn((table: string) => {
       currentTable = table;
-      const chain: any = {
-        select: vi.fn(() => chain),
-        eq: vi.fn(() => chain),
-        ilike: vi.fn(() => chain),
-        order: vi.fn(() => chain),
-        insert: vi.fn(() => {
-          // For insert operations, return a chain that resolves with the inserted data
-          return {
-            select: vi.fn(() => ({
-              single: vi.fn(() => {
-                if (currentTable === 'inventory_base') {
-                  return Promise.resolve({ 
-                    data: { id: 'inv123', name: 'Test Item', category: 'firearms' }, 
-                    error: null 
-                  });
-                }
-                return Promise.resolve({ data: { id: 'inv123' }, error: null });
-              })
-            }))
-          };
-        }),
-        update: vi.fn(() => chain),
-        single: vi.fn(() => {
-          if (currentTable === 'inventory_base') {
-            return Promise.resolve({ 
-              data: { id: 'inv123', name: 'Test Item', category: 'firearms' }, 
-              error: null 
-            });
-          }
-          if (currentTable === 'valuation_history') {
-            return Promise.resolve({ 
-              data: { id: 'val123', estimated_value: 1500 }, 
-              error: null 
-            });
-          }
-          return Promise.resolve({ data: { id: 'inv123' }, error: null });
-        }),
-        then: (resolve: any) => {
-          if (currentTable === 'inventory_base') {
-            return Promise.resolve({ data: mockInventoryItems, error: null }).then(resolve);
-          }
-          if (currentTable === 'valuation_history') {
-            return Promise.resolve({ data: mockValuationHistory, error: null }).then(resolve);
-          }
-          return Promise.resolve({ data: [], error: null }).then(resolve);
-        }
-      };
-      return chain;
+      insertedData = null;
+      return createChain();
     })
   };
   
   return { supabase };
 });
-
 
 vi.mock('sonner', () => ({
   toast: {
@@ -137,15 +136,13 @@ describe('InventoryService - Enhanced Tests', () => {
 
     it('returns empty array when no items found', async () => {
       const { supabase } = await import('@/lib/supabase');
-      vi.mocked(supabase.from).mockReturnValueOnce({
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            order: vi.fn().mockReturnValue({
-              then: (resolve: any) => Promise.resolve({ data: [], error: null }).then(resolve)
-            })
-          })
-        })
-      } as any);
+      const emptyChain: any = {
+        select: vi.fn(function(this: any) { return this }),
+        eq: vi.fn(function(this: any) { return this }),
+        order: vi.fn(function(this: any) { return this }),
+        then: (resolve: any) => Promise.resolve({ data: [], error: null }).then(resolve)
+      };
+      vi.mocked(supabase.from).mockReturnValueOnce(emptyChain);
 
       const result = await inventoryService.getItems('user123');
       expect(result).toEqual([]);

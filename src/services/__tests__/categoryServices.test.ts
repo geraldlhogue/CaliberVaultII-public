@@ -4,17 +4,20 @@ import { ammunitionService } from '../category/AmmunitionService';
 
 // Mock Supabase with full query builder chain
 vi.mock('@/lib/supabase', () => {
-  const createQueryChain = () => ({
-    select: vi.fn(() => createQueryChain()),
-    eq: vi.fn(() => createQueryChain()),
-    single: vi.fn(() => Promise.resolve({ 
-      data: { id: '123', name: 'Test Item' }, 
-      error: null 
-    })),
-    insert: vi.fn(() => createQueryChain()),
-    update: vi.fn(() => createQueryChain()),
-    delete: vi.fn(() => createQueryChain())
-  });
+  const createQueryChain = (): any => {
+    const chain: any = {
+      select: vi.fn(() => chain),
+      eq: vi.fn(() => chain),
+      single: vi.fn(() => Promise.resolve({ 
+        data: { id: '123', name: 'Test Item' }, 
+        error: null 
+      })),
+      insert: vi.fn(() => chain),
+      update: vi.fn(() => chain),
+      delete: vi.fn(() => chain)
+    };
+    return chain;
+  };
 
   return {
     supabase: {

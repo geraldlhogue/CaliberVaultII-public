@@ -1,19 +1,14 @@
-A  "AI review GIT and FIx.pdf"
-A  "Consolidated Development Standards-Rork.pdf"
-A  TEST_FIXES_NOV11_2024_COMPLETE.md
-A  VERIFICATION_CONFIRMATION.md
-M  "Word-Form-Documentation/Standards Document for designing 3rd Normal PWA Apps.docx"
-A  "Word-Form-Documentation/Standards Document for designing 3rd Normal PWA Apps.pdf"
-A  "Word-Form-Documentation/Standards Document for designing 3rd Normal PWA Apps/Backup of Standards Document for designing 3rd Normal PWA Apps.docx"
-A  "Word-Form-Documentation/~$andards Document for designing 3rd Normal PWA Apps.docx"
-A  "m => { execSync() }"
-M  package-lock.json
+A  CONFIRMATION_REPORT.md
+A  TEST_FIXES_NOV11_2024_FINAL.md
 M  scripts/famous_full_pipeline.sh
-A  scripts/overlay_with_logging.mjs
+A  scripts/overlay_with_logging.sh
+A  scripts/pipeline_force_publish.sh
 M  scripts/publish_public.sh
 M  scripts/run_all_tests.sh
+A  scripts/sync_check.sh
 M  scripts/verify_public.sh
 M  src/services/__tests__/categoryServices.test.ts
 M  src/services/__tests__/inventory.service.enhanced.test.ts
-M  src/services/inventory/__tests__/BatchOperationsService.test.ts
-M  src/test/integration/data-migration.test.ts
+MM test-artifacts/overlay.changed.txt
+M  test-artifacts/tsc.out.txt
+M  test-artifacts/vitest.out.txt

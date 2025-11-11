@@ -1,7 +1,9 @@
+#!/usr/bin/env bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 LOG="$ROOT/test-artifacts"
-echo "[publish] start" | tee -a "$LOG/publish.$(date +%s).log"
+STAMP="$(date +%s)"
+echo "[publish] start" | tee -a "$LOG/publish.$STAMP.log"
 cd "$ROOT"
 git add -A
 git commit -m "Automated publish $(date -u +%Y-%m-%dT%H:%M:%SZ)" || true
@@ -11,4 +13,4 @@ export GIT_TERMINAL_PROMPT=0
 export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/CaliberVaultII -o IdentitiesOnly=yes"
 ssh -T git@github.com || true
 git push -u public HEAD:main
-echo "[publish] pushed" | tee -a "$LOG/publish.$(date +%s).log"
+echo "[publish] pushed" | tee -a "$LOG/publish.$STAMP.log"
