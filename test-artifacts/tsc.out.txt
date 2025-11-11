@@ -1,1 +1,1 @@
-scripts/famous_full_pipeline_strict.sh: line 24: tsc: command not found
+scripts/run_full_with_gates.sh: line 29: tsc: command not found
