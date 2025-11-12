@@ -1,0 +1,7 @@
+A  TEST_FIXES_NOV11_2024_VITEST_SETUP_IMPROVEMENTS.md
+M  scripts/famous-memo.sh
+M  src/test/vitest.setup.ts
+A  test-artifacts/famous-memo.20251112023333.md
+A  test-artifacts/prev.stats
+A  test-artifacts/vitest.out.20251112023333.parse.txt
+?? test-artifacts/overlay.changed.1762915508.txt

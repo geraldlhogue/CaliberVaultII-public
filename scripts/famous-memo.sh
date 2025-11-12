@@ -5,11 +5,28 @@ RAW=https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main
 cd "$REPO"
 main_commit=$(git ls-remote --heads public 2>/dev/null | awk '/refs\/heads\/main$/{print $1}')
 vitest_sha256=$(curl -s "$RAW/test-artifacts/vitest.out.txt" | shasum -a 256 | awk '{print $1}')
-if [ -f test-artifacts/vitest.out.txt ]; then first3=$(head -n 3 test-artifacts/vitest.out.txt); last3=$(tail -n 3 test-artifacts/vitest.out.txt); else first3=$(curl -s "$RAW/test-artifacts/vitest.out.txt" | head -n 3); last3=$(curl -s "$RAW/test-artifacts/vitest.out.txt" | tail -n 3); fi
 ts=$(date -u +%Y%m%d%H%M%S)
 out="test-artifacts/famous-memo.$ts.md"
+local_log="test-artifacts/vitest.out.txt"
+work_log="test-artifacts/vitest.out.$ts.parse.txt"
+mkdir -p test-artifacts
+if [ -f "$local_log" ]; then cp "$local_log" "$work_log"; else curl -s "$RAW/test-artifacts/vitest.out.txt" -o "$work_log"; fi
+first3=$(head -n 3 "$work_log" || true)
+last3=$(tail -n 3 "$work_log" || true)
+# Robust count parser tolerant to minor format changes
+files_failed=$(awk '/^Test Files/{for(i=1;i<=NF;i++){if($i=="failed") f=$(i-1);}} END{print (f?f:0)}' "$work_log")
+files_passed=$(awk '/^Test Files/{for(i=1;i<=NF;i++){if($i=="passed") p=$(i-1);}} END{print (p?p:0)}' "$work_log")
+tests_failed=$(awk '/^Tests/{for(i=1;i<=NF;i++){if($i=="failed") f=$(i-1);}} END{print (f?f:0)}' "$work_log")
+tests_passed=$(awk '/^Tests/{for(i=1;i<=NF;i++){if($i=="passed") p=$(i-1);}} END{print (p?p:0)}' "$work_log")
+prev_stats="test-artifacts/prev.stats"
+if [ -f "$prev_stats" ]; then prev_tests_failed=$(grep "^tests_failed=" "$prev_stats" | cut -d"=" -f2); else prev_tests_failed=""; fi
+if [ -n "${prev_tests_failed:-}" ]; then
+  if [ "$tests_failed" -lt "$prev_tests_failed" ]; then delta=$((prev_tests_failed - tests_failed)); status="**Status:** Progress — '$delta' fewer failing tests than previous run."; elif [ "$tests_failed" -gt "$prev_tests_failed" ]; then delta=$((tests_failed - prev_tests_failed)); status="**Status:** Regression — '$delta' more failing tests than previous run."; else status="**Status:** No change — failing test count unchanged."; fi
+else status="**Status:** Baseline — no prior run to compare."; fi
 {
   echo "Subject: CaliberVaultII — consume these exact, current artifacts (run verified)"
+  echo
+  echo "$status"
   echo
   echo "Artifacts:"
   echo "- vitest.setup.ts"
@@ -20,8 +37,17 @@ out="test-artifacts/famous-memo.$ts.md"
   echo "  $RAW/test-artifacts/vitest.out.txt"
   echo
   echo "Verification values for this run"
-  echo "- main commit: $main_commit"
-  echo "- vitest.out.txt sha256: $vitest_sha256"
+  echo "- main commit: ''
+  echo "- vitest.out.txt sha256: ''
+  echo
+  echo "Summary counts from this run"
+  echo "- Test Files: '' failed
+|
+""
+passed' '  echo -
+Tests:
+""
+failed \| '' passed"
   echo
   echo "Please confirm you’re reviewing this exact run by replying with those two values and the first 3 and last 3 lines of vitest.out.txt."
   echo
@@ -36,7 +62,11 @@ out="test-artifacts/famous-memo.$ts.md"
   echo '```'
   echo
   echo "Notes:"
-  echo "- vitest.setup.ts is no longer frozen. If you need changes, include what changed and why in your drop notes; we’ll keep using your harness unless it clearly regresses other suites."
-  echo "- Tips for current reds: ensure Supabase builder ops are chainable (double .eq), API mocks return arrays/objects exactly as asserted and reject on error paths, expose auth.getSession/onAuthStateChange, and confirm UI exports (named vs default) match test imports."
+  echo "- vitest.setup.ts is no longer frozen. If you need changes, include what changed and why in your drop notes; we will keep using your harness unless it clearly regresses other suites."
+  echo "- Tips for current reds: ensure Supabase builder ops are chainable (double .eq), API mocks return arrays/objects exactly as asserted and reject on error paths, expose auth.getSession/onAuthStateChange, and confirm UI exports (named vs default) match test imports. Resolve 10s cache timeouts by using fake timers or lowering internal delays under NODE_ENV=test."
 } > "$out"
+printf "tests_failed=%s\n" "$tests_failed" > "$prev_stats"
+printf "tests_passed=%s\n" "$tests_passed" >> "$prev_stats"
+printf "files_failed=%s\n" "$files_failed" >> "$prev_stats"
+printf "files_passed=%s\n" "$files_passed" >> "$prev_stats"
 echo "Wrote memo: $out"
