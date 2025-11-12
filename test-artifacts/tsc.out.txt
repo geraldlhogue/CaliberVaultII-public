@@ -1,1 +1,1 @@
-zsh: command not found: tsc
+/Users/ghogue/Desktop/CaliberVaultII/scripts/pipeline.sh: line 26: tsc: command not found

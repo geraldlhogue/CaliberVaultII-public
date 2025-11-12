@@ -1,23 +1,27 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { firearmsService } from '../category/FirearmsService';
-import { ammunitionService } from '../category/AmmunitionService';
 
-// Mock Supabase with full query builder chain
+// Mock Supabase with full query builder chain - MUST be before imports
 vi.mock('@/lib/supabase', () => {
   const createQueryChain = (): any => {
     const chain: any = {
-      select: vi.fn(function(this: any) { return this }),
-      eq: vi.fn(function(this: any) { return this }),
+      select: vi.fn(),
+      eq: vi.fn(),
       single: vi.fn(() => Promise.resolve({ 
         data: { id: '123', name: 'Test Item' }, 
         error: null 
       })),
-      insert: vi.fn(function(this: any) { return this }),
-      update: vi.fn(function(this: any) { return this }),
-      delete: vi.fn(function(this: any) { return this })
+      insert: vi.fn(),
+      update: vi.fn(),
+      delete: vi.fn()
     };
-    // Make eq chainable with itself
-    chain.eq.mockImplementation(function(this: any) { return chain });
+    
+    // Make all methods chainable - return the same chain object
+    chain.select.mockImplementation(() => chain);
+    chain.eq.mockImplementation(() => chain);
+    chain.insert.mockImplementation(() => chain);
+    chain.update.mockImplementation(() => chain);
+    chain.delete.mockImplementation(() => chain);
+    
     return chain;
   };
 
@@ -28,8 +32,6 @@ vi.mock('@/lib/supabase', () => {
   };
 });
 
-
-
 vi.mock('@/lib/databaseErrorHandler', () => ({
   withDatabaseErrorHandling: vi.fn((fn) => fn())
 }));
@@ -37,6 +39,9 @@ vi.mock('@/lib/databaseErrorHandler', () => ({
 vi.mock('@/components/ui/use-toast', () => ({
   toast: vi.fn()
 }));
+
+import { firearmsService } from '../category/FirearmsService';
+import { ammunitionService } from '../category/AmmunitionService';
 
 describe('FirearmsService', () => {
   beforeEach(() => {

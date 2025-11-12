@@ -1,0 +1,5 @@
+M  .gitignore
+A  scripts/pipeline.sh
+M  src/services/__tests__/categoryServices.test.ts
+M  src/services/__tests__/inventory.service.enhanced.test.ts
+?? test-artifacts/overlay.changed.1762911474.txt
