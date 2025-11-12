@@ -1,0 +1,3 @@
+A  src/test/vitest.setup.backup.20251111175108
+M  src/test/vitest.setup.ts
+?? test-artifacts/overlay.changed.1762908670.txt
