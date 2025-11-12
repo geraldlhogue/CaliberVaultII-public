@@ -1,0 +1,3 @@
+M  src/test/vitest.setup.ts
+A  test-artifacts/famous-memo.20251112015943.md
+?? test-artifacts/overlay.changed.1762914591.txt
