@@ -1,0 +1,14 @@
+A  scripts/famous-memo.sh
+M  src/components/__tests__/AddItemModal.test.tsx
+M  src/components/__tests__/InventoryOperations.test.tsx
+M  src/components/__tests__/ItemCard.test.tsx
+M  src/components/__tests__/SmartInstallPrompt.test.tsx
+M  src/hooks/__tests__/useSubscription.test.ts
+M  src/lib/__tests__/barcodeCache.test.ts
+M  src/lib/__tests__/validation.test.ts
+M  src/services/__tests__/categoryServices.comprehensive.test.ts
+M  src/services/__tests__/inventory.service.enhanced.test.ts
+M  src/test/integration/api.test.ts
+M  src/test/integration/comprehensive-categories.test.ts
+M  src/test/vitest.setup.ts
+?? test-artifacts/overlay.changed.1762912650.txt

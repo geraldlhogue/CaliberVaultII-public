@@ -3,33 +3,34 @@ import { firearmsService } from '../category/FirearmsService';
 import { ammunitionService } from '../category/AmmunitionService';
 import { opticsService } from '../category/OpticsService';
 
-// Mock Supabase
-vi.mock('@/lib/supabase', () => ({
-  supabase: {
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({ data: { id: '123', name: 'Test' }, error: null }))
-        }))
+// Mock Supabase with proper chainable query builder
+vi.mock('@/lib/supabase', () => {
+  const createChainableBuilder = (): any => {
+    const builder: any = {
+      select: vi.fn(function(this: any) { return this }),
+      insert: vi.fn(function(this: any) { return this }),
+      update: vi.fn(function(this: any) { return this }),
+      delete: vi.fn(function(this: any) { return this }),
+      eq: vi.fn(function(this: any) { return this }),
+      single: vi.fn(() => Promise.resolve({ 
+        data: { id: '123', name: 'Test' }, 
+        error: null 
       })),
-      insert: vi.fn(() => ({
-        select: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({ data: { id: '123', name: 'Test' }, error: null }))
-        }))
-      })),
-      update: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          select: vi.fn(() => ({
-            single: vi.fn(() => Promise.resolve({ data: { id: '123', name: 'Updated' }, error: null }))
-          }))
-        }))
-      })),
-      delete: vi.fn(() => ({
-        eq: vi.fn(() => Promise.resolve({ error: null }))
-      }))
-    }))
-  }
-}));
+      then: (onFulfilled: any) => Promise.resolve({ 
+        data: { id: '123', name: 'Test' }, 
+        error: null 
+      }).then(onFulfilled)
+    };
+    return builder;
+  };
+
+  return {
+    supabase: {
+      from: vi.fn(() => createChainableBuilder())
+    }
+  };
+});
+
 
 vi.mock('@/lib/databaseErrorHandler', () => ({
   withDatabaseErrorHandling: vi.fn(async (fn) => {

@@ -5,13 +5,23 @@ import { AddItemModal } from '../inventory/AddItemModal';
 vi.mock('@/lib/supabase', () => ({
   supabase: {
     from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => Promise.resolve({ data: [], error: null })),
-        order: vi.fn(() => Promise.resolve({ data: [], error: null }))
+      select: vi.fn().mockReturnThis(),
+      eq: vi.fn().mockReturnThis(),
+      order: vi.fn().mockReturnThis(),
+      then: (onFulfilled: any) => Promise.resolve({ data: [], error: null }).then(onFulfilled)
+    })),
+    auth: {
+      getSession: vi.fn(() => Promise.resolve({ 
+        data: { session: { user: { id: 'user-1' } } }, 
+        error: null 
+      })),
+      onAuthStateChange: vi.fn(() => ({ 
+        data: { subscription: { unsubscribe: vi.fn() } } 
       }))
-    }))
+    }
   }
 }));
+
 
 describe('AddItemModal', () => {
   it('should render when open', () => {

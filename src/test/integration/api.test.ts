@@ -19,56 +19,64 @@ describe('API Integration Tests', () => {
         { id: '2', name: 'Item 2' }
       ];
 
-      vi.mocked(supabase.from).mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: mockData, error: null })
-      } as any);
+      const mockChain = {
+        select: vi.fn().mockReturnThis(),
+        then: (onFulfilled: any) => Promise.resolve({ data: mockData, error: null }).then(onFulfilled)
+      };
+      vi.mocked(supabase.from).mockReturnValue(mockChain as any);
 
       const result = await apiService.getAll();
       expect(result).toEqual(mockData);
+
     });
 
     it('creates item via API', async () => {
       const newItem = { name: 'New Item', category: 'firearms' };
       
-      vi.mocked(supabase.from).mockReturnValue({
-        insert: vi.fn().mockResolvedValue({ data: newItem, error: null }),
+      const mockChain = {
+        insert: vi.fn().mockReturnThis(),
         select: vi.fn().mockReturnThis(),
-        single: vi.fn().mockResolvedValue({ data: newItem, error: null })
-      } as any);
+        single: vi.fn(() => Promise.resolve({ data: newItem, error: null }))
+      };
+      vi.mocked(supabase.from).mockReturnValue(mockChain as any);
 
       const result = await apiService.create(newItem);
       expect(result).toEqual(newItem);
     });
 
-    it('handles API errors gracefully', async () => {
-      vi.mocked(supabase.from).mockReturnValue({
-        select: vi.fn().mockResolvedValue({ 
-          data: null, 
-          error: { message: 'API Error' } 
-        })
-      } as any);
 
-      await expect(apiService.getAll()).rejects.toThrow();
+    it('handles API errors gracefully', async () => {
+      const mockChain = {
+        select: vi.fn().mockReturnThis(),
+        then: () => Promise.reject(new Error('API Error'))
+      };
+      vi.mocked(supabase.from).mockReturnValue(mockChain as any);
+
+      await expect(apiService.getAll()).rejects.toThrow('API Error');
     });
   });
+
 
   describe('Real-time Subscriptions', () => {
     it('subscribes to inventory changes', async () => {
       const callback = vi.fn();
       
-      const mockSubscription = {
-        subscribe: vi.fn().mockReturnValue({
-          on: vi.fn().mockReturnThis(),
-          subscribe: vi.fn()
-        })
+      const mockChannel = {
+        on: vi.fn().mockReturnThis(),
+        subscribe: vi.fn()
       };
 
-      vi.mocked(supabase.channel).mockReturnValue(mockSubscription as any);
+      // Mock supabase.channel if it doesn't exist
+      if (!supabase.channel) {
+        (supabase as any).channel = vi.fn();
+      }
+      vi.mocked(supabase.channel).mockReturnValue(mockChannel as any);
 
       await apiService.subscribeToChanges(callback);
-      expect(mockSubscription.subscribe).toHaveBeenCalled();
+      expect(mockChannel.subscribe).toHaveBeenCalled();
     });
   });
+
 
   describe('Batch Operations', () => {
     it('performs batch insert', async () => {

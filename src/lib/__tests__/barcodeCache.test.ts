@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, afterAll } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
+
 import 'fake-indexeddb/auto';
 import { BarcodeCacheManager, nukeBarcodeDb } from '../barcodeCache';
 
@@ -6,15 +7,18 @@ describe('BarcodeCacheManager', () => {
   let cacheManager: BarcodeCacheManager;
 
   beforeEach(async () => {
+    vi.useFakeTimers();
     await nukeBarcodeDb();
     cacheManager = new BarcodeCacheManager();
     await cacheManager.init();
   });
 
   afterAll(async () => {
+    vi.useRealTimers();
     await cacheManager.dispose();
     await nukeBarcodeDb();
   });
+
 
   it('initializes cache manager', () => {
     expect(cacheManager).toBeDefined();

@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { validateEmail, validatePhone, validateURL, validateRequired } from '../validation/schemas';
+import { validateEmail, validatePhone, validateURL, validateRequired } from '../validation';
+
 
 describe('validation utilities', () => {
   describe('validateEmail', () => {

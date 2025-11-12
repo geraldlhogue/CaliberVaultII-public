@@ -42,11 +42,16 @@ vi.mock('@/lib/supabase', () => {
             error: null 
           });
         }
+        // Return inv123 to match test expectations
+        const resultData = this._insertData 
+          ? { id: 'inv123', ...this._insertData }
+          : { id: 'inv123' };
         return Promise.resolve({ 
-          data: { id: 'inv123', ...this._insertData }, 
+          data: resultData, 
           error: null 
         });
       }),
+
       then: function(this: any, onFulfilled: any, onRejected: any) {
         let data;
         if (this._table === 'inventory' || this._table === 'inventory_base') {
