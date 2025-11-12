@@ -1,39 +1,6 @@
 
  RUN  v2.1.9 /Users/ghogue/Desktop/CaliberVaultII
 
- ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate UPC format
- ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate EAN format
- ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should detect barcode type
- ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should track API usage
- ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should reset API counter
- ✓ src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > saveItem > should route firearms to firearmsService
- ✓ src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > saveItem > should route ammunition to ammunitionService
- ✓ src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > updateItem > should update firearms correctly
- ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Barcode Validation > validates UPC-A format (12 digits)
- ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Barcode Validation > validates UPC-E format (13 digits)
- ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Barcode Validation > rejects invalid UPC formats
- ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Barcode Validation > validates EAN-13 format
- ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Barcode Validation > rejects invalid EAN formats
- ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Barcode Validation > detects barcode types correctly
- ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Offline Mode > handles offline barcode lookup gracefully
- ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Offline Mode > returns cache miss when barcode not cached
- ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > API Usage Tracking > tracks API call count
- ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > API Usage Tracking > resets API counter
- ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Cache Management > gets cache statistics
- ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Cache Management > clears cache
-stdout | src/services/__tests__/sync.service.test.ts > SyncService > should process queue successfully
-[SyncService] Sync complete: { success: 0, failed: 0, conflicts: 0 }
-
- ✓ src/services/__tests__/sync.service.test.ts > SyncService > should process queue successfully
- ✓ src/services/__tests__/sync.service.test.ts > SyncService > should subscribe to sync status updates
- ✓ src/services/__tests__/sync.service.test.ts > SyncService > should not process queue if already processing
- ✓ src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkCreate > should create multiple items successfully
- ✓ src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkCreate > should handle partial failures
- ✓ src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkDelete > should delete multiple items
- ✓ src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkDuplicate > should duplicate items
-stdout | src/services/__tests__/sync.service.test.ts > SyncService > should not process queue if already processing
-[SyncService] Sync already in progress
-
  ✓ src/services/__tests__/team.service.test.ts > TeamService > should create team
  ✓ src/services/__tests__/team.service.test.ts > TeamService > should add team member
  ✓ src/services/__tests__/team.service.test.ts > TeamService > should list team members
@@ -41,77 +8,17 @@ stdout | src/services/__tests__/sync.service.test.ts > SyncService > should not 
  ✓ src/services/__tests__/team.service.test.ts > TeamService > should get teams
  ✓ src/services/__tests__/team.service.test.ts > TeamService > should update team
  ✓ src/services/__tests__/team.service.test.ts > TeamService > should delete team
- ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have ammunition table with correct schema
- ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have bullets table with correct schema
- ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have magazines table
- ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have accessories table
- ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should fetch all categories from categories table
- × src/test/integration/data-migration.test.ts > Data Migration Validation > should create ammunition item successfully
-   → expected 'Test Item 1' to be 'Test Ammo' // Object.is equality
- × src/test/integration/data-migration.test.ts > Data Migration Validation > should create magazine item successfully
-   → expected undefined to be 30 // Object.is equality
-stdout | src/services/__tests__/categoryServices.test.ts > FirearmsService > should create a firearm using createFirearm method
-[firearm_detailsService] Creating: {
-  baseData: {
-    name: 'Test Rifle',
-    manufacturer_id: 'mfg123',
-    model: 'TR-15',
-    quantity: 1,
-    purchase_date: undefined,
-    purchase_price: undefined,
-    current_value: undefined,
-    storage_location_id: undefined,
-    notes: undefined,
-    image_url: undefined
-  },
-  detailData: {
-    firearm_type_id: undefined,
-    serial_number: '123456',
-    caliber_id: 'cal123',
-    cartridge_id: undefined,
-    barrel_length: undefined,
-    overall_length: undefined,
-    weight: undefined,
-    capacity: undefined,
-    action_id: undefined,
-    finish: undefined,
-    round_count: undefined,
-    is_nfa: undefined,
-    nfa_item_type: undefined,
-    form_4_approved_date: undefined,
-    tax_stamp_number: undefined
-  }
-}
-
- ✓ src/services/__tests__/categoryServices.test.ts > FirearmsService > should create a firearm using createFirearm method
- ✓ src/services/__tests__/categoryServices.test.ts > FirearmsService > should update a firearm using updateFirearm method
- ✓ src/services/__tests__/categoryServices.test.ts > AmmunitionService > should create ammunition using createAmmunition method
-stdout | src/services/__tests__/categoryServices.test.ts > AmmunitionService > should create ammunition using createAmmunition method
-[ammunition_detailsService] Creating: {
-  baseData: {
-    name: 'Test Ammo',
-    manufacturer_id: 'mfg123',
-    model: undefined,
-    quantity: 1,
-    purchase_date: undefined,
-    purchase_price: undefined,
-    current_value: undefined,
-    storage_location_id: undefined,
-    notes: undefined,
-    image_url: undefined
-  },
-  detailData: {
-    caliber_id: 'cal123',
-    cartridge_id: undefined,
-    bullet_type_id: undefined,
-    bullet_weight: undefined,
-    muzzle_velocity: undefined,
-    rounds_per_box: undefined,
-    is_reloaded: undefined,
-    brass_condition: undefined
-  }
-}
-
+ ✓ src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > saveItem > should route firearms to firearmsService
+ ✓ src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > saveItem > should route ammunition to ammunitionService
+ ✓ src/services/inventory/__tests__/ModalIntegrationService.test.ts > ModalIntegrationService > updateItem > should update firearms correctly
+ ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > saves firearm item successfully
+ ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > saves ammunition item successfully
+ ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > throws error for invalid category
+ ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > getItems > retrieves all items for user
+ ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > getItems > returns empty array when no items found
+ ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > updateItem > updates item successfully
+ ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > valuation methods > saves valuation successfully
+ ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > valuation methods > gets valuation history
 stdout | src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > FirearmsService > should create firearm using createFirearm
 [firearm_detailsService] Creating: {
   baseData: {
@@ -205,14 +112,95 @@ stdout | src/services/__tests__/categoryServices.comprehensive.test.ts > Categor
  ✓ src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > OpticsService > should create optic using createOptic
  ✓ src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > OpticsService > should update optic using updateOptic
  ✓ src/services/__tests__/categoryServices.comprehensive.test.ts > Category Services - Comprehensive Tests > OpticsService > should delete optic
- ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > saves firearm item successfully
- ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > saves ammunition item successfully
- ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > saveItem > throws error for invalid category
- ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > getItems > retrieves all items for user
- ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > getItems > returns empty array when no items found
- ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > updateItem > updates item successfully
- ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > valuation methods > saves valuation successfully
- ✓ src/services/__tests__/inventory.service.enhanced.test.ts > InventoryService - Enhanced Tests > valuation methods > gets valuation history
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate UPC format
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should validate EAN format
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should detect barcode type
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should track API usage
+ ✓ src/services/__tests__/barcode.service.test.ts > BarcodeService > should reset API counter
+ ✓ src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkCreate > should create multiple items successfully
+ ✓ src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkCreate > should handle partial failures
+ ✓ src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkDelete > should delete multiple items
+ ✓ src/services/inventory/__tests__/BatchOperationsService.test.ts > BatchOperationsService > bulkDuplicate > should duplicate items
+ ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have ammunition table with correct schema
+ ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have bullets table with correct schema
+ ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have magazines table
+ ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should have accessories table
+ ✓ src/test/integration/data-migration.test.ts > Data Migration Validation > should fetch all categories from categories table
+ × src/test/integration/data-migration.test.ts > Data Migration Validation > should create ammunition item successfully
+   → expected 'Test Item 1' to be 'Test Ammo' // Object.is equality
+ × src/test/integration/data-migration.test.ts > Data Migration Validation > should create magazine item successfully
+   → expected undefined to be 30 // Object.is equality
+stdout | src/services/__tests__/categoryServices.test.ts > FirearmsService > should create a firearm using createFirearm method
+[firearm_detailsService] Creating: {
+  baseData: {
+    name: 'Test Rifle',
+    manufacturer_id: 'mfg123',
+    model: 'TR-15',
+    quantity: 1,
+    purchase_date: undefined,
+    purchase_price: undefined,
+    current_value: undefined,
+    storage_location_id: undefined,
+    notes: undefined,
+    image_url: undefined
+  },
+  detailData: {
+    firearm_type_id: undefined,
+    serial_number: '123456',
+    caliber_id: 'cal123',
+    cartridge_id: undefined,
+    barrel_length: undefined,
+    overall_length: undefined,
+    weight: undefined,
+    capacity: undefined,
+    action_id: undefined,
+    finish: undefined,
+    round_count: undefined,
+    is_nfa: undefined,
+    nfa_item_type: undefined,
+    form_4_approved_date: undefined,
+    tax_stamp_number: undefined
+  }
+}
+
+stdout | src/services/__tests__/categoryServices.test.ts > AmmunitionService > should create ammunition using createAmmunition method
+[ammunition_detailsService] Creating: {
+  baseData: {
+    name: 'Test Ammo',
+    manufacturer_id: 'mfg123',
+    model: undefined,
+    quantity: 1,
+    purchase_date: undefined,
+    purchase_price: undefined,
+    current_value: undefined,
+    storage_location_id: undefined,
+    notes: undefined,
+    image_url: undefined
+  },
+  detailData: {
+    caliber_id: 'cal123',
+    cartridge_id: undefined,
+    bullet_type_id: undefined,
+    bullet_weight: undefined,
+    muzzle_velocity: undefined,
+    rounds_per_box: undefined,
+    is_reloaded: undefined,
+    brass_condition: undefined
+  }
+}
+
+ ✓ src/services/__tests__/categoryServices.test.ts > FirearmsService > should create a firearm using createFirearm method
+ ✓ src/services/__tests__/categoryServices.test.ts > FirearmsService > should update a firearm using updateFirearm method
+ ✓ src/services/__tests__/categoryServices.test.ts > AmmunitionService > should create ammunition using createAmmunition method
+stdout | src/services/__tests__/sync.service.test.ts > SyncService > should process queue successfully
+[SyncService] Sync complete: { success: 0, failed: 0, conflicts: 0 }
+
+stdout | src/services/__tests__/sync.service.test.ts > SyncService > should not process queue if already processing
+[SyncService] Sync already in progress
+
+ ✓ src/services/__tests__/sync.service.test.ts > SyncService > should process queue successfully
+ ✓ src/services/__tests__/sync.service.test.ts > SyncService > should subscribe to sync status updates
+ ✓ src/services/__tests__/sync.service.test.ts > SyncService > should not process queue if already processing
 stdout | src/test/integration/comprehensive-categories.test.ts > Comprehensive Category Integration Tests > Firearms Service Integration > creates firearm with all fields
 [firearm_detailsService] Creating: {
   baseData: {
@@ -249,6 +237,18 @@ stdout | src/test/integration/comprehensive-categories.test.ts > Comprehensive C
  × src/test/integration/comprehensive-categories.test.ts > Comprehensive Category Integration Tests > Ammunition Service Integration > creates ammunition with specifications
    → Cannot read properties of undefined (reading 'insert')
  ✓ src/test/integration/comprehensive-categories.test.ts > Comprehensive Category Integration Tests > Cross-Category Operations > links firearm with compatible ammunition
+ ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Barcode Validation > validates UPC-A format (12 digits)
+ ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Barcode Validation > validates UPC-E format (13 digits)
+ ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Barcode Validation > rejects invalid UPC formats
+ ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Barcode Validation > validates EAN-13 format
+ ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Barcode Validation > rejects invalid EAN formats
+ ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Barcode Validation > detects barcode types correctly
+ ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Offline Mode > handles offline barcode lookup gracefully
+ ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Offline Mode > returns cache miss when barcode not cached
+ ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > API Usage Tracking > tracks API call count
+ ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > API Usage Tracking > resets API counter
+ ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Cache Management > gets cache statistics
+ ✓ src/services/__tests__/barcode.service.comprehensive.test.ts > BarcodeService - Comprehensive Tests > Cache Management > clears cache
  × src/test/integration/api.test.ts > API Integration Tests > REST API Endpoints > fetches inventory items via API
    → expected [ …(2) ] to deeply equal [ { id: '1', name: 'Item 1' }, …(1) ]
  × src/test/integration/api.test.ts > API Integration Tests > REST API Endpoints > creates item via API
@@ -268,12 +268,25 @@ stdout | src/test/integration/comprehensive-categories.test.ts > Comprehensive C
  ✓ src/hooks/__tests__/useInventoryFilters.test.ts > useInventoryFilters > handles empty inventory gracefully
  ✓ src/hooks/__tests__/useInventoryFilters.test.ts > useInventoryFilters > filters with advanced price range
  ✓ src/hooks/__tests__/useInventoryFilters.test.ts > useInventoryFilters > calculates active filter count
+ ✓ src/services/__tests__/inventory.service.test.ts > InventoryService > should save firearm item
+ ✓ src/services/__tests__/inventory.service.test.ts > InventoryService > should handle lowercase category names
 stdout | src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should create firearm with correct fields
 [firearm_detailsService] Creating: {
   baseData: { name: 'Test Rifle', manufacturer_id: 'mfg-123' },
   detailData: { serial_number: '123456', caliber_id: 'cal-123' }
 }
 
+stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should create ammunition with correct fields
+[ammunition_detailsService] Creating: {
+  baseData: { name: 'Test Ammo', manufacturer_id: 'mfg-456' },
+  detailData: { caliber_id: 'cal-456', bullet_weight: 115 }
+}
+
+stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should handle bullet weight
+[ammunition_detailsService] Creating: { baseData: { name: 'Test Ammo' }, detailData: { bullet_weight: 115 } }
+
+ ✓ src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should create ammunition with correct fields
+ ✓ src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should handle bullet weight
  ✓ src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should create firearm with correct fields
  ✓ src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should handle serial numbers
 stdout | src/services/category/__tests__/FirearmsService.test.ts > FirearmsService > should handle serial numbers
@@ -282,42 +295,25 @@ stdout | src/services/category/__tests__/FirearmsService.test.ts > FirearmsServi
   detailData: { serial_number: 'ABC123' }
 }
 
- ✓ src/services/__tests__/inventory.service.test.ts > InventoryService > should save firearm item
- ✓ src/services/__tests__/inventory.service.test.ts > InventoryService > should handle lowercase category names
+ ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > firearms service is defined
+ ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > ammunition service is defined
+ ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > optics service is defined
+ ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > all services have create method
+ ✓ src/services/__tests__/reference.service.test.ts > ReferenceDataService > getManufacturers > fetches manufacturers
+ ✓ src/services/__tests__/reference.service.test.ts > ReferenceDataService > getCalibers > fetches calibers
+ ✓ src/services/__tests__/reference.service.test.ts > ReferenceDataService > addManufacturer > adds new manufacturer
  ✓ src/utils/__tests__/csvValidator.test.ts > csvValidator > validateCSVRow > validates row with all required fields
  ✓ src/utils/__tests__/csvValidator.test.ts > csvValidator > validateCSVRow > rejects row with missing required fields
  ✓ src/utils/__tests__/csvValidator.test.ts > csvValidator > validateCSVRow > validates numeric fields
  ✓ src/utils/__tests__/csvValidator.test.ts > csvValidator > validateCSVHeaders > validates correct headers
  ✓ src/utils/__tests__/csvValidator.test.ts > csvValidator > validateCSVHeaders > rejects missing required headers
- ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > firearms service is defined
- ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > ammunition service is defined
- ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > optics service is defined
- ✓ src/services/category/__tests__/AllCategories.test.ts > All Category Services > all services have create method
-stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should create ammunition with correct fields
-[ammunition_detailsService] Creating: {
-  baseData: { name: 'Test Ammo', manufacturer_id: 'mfg-456' },
-  detailData: { caliber_id: 'cal-456', bullet_weight: 115 }
-}
-
- ✓ src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should create ammunition with correct fields
- ✓ src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should handle bullet weight
-stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionService > createAmmunition > should handle bullet weight
-[ammunition_detailsService] Creating: { baseData: { name: 'Test Ammo' }, detailData: { bullet_weight: 115 } }
-
  ✓ src/components/__tests__/SmartInstallPrompt.test.tsx > SmartInstallPrompt > renders install prompt
  ✓ src/components/__tests__/SmartInstallPrompt.test.tsx > SmartInstallPrompt > handles PWA install event
- ✓ src/services/__tests__/reference.service.test.ts > ReferenceDataService > getManufacturers > fetches manufacturers
- ✓ src/services/__tests__/reference.service.test.ts > ReferenceDataService > getCalibers > fetches calibers
- ✓ src/services/__tests__/reference.service.test.ts > ReferenceDataService > addManufacturer > adds new manufacturer
- × src/components/__tests__/InventoryOperations.test.tsx > InventoryOperations > renders inventory dashboard
-   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
- × src/components/__tests__/InventoryOperations.test.tsx > InventoryOperations > handles inventory operations
-   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
  ✓ src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture > renders photo capture dialog
- ✓ src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture > calls onClose when close button clicked
- ✓ src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture > initializes camera on mount
  ✓ src/components/__tests__/AIValuationModal.test.tsx > AIValuationModal Tests > renders valuation modal
  ✓ src/components/__tests__/AIValuationModal.test.tsx > AIValuationModal Tests > handles modal close
+ ✓ src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture > calls onClose when close button clicked
+ ✓ src/components/__tests__/PhotoCapture.test.tsx > PhotoCapture > initializes camera on mount
  ✓ src/components/__tests__/ItemCard.test.tsx > ItemCard Component > renders item information
  ✓ src/components/__tests__/ItemCard.test.tsx > ItemCard Component > accepts callback functions
  ✓ src/lib/__tests__/formatters.test.ts > formatters > formatCurrency > formats USD currency
@@ -328,11 +324,6 @@ stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionS
  ✓ src/lib/__tests__/formatters.test.ts > formatters > formatNumber > formats large numbers with commas
  ✓ src/lib/__tests__/formatters.test.ts > formatters > formatNumber > handles decimals
  ✓ src/lib/__tests__/formatters.test.ts > formatters > formatPercentage > formats percentage
- ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > parses valid CSV data
- ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > handles empty CSV
- ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > handles CSV with headers only
- ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > handles quoted values
- ✓ src/utils/__tests__/csvParser.test.ts > csvParser > generateCSVTemplate > generates template with headers
  ✓ src/lib/__tests__/validation.test.ts > validation utilities > validateEmail > validates correct email
  ✓ src/lib/__tests__/validation.test.ts > validation utilities > validateEmail > rejects invalid email
  ✓ src/lib/__tests__/validation.test.ts > validation utilities > validatePhone > validates US phone number
@@ -341,11 +332,26 @@ stdout | src/services/category/__tests__/AmmunitionService.test.ts > AmmunitionS
  ✓ src/lib/__tests__/validation.test.ts > validation utilities > validateURL > rejects invalid URL
  ✓ src/lib/__tests__/validation.test.ts > validation utilities > validateRequired > validates non-empty value
  ✓ src/lib/__tests__/validation.test.ts > validation utilities > validateRequired > rejects empty value
+ ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > parses valid CSV data
+ ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > handles empty CSV
+ ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > handles CSV with headers only
+ ✓ src/utils/__tests__/csvParser.test.ts > csvParser > parseCSV > handles quoted values
+ ✓ src/utils/__tests__/csvParser.test.ts > csvParser > generateCSVTemplate > generates template with headers
  × src/services/__tests__/storage.service.test.ts > StorageService > uploadFile > uploads file successfully
    → Cannot read properties of undefined (reading 'getSession')
  ✓ src/services/__tests__/storage.service.test.ts > StorageService > deleteFile > deletes file successfully
  ✓ src/services/__tests__/storage.service.test.ts > StorageService > listFiles > lists files successfully
- × src/hooks/__tests__/useSubscription.test.ts > useSubscription > returns subscription data with tier pro 1019ms
+ ✓ src/utils/__tests__/barcodeUtils.test.ts > barcodeUtils > validateUPC > validates correct UPC-A codes
+ ✓ src/utils/__tests__/barcodeUtils.test.ts > barcodeUtils > validateUPC > rejects invalid UPC codes
+ ✓ src/utils/__tests__/barcodeUtils.test.ts > barcodeUtils > validateUPC > rejects UPC with wrong check digit
+ ✓ src/utils/__tests__/barcodeUtils.test.ts > barcodeUtils > formatBarcode > formats barcode with spaces
+ ✓ src/utils/__tests__/barcodeUtils.test.ts > barcodeUtils > formatBarcode > handles empty input
+ ✓ src/utils/__tests__/barcodeUtils.test.ts > barcodeUtils > generateCheckDigit > generates correct check digit
+ × src/components/__tests__/InventoryOperations.test.tsx > InventoryOperations > renders inventory dashboard
+   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+ × src/components/__tests__/InventoryOperations.test.tsx > InventoryOperations > handles inventory operations
+   → Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+ × src/hooks/__tests__/useSubscription.test.ts > useSubscription > returns subscription data with tier pro 1016ms
    → expected true to be false // Object.is equality
 
 Ignored nodes: comments, script, style
@@ -365,22 +371,16 @@ Ignored nodes: comments, script, style
     [36m<div />[39m
   [36m</body>[39m
 [36m</html>[39m
- ✓ src/services/api/__tests__/InventoryAPIService.test.ts > InventoryAPIService > fetches inventory items
- ✓ src/services/api/__tests__/InventoryAPIService.test.ts > InventoryAPIService > creates new item via API
- ✓ src/services/api/__tests__/InventoryAPIService.test.ts > InventoryAPIService > handles API errors
- ✓ src/utils/__tests__/barcodeUtils.test.ts > barcodeUtils > validateUPC > validates correct UPC-A codes
- ✓ src/utils/__tests__/barcodeUtils.test.ts > barcodeUtils > validateUPC > rejects invalid UPC codes
- ✓ src/utils/__tests__/barcodeUtils.test.ts > barcodeUtils > validateUPC > rejects UPC with wrong check digit
- ✓ src/utils/__tests__/barcodeUtils.test.ts > barcodeUtils > formatBarcode > formats barcode with spaces
- ✓ src/utils/__tests__/barcodeUtils.test.ts > barcodeUtils > formatBarcode > handles empty input
- ✓ src/utils/__tests__/barcodeUtils.test.ts > barcodeUtils > generateCheckDigit > generates correct check digit
- ✓ src/hooks/__tests__/useInventoryFilters.enhanced.test.ts > useInventoryFilters Enhanced > handles complex filter combinations
- ✓ src/hooks/__tests__/useInventoryFilters.enhanced.test.ts > useInventoryFilters Enhanced > persists filter state
  ✓ src/services/__tests__/reports.service.test.ts > ReportService > should generate inventory summary report
  ✓ src/services/__tests__/reports.service.test.ts > ReportService > should generate category breakdown report
  ✓ src/services/__tests__/reports.service.test.ts > ReportService > should generate value report
+ ✓ src/services/api/__tests__/InventoryAPIService.test.ts > InventoryAPIService > fetches inventory items
+ ✓ src/services/api/__tests__/InventoryAPIService.test.ts > InventoryAPIService > creates new item via API
+ ✓ src/services/api/__tests__/InventoryAPIService.test.ts > InventoryAPIService > handles API errors
  ✓ src/services/security/__tests__/SecurityService.test.ts > SecurityService > logSecurityEvent > logs security event successfully
  ✓ src/services/security/__tests__/SecurityService.test.ts > SecurityService > checkPermission > checks user permission
+ ✓ src/hooks/__tests__/useInventoryFilters.enhanced.test.ts > useInventoryFilters Enhanced > handles complex filter combinations
+ ✓ src/hooks/__tests__/useInventoryFilters.enhanced.test.ts > useInventoryFilters Enhanced > persists filter state
  ✓ src/hooks/__tests__/useOfflineSync.test.ts > useOfflineSync > initializes sync state
  ✓ src/hooks/__tests__/useOfflineSync.test.ts > useOfflineSync > handles offline mode
  ✓ src/hooks/__tests__/useOfflineSync.test.ts > useOfflineSync > queues offline changes
@@ -388,7 +388,9 @@ Ignored nodes: comments, script, style
  ✓ src/components/__tests__/TierEnforcement.test.tsx > TierEnforcement > enforces tier limits
  ✓ src/components/__tests__/DatabaseMigrationSystem.test.tsx > DatabaseMigrationSystem > renders migration system
  ✓ src/components/__tests__/DatabaseMigrationSystem.test.tsx > DatabaseMigrationSystem > handles migration operations
- × src/hooks/__tests__/useSubscription.test.ts > useSubscription > has hasFeature function that returns true 1082ms
+ ✓ src/components/__tests__/EnhancedBulkImport.test.tsx > EnhancedBulkImport > renders bulk import component
+ ✓ src/components/__tests__/EnhancedBulkImport.test.tsx > EnhancedBulkImport > handles file upload
+ × src/hooks/__tests__/useSubscription.test.ts > useSubscription > has hasFeature function that returns true 1081ms
    → expected true to be false // Object.is equality
 
 Ignored nodes: comments, script, style
@@ -406,16 +408,14 @@ Ignored nodes: comments, script, style
    → ErrorHandler is not a constructor
  × src/lib/__tests__/errorHandler.test.ts > ErrorHandler > categorizes errors
    → ErrorHandler is not a constructor
- ✓ src/components/__tests__/SyncStatusDashboard.test.tsx > SyncStatusDashboard > renders sync dashboard
- ✓ src/components/__tests__/SyncStatusDashboard.test.tsx > SyncStatusDashboard > displays sync status
- ✓ src/components/__tests__/EnhancedBulkImport.test.tsx > EnhancedBulkImport > renders bulk import component
- ✓ src/components/__tests__/EnhancedBulkImport.test.tsx > EnhancedBulkImport > handles file upload
- ✓ src/hooks/__tests__/usePullToRefresh.test.ts > usePullToRefresh > initializes pull to refresh
- ✓ src/hooks/__tests__/usePullToRefresh.test.ts > usePullToRefresh > handles refresh callback
- ✓ src/hooks/__tests__/usePullToRefresh.test.ts > usePullToRefresh > tracks pull state
  ✓ src/hooks/__tests__/useSwipeGesture.test.ts > useSwipeGesture > initializes swipe gesture
  ✓ src/hooks/__tests__/useSwipeGesture.test.ts > useSwipeGesture > handles swipe callback
  ✓ src/hooks/__tests__/useSwipeGesture.test.ts > useSwipeGesture > detects swipe direction
+ ✓ src/hooks/__tests__/usePullToRefresh.test.ts > usePullToRefresh > initializes pull to refresh
+ ✓ src/hooks/__tests__/usePullToRefresh.test.ts > usePullToRefresh > handles refresh callback
+ ✓ src/hooks/__tests__/usePullToRefresh.test.ts > usePullToRefresh > tracks pull state
+ ✓ src/components/__tests__/SyncStatusDashboard.test.tsx > SyncStatusDashboard > renders sync dashboard
+ ✓ src/components/__tests__/SyncStatusDashboard.test.tsx > SyncStatusDashboard > displays sync status
  ✓ src/components/__tests__/MobileBarcodeScanner.test.tsx > MobileBarcodeScanner > renders barcode scanner
  ✓ src/components/__tests__/MobileBarcodeScanner.test.tsx > MobileBarcodeScanner > handles scan callback
  × src/components/__tests__/AddItemModal.test.tsx > AddItemModal > should render when open
@@ -428,7 +428,7 @@ Ignored nodes: comments, script, style
    → Cannot read properties of undefined (reading 'onAuthStateChange')
  × src/components/__tests__/AddItemModal.enhanced.test.tsx > AddItemModal Enhanced > supports all categories
    → Cannot read properties of undefined (reading 'onAuthStateChange')
- × src/hooks/__tests__/useSubscription.test.ts > useSubscription > returns defined limits 1173ms
+ × src/hooks/__tests__/useSubscription.test.ts > useSubscription > returns defined limits 1163ms
    → expected true to be false // Object.is equality
 
 Ignored nodes: comments, script, style
@@ -443,7 +443,7 @@ Ignored nodes: comments, script, style
  × src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > initializes cache manager 10009ms
    → Hook timed out in 10000ms.
 If this is a long-running hook, pass a timeout value as the last argument or configure it globally with "hookTimeout".
- × src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > caches barcode data 10002ms
+ × src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > caches barcode data 10001ms
    → Hook timed out in 10000ms.
 If this is a long-running hook, pass a timeout value as the last argument or configure it globally with "hookTimeout".
  × src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > retrieves cached data 10002ms
@@ -452,12 +452,12 @@ If this is a long-running hook, pass a timeout value as the last argument or con
  × src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > returns null for non-existent barcode 10002ms
    → Hook timed out in 10000ms.
 If this is a long-running hook, pass a timeout value as the last argument or configure it globally with "hookTimeout".
- × src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > clears all cache 10003ms
+ × src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > clears all cache 10004ms
    → Hook timed out in 10000ms.
 If this is a long-running hook, pass a timeout value as the last argument or configure it globally with "hookTimeout".
 
  Test Files  11 failed | 37 passed (48)
       Tests  27 failed | 163 passed (190)
-   Start at  23:03:31
-   Duration  57.85s (transform 1.73s, setup 17.21s, collect 20.79s, tests 54.86s, environment 65.43s, prepare 5.92s)
+   Start at  23:25:02
+   Duration  57.35s (transform 1.66s, setup 15.21s, collect 21.52s, tests 54.84s, environment 62.09s, prepare 5.49s)
 
