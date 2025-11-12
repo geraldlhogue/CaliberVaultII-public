@@ -9,6 +9,7 @@ ts=$(date -u +%Y%m%d%H%M%S)
 out="test-artifacts/famous-memo.$ts.md"
 local_log="test-artifacts/vitest.out.txt"
 work_log="test-artifacts/vitest.out.$ts.parse.txt"
+mkdir -p test-artifacts
 if [ -f "$local_log" ]; then cp "$local_log" "$work_log"; else curl -s "$RAW/test-artifacts/vitest.out.txt" -o "$work_log"; fi
 first3=$(head -n 3 "$work_log" || true)
 last3=$(tail -n 3 "$work_log" || true)
@@ -46,14 +47,14 @@ if [ -n "$prev_tests_failed" ]; then if [ "$tests_failed" -lt "$prev_tests_faile
   echo "Please confirm you’re reviewing this exact run by replying with those two values and the first 3 and last 3 lines of vitest.out.txt."
   echo
   echo "vitest.out.txt — first 3 lines"
-  echo '```'
+  echo "```"
   echo "$first3"
-  echo '```'
+  echo "```"
   echo
   echo "vitest.out.txt — last 3 lines"
-  echo '```'
+  echo "```"
   echo "$last3"
-  echo '```'
+  echo "```"
   echo
   echo "Key Focus Areas"
   echo "1) InventoryOperations: align export/import (named vs default)."
