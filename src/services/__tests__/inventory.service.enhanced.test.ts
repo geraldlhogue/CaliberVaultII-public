@@ -139,6 +139,8 @@ describe('InventoryService - Enhanced Tests', () => {
         order: vi.fn(function(this: any) { return this }),
         then: (resolve: any) => Promise.resolve({ data: [], error: null }).then(resolve)
       };
+      // Make eq chainable with itself
+      emptyChain.eq.mockImplementation(function(this: any) { return emptyChain });
       vi.mocked(supabase.from).mockReturnValueOnce(emptyChain);
 
       const result = await inventoryService.getItems('user123');

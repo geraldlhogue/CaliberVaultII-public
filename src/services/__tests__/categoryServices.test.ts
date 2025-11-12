@@ -16,6 +16,8 @@ vi.mock('@/lib/supabase', () => {
       update: vi.fn(function(this: any) { return this }),
       delete: vi.fn(function(this: any) { return this })
     };
+    // Make eq chainable with itself
+    chain.eq.mockImplementation(function(this: any) { return chain });
     return chain;
   };
 

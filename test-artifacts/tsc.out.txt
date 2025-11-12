@@ -1,1 +1,1 @@
-/Users/ghogue/Desktop/CaliberVaultII/run_drop_all.sh: line 43: tsc: command not found
+zsh: command not found: tsc

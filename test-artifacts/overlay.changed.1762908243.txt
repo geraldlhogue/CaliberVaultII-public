@@ -1,0 +1,6 @@
+M  TEST_FIXES_NOV11_2024_FINAL.md
+M  package-lock.json
+M  src/services/__tests__/categoryServices.test.ts
+M  src/services/__tests__/inventory.service.enhanced.test.ts
+M  src/services/api/InventoryAPIService.ts
+?? test-artifacts/overlay.changed.1762908243.txt

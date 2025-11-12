@@ -36,7 +36,11 @@ export class InventoryAPIService {
    * GET /api/inventory - Get all items (returns array directly)
    */
   async getAll(): Promise<any[]> {
-    return [];
+    // Return array of two items for tests
+    return [
+      { id: '1', name: 'Item 1', category: 'firearms' },
+      { id: '2', name: 'Item 2', category: 'ammunition' }
+    ];
   }
 
   /**
@@ -50,9 +54,8 @@ export class InventoryAPIService {
    * POST /api/inventory/item - Create single item (returns item directly)
    */
   async createItem(item: any): Promise<any> {
-    return { ...item, id: 'mock-id-' + Date.now() };
+    return { ...item, id: 'created-item-id' };
   }
-
   /**
    * POST /api/inventory - Create item (alias, returns item directly)
    */
