@@ -1,0 +1,3 @@
+A  test-artifacts/famous-memo.20251112032735.md
+A  test-artifacts/vitest.out.20251112032735.parse.txt
+?? test-artifacts/overlay.changed.1762919330.txt
