@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+/Users/ghogue/Desktop/CaliberVaultII/scripts/pipeline.sh || true
+/Users/ghogue/Desktop/CaliberVaultII/scripts/memo.sh || true

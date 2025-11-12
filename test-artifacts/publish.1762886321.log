@@ -1,0 +1,13 @@
+[publish] start
+[publish] start
+[main 39f303f] Automated publish 2025-11-11T18:38:41Z
+ 22 files changed, 510 insertions(+), 360 deletions(-)
+ create mode 100644 AI review GIT and FIx.pdf
+ create mode 100644 Consolidated Development Standards-Rork.pdf
+ create mode 100644 TEST_FIXES_NOV11_2024_COMPLETE.md
+ create mode 100644 VERIFICATION_CONFIRMATION.md
+ create mode 100644 Word-Form-Documentation/Standards Document for designing 3rd Normal PWA Apps.pdf
+ create mode 100644 Word-Form-Documentation/Standards Document for designing 3rd Normal PWA Apps/Backup of Standards Document for designing 3rd Normal PWA Apps.docx
+ create mode 100644 Word-Form-Documentation/~$andards Document for designing 3rd Normal PWA Apps.docx
+ create mode 100644 m => { execSync() }
+ create mode 100755 scripts/overlay_with_logging.mjs

@@ -1,1 +1,1 @@
-/Users/ghogue/Desktop/CaliberVaultII/scripts/pipeline.sh: line 26: tsc: command not found
+/Users/ghogue/Desktop/CaliberVaultII/scripts/pipeline.sh: line 15: tsc: command not found

@@ -1,0 +1,7 @@
+A  scripts/cvmemo
+A  scripts/cvpipe
+A  scripts/cvrelease
+A  scripts/memo.sh
+M  scripts/pipeline.sh
+A  scripts/pipeline.sh.backup.20251112004659
+?? test-artifacts/overlay.changed.1762955886.txt

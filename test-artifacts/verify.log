@@ -1,0 +1,36 @@
+[verify] start
+[verify] 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/src/test/vitest.setup.ts
+[verify] 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/vitest.override.ts
+[verify] 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/test-artifacts/tsc.out.txt
+[verify] 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/test-artifacts/vitest.out.txt
+[verify] done
+[verify] start
+[verify] 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/src/test/vitest.setup.ts
+[verify] 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/vitest.override.ts
+[verify] 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/test-artifacts/tsc.out.txt
+[verify] 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/test-artifacts/vitest.out.txt
+[verify] done
+VERIFY_BEGIN
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/src/test/vitest.setup.ts
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/vitest.override.ts
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/test-artifacts/tsc.out.txt
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/test-artifacts/vitest.out.txt
+VERIFY_END
+VERIFY_BEGIN
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/src/test/vitest.setup.ts
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/vitest.override.ts
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/test-artifacts/tsc.out.txt
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/test-artifacts/vitest.out.txt
+VERIFY_END
+VERIFY_BEGIN
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/src/test/vitest.setup.ts
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/vitest.override.ts
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/test-artifacts/tsc.out.txt
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/test-artifacts/vitest.out.txt
+VERIFY_END
+VERIFY_BEGIN
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/src/test/vitest.setup.ts
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/vitest.override.ts
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/test-artifacts/tsc.out.txt
+VERIFY_URL 200 https://raw.githubusercontent.com/geraldlhogue/CaliberVaultII-public/main/test-artifacts/vitest.out.txt
+VERIFY_END

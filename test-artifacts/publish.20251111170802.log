@@ -1,0 +1,9 @@
+[main cc71f46] Automated publish 2025-11-12T00:09:51Z
+ 4 files changed, 210 insertions(+), 97 deletions(-)
+ create mode 100755 run_drop_all.sh
+ create mode 100644 test-artifacts/overlay.changed.20251111170802.txt
+Locking support detected on remote "public". Consider enabling it with:
+  $ git config lfs.https://ssh.github.com/geraldlhogue/CaliberVaultII-public.git/info/lfs.locksverify true
+To ssh://ssh.github.com:443/geraldlhogue/CaliberVaultII-public.git
+   35e0a89..cc71f46  HEAD -> main
+branch 'main' set up to track 'public/main'.

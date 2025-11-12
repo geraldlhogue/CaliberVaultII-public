@@ -1,0 +1,9 @@
+[publish] start
+[main 5ba6c64] Automated publish 2025-11-11T20:39:52Z
+ 14 files changed, 434 insertions(+), 253 deletions(-)
+ create mode 100644 CONFIRMATION_REPORT.md
+ create mode 100644 TEST_FIXES_NOV11_2024_FINAL.md
+ create mode 100755 scripts/overlay_with_logging.sh
+ create mode 100755 scripts/pipeline_force_publish.sh
+ create mode 100755 scripts/sync_check.sh
+Uploading LFS objects: 100% (5/5), 12 MB | 2.5 MB/s, done.

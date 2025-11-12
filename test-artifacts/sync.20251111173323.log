@@ -1,0 +1,6 @@
+SYNC HEAD local=b80dcbb09b3a450ed702cde4c2d2521754e3b1bc
+SYNC HEAD remote=b80dcbb09b3a450ed702cde4c2d2521754e3b1bc
+SYNC HEAD OK
+SYNC VITEST local_sha=53fb2fee5ac676cfdde1ec96de1da62d9bc1e0864ffa13aaba3c68e625befecc
+SYNC VITEST remote_sha=53fb2fee5ac676cfdde1ec96de1da62d9bc1e0864ffa13aaba3c68e625befecc
+SYNC VITEST OK
