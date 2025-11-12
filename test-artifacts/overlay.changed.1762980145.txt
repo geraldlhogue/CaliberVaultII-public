@@ -1,0 +1,3 @@
+M  .gitignore
+A  docs/famous-memo-20251112-095500.md
+?? test-artifacts/overlay.changed.1762980145.txt
