@@ -1,8 +1,9 @@
 import React, { useState, useCallback } from 'react';
 import { parseCSV, mapCSVToInventoryItem, CSVRow } from '@/utils/csvParser';
-import { validateCSVRow, ValidationWarning } from '@/utils/csvValidator';
+import { validateCSVRowLegacy, ValidationWarning } from '@/utils/csvValidator';
 import { downloadSampleCSV } from '@/utils/csvTemplate';
 import { InventoryItem } from '@/types/inventory';
+
 import { Button } from '../ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { CSVPreviewTable } from './CSVPreviewTable';
@@ -86,9 +87,10 @@ export const CSVImportModal: React.FC<CSVImportModalProps> = ({ onClose, onImpor
     const allWarnings: ValidationWarning[] = [];
     
     csvData.forEach((row, idx) => {
-      const rowWarnings = validateCSVRow(row, idx, fieldMapping);
+      const rowWarnings = validateCSVRowLegacy(row, idx, fieldMapping);
       allWarnings.push(...rowWarnings);
     });
+
     
     setPreviewItems(items);
     setWarnings(allWarnings);

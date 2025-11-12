@@ -90,9 +90,12 @@ export const mapCSVToInventoryItem = (
 };
 
 // Export CSV template generator
-export const generateCSVTemplate = (): string => {
-  const headers = ['Name', 'Category', 'Manufacturer', 'Model', 'Serial Number', 'Purchase Price', 'Quantity', 'Notes'];
-  return headers.join(',');
+export const generateCSVTemplate = (headers?: string[]): string => {
+  const defaultHeaders = ['name', 'category', 'manufacturer', 'model', 'serial number', 'purchase price', 'quantity', 'notes'];
+  const templateHeaders = headers || defaultHeaders;
+  return templateHeaders.join(',');
 };
+
+
 
 

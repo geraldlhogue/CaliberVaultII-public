@@ -7,26 +7,76 @@ export interface ValidationWarning {
   severity: 'error' | 'warning';
 }
 
-// Export validateCSVHeaders
-export const validateCSVHeaders = (headers: string[]): boolean => {
-  const requiredHeaders = ['name', 'category'];
-  return requiredHeaders.every(req => 
-    headers.some(h => h.toLowerCase() === req.toLowerCase())
+export interface ValidationResult {
+  valid: boolean;
+  errors?: string[];
+  warnings?: string[];
+}
+
+// Export validateCSVHeaders - returns ValidationResult
+export const validateCSVHeaders = (headers: string[], requiredHeaders?: string[]): ValidationResult => {
+  const required = requiredHeaders || ['name', 'category'];
+  const missing = required.filter(req => 
+    !headers.some(h => h.toLowerCase() === req.toLowerCase())
   );
+  
+  return {
+    valid: missing.length === 0,
+    errors: missing.length > 0 ? missing.map(h => `Missing required header: ${h}`) : undefined
+  };
 };
 
-// Export validateCSVRow
+// Export validateCSVRow - returns ValidationResult
 export const validateCSVRow = (
   row: CSVRow,
-  rowIndex: number,
-  fieldMapping: { [key: string]: string }
-): ValidationWarning[] => {
-  const warnings: ValidationWarning[] = [];
-  const requiredFields = ['name', 'category', 'storageLocation', 'purchasePrice'];
+  requiredFields: string[],
+  fieldTypes?: { [key: string]: 'number' | 'string' }
+): ValidationResult => {
+  const errors: string[] = [];
+  const warnings: string[] = [];
   
   // Check required fields
   requiredFields.forEach(field => {
-    const csvField = Object.keys(fieldMapping).find(k => fieldMapping[k] === field);
+    if (!row[field] || row[field].trim() === '') {
+      errors.push(`Missing required field: ${field}`);
+    }
+  });
+  
+  // Validate field types
+  if (fieldTypes) {
+    Object.entries(fieldTypes).forEach(([field, type]) => {
+      const value = row[field];
+      if (value && type === 'number') {
+        const num = parseFloat(value);
+        if (isNaN(num)) {
+          errors.push(`Invalid ${field}: must be a number`);
+        }
+      }
+    });
+  }
+  
+  return {
+    valid: errors.length === 0,
+    errors: errors.length > 0 ? errors : undefined,
+    warnings: warnings.length > 0 ? warnings : undefined
+  };
+};
+
+// Legacy function for backward compatibility with CSVImportModal
+export const validateCSVRowLegacy = (
+  row: CSVRow,
+  rowIndex: number,
+  fieldMapping: { [key: string]: string } = {}
+): ValidationWarning[] => {
+  const warnings: ValidationWarning[] = [];
+  const requiredFields = ['name', 'category'];
+  
+  // Guard against null/undefined fieldMapping
+  const mapping = fieldMapping || {};
+  
+  // Check required fields
+  requiredFields.forEach(field => {
+    const csvField = Object.keys(mapping).find(k => mapping[k] === field);
     if (!csvField || !row[csvField]?.trim()) {
       warnings.push({
         row: rowIndex,
@@ -37,31 +87,10 @@ export const validateCSVRow = (
     }
   });
   
-  // Validate price
-  const priceField = Object.keys(fieldMapping).find(k => fieldMapping[k] === 'purchasePrice');
-  if (priceField && row[priceField]) {
-    const price = parseFloat(row[priceField]);
-    if (isNaN(price) || price < 0) {
-      warnings.push({
-        row: rowIndex,
-        field: 'purchasePrice',
-        message: 'Invalid price format',
-        severity: 'error'
-      });
-    }
-  }
-  
-  // Validate category
-  const validCategories = ['firearms', 'optics', 'ammunition', 'accessories', 'parts'];
-  const catField = Object.keys(fieldMapping).find(k => fieldMapping[k] === 'category');
-  if (catField && row[catField] && !validCategories.includes(row[catField].toLowerCase())) {
-    warnings.push({
-      row: rowIndex,
-      field: 'category',
-      message: `Invalid category. Must be one of: ${validCategories.join(', ')}`,
-      severity: 'warning'
-    });
-  }
-  
   return warnings;
+};
+
+// Export getValidationErrors helper
+export const getValidationErrors = (result: ValidationResult): string[] => {
+  return result.errors || [];
 };

@@ -2,6 +2,11 @@ import 'fake-indexeddb/auto'
 import '@testing-library/jest-dom/vitest'
 import { vi } from 'vitest'
 
+/**
+ * Minimal browser/env shims used by the app/tests
+ */
+
+/* 1) PWA install prompt */
 class MockBeforeInstallPromptEvent extends Event {
   preventDefault: () => void
   prompt: () => void
@@ -13,6 +18,7 @@ class MockBeforeInstallPromptEvent extends Event {
 }
 vi.stubGlobal('BeforeInstallPromptEvent', MockBeforeInstallPromptEvent)
 
+/* 2) matchMedia */
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation((query: string) => ({
@@ -27,6 +33,7 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 })
 
+/* 3) localStorage */
 vi.stubGlobal('localStorage', {
   getItem: vi.fn(),
   setItem: vi.fn(),
@@ -34,12 +41,16 @@ vi.stubGlobal('localStorage', {
   clear: vi.fn(),
 })
 
+/* 4) ResizeObserver polyfill */
 global.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
   disconnect() {}
 } as any
 
+/**
+ * Supabase: robust, fully-chainable mock
+ */
 const createMockSupabaseClient = () => {
   const mockCategories = [
     { id: '1', name: 'Firearms' },
@@ -55,58 +66,101 @@ const createMockSupabaseClient = () => {
     { id: '11', name: 'Powder' },
     { id: '12', name: 'Parts' },
   ]
-  const mockData = [{ id: 'mock-id', created_at: new Date().toISOString() }]
+  
+  const mockData = [
+    { id: 'inv123', name: 'Item 1', created_at: new Date().toISOString() },
+    { id: 'inv124', name: 'Item 2', created_at: new Date().toISOString() }
+  ]
   const mockError = null
 
-  const qb: any = {
-    select: vi.fn(function(this: any) { return this }),
-    insert: vi.fn(function(this: any, data: any) { this._insertData = data; return this }),
-    update: vi.fn(function(this: any) { return this }),
-    delete: vi.fn(function(this: any) { return this }),
-    from: vi.fn(function(this: any, table: string) { this._table = table; return this }),
-    rpc: vi.fn(function(this: any) { return this }),
-    eq: vi.fn(function(this: any) { return this }),
-    neq: vi.fn(function(this: any) { return this }),
-    gt: vi.fn(function(this: any) { return this }),
-    gte: vi.fn(function(this: any) { return this }),
-    lt: vi.fn(function(this: any) { return this }),
-    lte: vi.fn(function(this: any) { return this }),
-    like: vi.fn(function(this: any) { return this }),
-    ilike: vi.fn(function(this: any) { return this }),
-    in: vi.fn(function(this: any) { return this }),
-    is: vi.fn(function(this: any) { return this }),
-    filter: vi.fn(function(this: any) { return this }),
-    or: vi.fn(function(this: any) { return this }),
-    not: vi.fn(function(this: any) { return this }),
-    order: vi.fn(function(this: any) { return this }),
-    limit: vi.fn(function(this: any) { return this }),
-    range: vi.fn(function(this: any) { return this }),
-    single: vi.fn(function(this: any) {
-      const data =
-        this._table === 'categories'
-          ? mockCategories[0]
-          : this._insertData
-          ? { id: 'mock-id', ...this._insertData }
-          : mockData[0]
-      return Promise.resolve({ data, error: mockError })
-    }),
-    maybeSingle: vi.fn(function(this: any) {
-      const data = this._table === 'categories' ? mockCategories[0] : mockData[0]
-      return Promise.resolve({ data, error: mockError })
-    }),
-    then: function(this: any, onFulfilled: any, onRejected: any) {
-      let data = this._table === 'categories' ? mockCategories : mockData
-      if (this._insertData) {
-        data = Array.isArray(this._insertData)
-          ? this._insertData.map((d: any, i: number) => ({ id: `mock-id-${i}`, ...d }))
-          : [{ id: 'mock-id', ...this._insertData }]
-      }
-      return Promise.resolve({ data, error: mockError }).then(onFulfilled, onRejected)
-    },
+  const createChainableBuilder = (table?: string, insertData?: any) => {
+    const builder: any = {
+      _table: table,
+      _insertData: insertData,
+      select: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData) 
+      }),
+      insert: vi.fn(function(this: any, data: any) { 
+        return createChainableBuilder(this._table, data)
+      }),
+      update: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      delete: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      eq: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      neq: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      gt: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      gte: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      lt: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      lte: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      like: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      ilike: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      in: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      is: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      filter: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      or: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      not: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      order: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      limit: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      range: vi.fn(function(this: any) { 
+        return createChainableBuilder(this._table, this._insertData)
+      }),
+      single: vi.fn(function(this: any) { 
+        const data = this._table === 'categories' ? mockCategories[0] : 
+                     this._insertData ? { id: 'inv123', ...this._insertData } : mockData[0]
+        return Promise.resolve({ data, error: mockError })
+      }),
+      maybeSingle: vi.fn(function(this: any) { 
+        const data = this._table === 'categories' ? mockCategories[0] : mockData[0]
+        return Promise.resolve({ data, error: mockError })
+      }),
+      then: function(this: any, onFulfilled: any, onRejected: any) {
+        let data = this._table === 'categories' ? mockCategories : mockData
+        if (this._insertData) {
+          data = Array.isArray(this._insertData) 
+            ? this._insertData.map((d: any, i: number) => ({ id: `inv123`, ...d }))
+            : [{ id: 'inv123', ...this._insertData }]
+        }
+        return Promise.resolve({ data, error: mockError }).then(onFulfilled, onRejected)
+      },
+    }
+    return builder
   }
 
   return {
-    from: vi.fn((table: string) => { const newQb = Object.create(qb); newQb._table = table; return newQb }),
+    from: vi.fn((table: string) => createChainableBuilder(table)),
     auth: {
       signInWithPassword: vi.fn(() => Promise.resolve({ data: { user: { id: 'user-1' } }, error: null })),
       signOut: vi.fn(() => Promise.resolve({ error: null })),

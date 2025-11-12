@@ -1,17 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { batchOperationsService } from '../BatchOperationsService';
 
-// Create mock service instances
-const createMockService = () => ({
-  create: vi.fn(),
-  update: vi.fn(),
-  delete: vi.fn(),
-  getById: vi.fn()
-});
-
-// Mock all category services with proper exports
+// Mock all category services with proper exports - MUST be before imports
 vi.mock('../../category', () => {
-  const mockServices = {
+  const createMockService = () => ({
+    create: vi.fn(),
+    update: vi.fn(),
+    delete: vi.fn(),
+    getById: vi.fn()
+  });
+
+  return {
     firearmsService: createMockService(),
     ammunitionService: createMockService(),
     opticsService: createMockService(),
@@ -23,9 +21,11 @@ vi.mock('../../category', () => {
     primersService: createMockService(),
     powderService: createMockService()
   };
-  
-  return mockServices;
 });
+
+import { batchOperationsService } from '../BatchOperationsService';
+
+
 
 
 describe('BatchOperationsService', () => {

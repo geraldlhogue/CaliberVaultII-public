@@ -1,0 +1,6 @@
+M  src/components/inventory/CSVImportModal.tsx
+M  src/services/inventory/__tests__/BatchOperationsService.test.ts
+M  src/test/vitest.setup.ts
+M  src/utils/csvParser.ts
+M  src/utils/csvValidator.ts
+?? test-artifacts/overlay.changed.1762909833.txt
