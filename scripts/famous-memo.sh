@@ -9,20 +9,31 @@ ts=$(date -u +%Y%m%d%H%M%S)
 out="test-artifacts/famous-memo.$ts.md"
 local_log="test-artifacts/vitest.out.txt"
 work_log="test-artifacts/vitest.out.$ts.parse.txt"
-mkdir -p test-artifacts
 if [ -f "$local_log" ]; then cp "$local_log" "$work_log"; else curl -s "$RAW/test-artifacts/vitest.out.txt" -o "$work_log"; fi
 first3=$(head -n 3 "$work_log" || true)
 last3=$(tail -n 3 "$work_log" || true)
-# Robust count parser tolerant to minor format changes
-files_failed=$(awk '/^Test Files/{for(i=1;i<=NF;i++){if($i=="failed") f=$(i-1);}} END{print (f?f:0)}' "$work_log")
-files_passed=$(awk '/^Test Files/{for(i=1;i<=NF;i++){if($i=="passed") p=$(i-1);}} END{print (p?p:0)}' "$work_log")
-tests_failed=$(awk '/^Tests/{for(i=1;i<=NF;i++){if($i=="failed") f=$(i-1);}} END{print (f?f:0)}' "$work_log")
-tests_passed=$(awk '/^Tests/{for(i=1;i<=NF;i++){if($i=="passed") p=$(i-1);}} END{print (p?p:0)}' "$work_log")
+# Try Vitest summary lines first
+files_failed=$(awk '/^Test Files/{for(i=1;i<=NF;i++){if($i=="failed") f=$(i-1)} } END{print (f?f:0)}' "$work_log")
+files_passed=$(awk '/^Test Files/{for(i=1;i<=NF;i++){if($i=="passed") p=$(i-1)} } END{print (p?p:0)}' "$work_log")
+tests_failed=$(awk '/^Tests/{for(i=1;i<=NF;i++){if($i=="failed") f=$(i-1)} } END{print (f?f:0)}' "$work_log")
+tests_passed=$(awk '/^Tests/{for(i=1;i<=NF;i++){if($i=="passed") p=$(i-1)} } END{print (p?p:0)}' "$work_log")
+# Fallback: count ✓ / × when summaries are missing
+if [ "$tests_failed" -eq 0 ] && [ "$tests_passed" -eq 0 ]; then
+  tests_passed=$(grep -E "^[[:space:]]*✓ " "$work_log" | wc -l | tr -d " ")
+  tests_failed=$(grep -E "^[[:space:]]*× " "$work_log" | wc -l | tr -d " ")
+fi
+if [ "$files_failed" -eq 0 ] && [ "$files_passed" -eq 0 ]; then
+  files_passed="$tests_passed"
+  files_failed="$tests_failed"
+fi
 prev_stats="test-artifacts/prev.stats"
-if [ -f "$prev_stats" ]; then prev_tests_failed=$(grep "^tests_failed=" "$prev_stats" | cut -d"=" -f2); else prev_tests_failed=""; fi
-if [ -n "${prev_tests_failed:-}" ]; then
-  if [ "$tests_failed" -lt "$prev_tests_failed" ]; then delta=$((prev_tests_failed - tests_failed)); status="**Status:** Progress — '$delta' fewer failing tests than previous run."; elif [ "$tests_failed" -gt "$prev_tests_failed" ]; then delta=$((tests_failed - prev_tests_failed)); status="**Status:** Regression — '$delta' more failing tests than previous run."; else status="**Status:** No change — failing test count unchanged."; fi
-else status="**Status:** Baseline — no prior run to compare."; fi
+prev_tests_failed=""
+if [ -f "$prev_stats" ]; then prev_tests_failed=$(grep "^tests_failed=" "$prev_stats" | cut -d"=" -f2 || echo ""); fi
+if [ -n "$prev_tests_failed" ]; then
+  if [ "$tests_failed" -lt "$prev_tests_failed" ]; then delta=$((prev_tests_failed - tests_failed)); status="**Status:** Progress — $delta fewer failing tests than previous run."; elif [ "$tests_failed" -gt "$prev_tests_failed" ]; then delta=$((tests_failed - prev_tests_failed)); status="**Status:** Regression — $delta more failing tests than previous run."; else status="**Status:** No change — failing test count unchanged."; fi
+else
+  status="**Status:** Baseline — no prior run to compare."
+fi
 {
   echo "Subject: CaliberVaultII — consume these exact, current artifacts (run verified)"
   echo
@@ -37,33 +48,28 @@ else status="**Status:** Baseline — no prior run to compare."; fi
   echo "  $RAW/test-artifacts/vitest.out.txt"
   echo
   echo "Verification values for this run"
-  echo "- main commit: ''
-  echo "- vitest.out.txt sha256: ''
+  echo "- main commit: $main_commit"
+  echo "- vitest.out.txt sha256: $vitest_sha256"
   echo
   echo "Summary counts from this run"
-  echo "- Test Files: '' failed
-|
-""
-passed' '  echo -
-Tests:
-""
-failed \| '' passed"
+  echo "- Test Files: $files_failed failed | $files_passed passed"
+  echo "- Tests: $tests_failed failed | $tests_passed passed"
   echo
   echo "Please confirm you’re reviewing this exact run by replying with those two values and the first 3 and last 3 lines of vitest.out.txt."
   echo
   echo "vitest.out.txt — first 3 lines"
-  echo '```'
+  echo "```"
   echo "$first3"
-  echo '```'
+  echo "```"
   echo
   echo "vitest.out.txt — last 3 lines"
-  echo '```'
+  echo "```"
   echo "$last3"
-  echo '```'
+  echo "```"
   echo
   echo "Notes:"
   echo "- vitest.setup.ts is no longer frozen. If you need changes, include what changed and why in your drop notes; we will keep using your harness unless it clearly regresses other suites."
-  echo "- Tips for current reds: ensure Supabase builder ops are chainable (double .eq), API mocks return arrays/objects exactly as asserted and reject on error paths, expose auth.getSession/onAuthStateChange, and confirm UI exports (named vs default) match test imports. Resolve 10s cache timeouts by using fake timers or lowering internal delays under NODE_ENV=test."
+  echo "- Tips for current reds: confirm InventoryOperations export/import (invalid element), ensure supabase.auth.getSession/onAuthStateChange exist in the same client your StorageService imports, align useSubscription hasFeature/tier to the spec. If cache tests hang, use fake timers or reduce internal delays when NODE_ENV=test."
 } > "$out"
 printf "tests_failed=%s\n" "$tests_failed" > "$prev_stats"
 printf "tests_passed=%s\n" "$tests_passed" >> "$prev_stats"

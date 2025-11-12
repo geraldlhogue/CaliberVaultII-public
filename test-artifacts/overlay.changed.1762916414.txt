@@ -1,0 +1,6 @@
+M  scripts/famous-memo.sh
+A  test-artifacts/famous-memo.20251112024801.md
+A  test-artifacts/famous-memo.20251112024848.md
+A  test-artifacts/vitest.out.20251112024801.parse.txt
+A  test-artifacts/vitest.out.20251112024848.parse.txt
+?? test-artifacts/overlay.changed.1762916414.txt
