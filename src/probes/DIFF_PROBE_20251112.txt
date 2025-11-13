@@ -1,2 +1,4 @@
 DIFF_PROBE_20251112_BASELINE
 If you see this, baseline file exists.
+DIFF_PROBE_20251112_CHANGE
+If you see this, the Famous diff was applied correctly.
