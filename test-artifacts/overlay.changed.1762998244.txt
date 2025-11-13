@@ -1,0 +1,4 @@
+M  .gitignore
+M  src/lib/barcodeCache.ts
+M  src/lib/errorHandler.ts
+?? test-artifacts/overlay.changed.1762998244.txt
