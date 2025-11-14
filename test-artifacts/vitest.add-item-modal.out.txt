@@ -1,0 +1,12 @@
+
+ RUN  v2.1.9 /Users/ghogue/Desktop/CaliberVaultII
+
+ ✓ src/components/__tests__/AddItemModal.test.tsx > AddItemModal > should render when open
+ ✓ src/components/__tests__/AddItemModal.test.tsx > AddItemModal > should not render when closed
+ ✓ src/components/__tests__/AddItemModal.test.tsx > AddItemModal > should render modal component
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  09:52:27
+   Duration  860ms (transform 46ms, setup 117ms, collect 159ms, tests 35ms, environment 326ms, prepare 40ms)
+

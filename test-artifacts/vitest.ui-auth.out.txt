@@ -1,0 +1,21 @@
+
+ RUN  v2.1.9 /Users/ghogue/Desktop/CaliberVaultII
+
+ ✓ src/components/__tests__/InventoryOperations.test.tsx > InventoryOperations > renders inventory dashboard
+ ✓ src/components/__tests__/InventoryOperations.test.tsx > InventoryOperations > handles inventory operations
+ ✓ src/components/__tests__/SmartInstallPrompt.test.tsx > SmartInstallPrompt > renders install prompt
+ ✓ src/components/__tests__/SmartInstallPrompt.test.tsx > SmartInstallPrompt > handles PWA install event
+ ✓ src/components/__tests__/SmartInstallPrompt.test.tsx > SmartInstallPrompt > shows install button when prompt is available
+ ✓ src/components/__tests__/AddItemModal.enhanced.test.tsx > AddItemModal Enhanced > renders modal with all features
+ ✓ src/components/__tests__/AddItemModal.enhanced.test.tsx > AddItemModal Enhanced > handles form validation
+ ✓ src/components/__tests__/AddItemModal.enhanced.test.tsx > AddItemModal Enhanced > supports all categories
+ × src/components/__tests__/AddItemModal.test.tsx > AddItemModal > should render when open
+   → expected null to be truthy
+ ✓ src/components/__tests__/AddItemModal.test.tsx > AddItemModal > should not render when closed
+ ✓ src/components/__tests__/AddItemModal.test.tsx > AddItemModal > should render modal component
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 10 passed (11)
+   Start at  09:33:11
+   Duration  1.09s (transform 124ms, setup 539ms, collect 639ms, tests 76ms, environment 1.96s, prepare 296ms)
+

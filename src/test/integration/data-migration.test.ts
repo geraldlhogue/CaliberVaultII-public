@@ -14,7 +14,7 @@ const mockCategories = [
   { id: '9', name: 'Powder' },
   { id: '10', name: 'Primers' },
   { id: '11', name: 'Reloading' },
-  { id: '12', name: 'Parts' },
+  { id: '12', name: 'Parts' }
 ];
 
 describe('Data Migration Validation', () => {
@@ -74,9 +74,9 @@ describe('Data Migration Validation', () => {
     expect(error).toBeNull();
     expect(data).toBeDefined();
     expect(data?.length).toBeGreaterThanOrEqual(12);
-
+    
     if (data && data.length >= 12) {
-      const categoryNames = data.map((c) => c.name);
+      const categoryNames = data.map(c => c.name);
       expect(categoryNames).toContain('Firearms');
       expect(categoryNames).toContain('Ammunition');
       expect(categoryNames).toContain('Bullets');
@@ -85,44 +85,27 @@ describe('Data Migration Validation', () => {
     }
   });
 
+
   it('should create ammunition item successfully', async () => {
     const testItem = {
       user_id: testUserId,
       name: 'Test Ammo',
       manufacturer: 'Test Mfg',
       quantity: 100,
-      caliber: '9mm',
+      caliber: '9mm'
     };
 
-    const originalFrom = supabase.from;
+    const { data, error } = await supabase
+      .from('ammunition')
+      .insert(testItem)
+      .select()
+      .single();
 
-    try {
-      // Local mock so insert/select/single returns the inserted payload
-      (supabase as any).from = vi.fn((table: string) => {
-        if (table !== 'ammunition') {
-          return originalFrom(table);
-        }
-
-        return {
-          insert: vi.fn().mockReturnThis(),
-          select: vi.fn().mockReturnThis(),
-          single: vi.fn(async () => ({ data: testItem, error: null })),
-        };
-      });
-
-      const { data, error } = await supabase
-        .from('ammunition')
-        .insert(testItem)
-        .select()
-        .single();
-
-      expect(error).toBeNull();
-      expect(data).toBeDefined();
-      expect(data?.name).toBe('Test Ammo');
-    } finally {
-      (supabase as any).from = originalFrom;
-    }
+    expect(error).toBeNull();
+    expect(data).toBeDefined();
+    expect(data?.name).toBe('Test Ammo');
   });
+
 
   it('should create magazine item successfully', async () => {
     const testItem = {
@@ -130,37 +113,18 @@ describe('Data Migration Validation', () => {
       name: 'Test Magazine',
       manufacturer: 'Test Mfg',
       quantity: 5,
-      capacity: 30,
+      capacity: 30
     };
 
-    const originalFrom = supabase.from;
+    const { data, error } = await supabase
+      .from('magazines')
+      .insert(testItem)
+      .select()
+      .single();
 
-    try {
-      // Local mock for magazines insert
-      (supabase as any).from = vi.fn((table: string) => {
-        if (table !== 'magazines') {
-          return originalFrom(table);
-        }
-
-        return {
-          insert: vi.fn().mockReturnThis(),
-          select: vi.fn().mockReturnThis(),
-          single: vi.fn(async () => ({ data: testItem, error: null })),
-        };
-      });
-
-      const { data, error } = await supabase
-        .from('magazines')
-        .insert(testItem)
-        .select()
-        .single();
-
-      expect(error).toBeNull();
-      expect(data).toBeDefined();
-      expect(data?.capacity).toBe(30);
-    } finally {
-      (supabase as any).from = originalFrom;
-    }
+    expect(error).toBeNull();
+    expect(data).toBeDefined();
+    expect(data?.capacity).toBe(30);
   });
 });
 

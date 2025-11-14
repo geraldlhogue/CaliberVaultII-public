@@ -1,0 +1,14 @@
+
+ RUN  v2.1.9 /Users/ghogue/Desktop/CaliberVaultII
+
+ ✓ src/test/integration/api.test.ts > API Integration Tests > REST API Endpoints > fetches inventory items via API
+ ✓ src/test/integration/api.test.ts > API Integration Tests > REST API Endpoints > creates item via API
+ ✓ src/test/integration/api.test.ts > API Integration Tests > REST API Endpoints > handles API errors gracefully
+ ✓ src/test/integration/api.test.ts > API Integration Tests > Real-time Subscriptions > subscribes to inventory changes
+ ✓ src/test/integration/api.test.ts > API Integration Tests > Batch Operations > performs batch insert
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  20:12:33
+   Duration  1.00s (transform 71ms, setup 142ms, collect 136ms, tests 3ms, environment 419ms, prepare 147ms)
+

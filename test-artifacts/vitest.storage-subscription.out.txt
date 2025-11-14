@@ -1,0 +1,22 @@
+
+ RUN  v2.1.9 /Users/ghogue/Desktop/CaliberVaultII
+
+stdout | src/services/__tests__/storage.service.test.ts > StorageService > uploadFile > uploads file successfully
+[StorageService] Uploading to undefined/test-user/1763050463665-test.jpg
+[StorageService] Upload successful: https://storage.local/undefined/test-user/1763050463665-test.jpg
+
+ ✓ src/services/__tests__/storage.service.test.ts > StorageService > uploadFile > uploads file successfully
+ ✓ src/services/__tests__/storage.service.test.ts > StorageService > deleteFile > deletes file successfully
+ ✓ src/services/__tests__/storage.service.test.ts > StorageService > listFiles > lists files successfully
+
+⎯⎯⎯⎯⎯⎯ Unhandled Errors ⎯⎯⎯⎯⎯⎯
+
+Vitest caught 1 unhandled error during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+ Test Files  1 passed (2)
+      Tests  3 passed (6)
+     Errors  1 error
+   Start at  09:14:22
+   Duration  98.65s (transform 51ms, setup 277ms, collect 86ms, tests 3ms, environment 908ms, prepare 95ms)
+

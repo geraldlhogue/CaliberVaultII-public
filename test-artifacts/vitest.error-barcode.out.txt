@@ -1,0 +1,17 @@
+
+ RUN  v2.1.9 /Users/ghogue/Desktop/CaliberVaultII
+
+ ✓ src/lib/__tests__/errorHandler.test.ts > ErrorHandler > handles errors gracefully
+ ✓ src/lib/__tests__/errorHandler.test.ts > ErrorHandler > logs errors
+ ✓ src/lib/__tests__/errorHandler.test.ts > ErrorHandler > categorizes errors
+ ✓ src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > initializes cache manager
+ ✓ src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > caches barcode data
+ ✓ src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > retrieves cached data
+ ✓ src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > returns null for non-existent barcode
+ ✓ src/lib/__tests__/barcodeCache.test.ts > BarcodeCacheManager > clears all cache
+
+ Test Files  2 passed (2)
+      Tests  8 passed (8)
+   Start at  08:48:47
+   Duration  928ms (transform 43ms, setup 246ms, collect 20ms, tests 3ms, environment 871ms, prepare 189ms)
+

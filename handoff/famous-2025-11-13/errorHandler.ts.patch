@@ -1,0 +1,133 @@
+diff --git a/src/lib/errorHandler.ts b/src/lib/errorHandler.ts
+index 5abf455..f59e8ba 100644
+--- a/src/lib/errorHandler.ts
++++ b/src/lib/errorHandler.ts
+@@ -1,36 +1,106 @@
+-export type ErrorCategory = 'generic';
++export type ErrorCategory =
++  | 'network'
++  | 'database'
++  | 'validation'
++  | 'auth'
++  | 'generic';
+ 
+-export interface HandledError {
++export interface CategorizedError {
+   type: ErrorCategory;
+   message: string;
++  original?: unknown;
++  context?: Record<string, unknown>;
+ }
+ 
+-export default class ErrorHandler {
+-  category: ErrorCategory;
+-  message: string;
+-
+-  constructor(err?: unknown) {
+-    this.category = 'generic';
+-    this.message = ErrorHandler.extractMessage(err);
++/**
++ * Central error handler used in both app code and tests.
++ * The tests expect:
++ *  - `ErrorHandler` to be a constructor (class)
++ *  - instances to have `.log()` and `.categorize()` methods
++ */
++export class ErrorHandler {
++  log(message: string, meta?: Record<string, unknown>): void {
++    try {
++      // Keep logging side-effect simple and resilient
++      if (typeof console !== 'undefined' && console.error) {
++        console.error('[ErrorHandler]', message, meta ?? {});
++      }
++    } catch {
++      // Never let logging throw in tests
++    }
+   }
+ 
+-  static extractMessage(err: unknown): string {
+-    if (err && typeof err === 'object' && 'message' in (err as any)) {
+-      return String((err as any).message);
++  categorize(error: unknown): ErrorCategory {
++    const message =
++      error instanceof Error ? error.message : String(error ?? '');
++    const lower = message.toLowerCase();
++
++    if (
++      lower.includes('network') ||
++      lower.includes('fetch') ||
++      lower.includes('timeout')
++    ) {
++      return 'network';
++    }
++
++    if (
++      lower.includes('database') ||
++      lower.includes('db') ||
++      lower.includes('sql')
++    ) {
++      return 'database';
++    }
++
++    if (
++      lower.includes('validation') ||
++      lower.includes('invalid') ||
++      lower.includes('schema')
++    ) {
++      return 'validation';
+     }
+-    if (typeof err === 'string') return err;
+-    if (err == null) return 'Unknown error';
+-    return String(err);
++
++    if (
++      lower.includes('auth') ||
++      lower.includes('unauthorized') ||
++      lower.includes('forbidden')
++    ) {
++      return 'auth';
++    }
++
++    return 'generic';
+   }
+ 
+-  categorize(): ErrorCategory {
+-    return this.category;
++  handle(
++    error: unknown,
++    context?: Record<string, unknown>
++  ): CategorizedError {
++    const type = this.categorize(error);
++    const message =
++      error instanceof Error ? error.message : String(error ?? 'Unknown error');
++
++    this.log(message, { ...context, type });
++
++    return {
++      type,
++      message,
++      original: error,
++      context,
++    };
+   }
+ }
+ 
+-export function handleError(err: unknown): HandledError {
+-  return {
+-    type: 'generic',
+-    message: ErrorHandler.extractMessage(err),
+-  };
++// Shared singleton used by the helper function below
++const defaultHandler = new ErrorHandler();
++
++/**
++ * Helper used across the codebase/tests to "handle errors gracefully".
++ * It always returns a structured object and never throws.
++ */
++export function handleError(
++  error: unknown,
++  context?: Record<string, unknown>
++): CategorizedError {
++  return defaultHandler.handle(error, context);
+ }
++
++export default ErrorHandler;
